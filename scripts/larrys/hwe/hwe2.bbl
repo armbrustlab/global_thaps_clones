@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem{Armbrust04}
+\bibinfo{author}{Armbrust, E.~V.} \emph{et~al.}
+\newblock \bibinfo{title}{The genome of the diatom \textit{Thalassiosira
+  pseudonana}: Ecology, evolution, and metabolism}.
+\newblock \emph{\bibinfo{journal}{Science}} \textbf{\bibinfo{volume}{306}},
+  \bibinfo{pages}{79--86} (\bibinfo{year}{2004}).
+
+\end{thebibliography}

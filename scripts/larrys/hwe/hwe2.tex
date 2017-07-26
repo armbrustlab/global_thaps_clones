@@ -1,0 +1,575 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+\usepackage{xr}
+\externaldocument{../../../inst/doc/tp.7gen}
+\externaldocument[figures-]{../../../inst/doc/tp.7gen.figures}
+\externaldocument[ed-]{../../../inst/doc/tp.7gen.ed}
+\externaldocument[supp-]{../../../inst/doc/tp.7gen.supp}
+% generate custom captions for this file
+\renewcommand{\thetable}{H2-\arabic{table}}
+\renewcommand{\thefigure}{H2-\arabic{figure}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\title{More notes on HWE}
+\maketitle
+
+\newif\ifshort\shortfalse
+
+\ifshort\else
+\section{Preliminaries}
+Load utility R code; do setup:
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{source}\hlstd{(}\hlstr{'../../../R/wlr.R'}\hlstd{)} \hlcom{# load util code; path relative this folder or sibling in scripts/larrys }
+\end{alltt}
+\begin{verbatim}
+## [1] "SVN Id, I miss you.  $Id: wlr.R  2016-03-05 or later ruzzo $"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{setup.my.wd}\hlstd{(}\hlstr{'hwe'}\hlstd{)}         \hlcom{# set working dir; UPDATE if this file moves, or if COPY/PASTE to new file}
+\hlkwd{setup.my.knitr}\hlstd{()}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Some of the following should be copied into the methods supplement.
+\fi
+
+\section{The Reference Genome is a ``Hardy-Weinberg Haplotype''}
+\label{sec:hw-hap}
+
+It is useful to understand how often the reference sequence reflects rare alleles at polymorphic sites.  
+
+When a haploid ``reference genome'' is constructed from a single diploid individual, homozygous 
+positions are, of course, recorded in the reference, while at heterozygous positions, one of the two 
+alleles is selected to be the reference nucleotide essentially at random, e.g., based on which 
+variant accumulated more reads in the sequencing run.  Casting this as a more explicitly 
+probabilistic process (and ignoring read errors and potentially biased coverage), to construct the 
+reference, draw two samples from the HWE population at each site; if the two samples differ, 
+choosing the one with more reads is equivalent to choosing the first draw, since they are 
+equiprobable; if the two samples agree, it is again equivalent to choosing the first draw.  So, the 
+reference sequence is equivalent to drawing \emph{one} sample from HWE at each position.  I.e., the 
+reference genome is what we might call a ``Hardy-Weinberg haplotype''---exactly equivalent to a 
+randomly selected haplotype drawn from the HWE population.
+
+The above analysis would not apply to a ``reference genome'' constructed from DNA pooled from more 
+than one individual. %As noted elsewhere, 
+However, the CCMP 1335 reference sequence\cite{Armbrust04} 
+was derived from an isogenic cell culture: the sequencing project isolated a single cell from the 
+CCMP 1335 culture, then allowed it to divide to produce enough DNA for sequencing.  Reproduction in
+culture is believed to have been exclusively mitotic, and so the reference construction model 
+presented above is as appropriate as it would be for a more typical sequencing project based on a 
+sample from a single multicellular organism.  Unobserved sexual reproduction in culture might 
+increase the variance in observed read counts at heterozygous sites, but with rare exceptions 
+(e.g., homozygous lethality), should not alter the mean 50-50 mixture of the two alleles. 
+
+\newif\ifshowalgebra\showalgebratrue
+\ifshowalgebra
+{\footnotesize \textit{ Keep the following algebraic derivation of the same result 
+``just in case,'' but \ifshort\else commented out in methods, since \fi I think the version above
+is more readable and no less rigorous.}
+
+\noindent
+... Thus (ignoring read errors and assuming unbiased coverage), the probability that the minor
+allele is enshrined as the reference at that position is
+$$
+  q^2 + \frac12(2 p q) = q(q + p) = q .
+$$
+(In the founder cell from which the sequencing culture was derived, this position was homozygous for
+the minor allele or it was heterozygous and the minor allele happened to have more reads than the
+equally-likely alternative.)  
+
+While irrelevant for our immediate purposes, this model extends to tri- and quad-allelic positions, 
+too.  If the four allele frequencies are $p,q,r,s$, then the probability, that, say, the $q$ allele
+appears in the reference sequence is:
+$$
+  q^2 + \frac12(2 p q + 2 r q + 2 s q) = q(q + p + r + s) = q ,
+$$
+and similarly for the others by symmetry.
+}
+\fi
+
+\section{Heterozygous Sites Outnumber Homozygous Non-Reference Sites 2 to 1}
+\label{sec:two-to-one}
+
+In both H-isolates, we see a roughly 2:1 ratio between numbers of
+heterozygous (het) versus homozygous non-reference (homnr) positions.  In
+principle, that ratio depends on both the distribution of allele
+frequencies in the sampled populations and on the reference genome, so
+it is natural to ask whether the 2:1 ratio is ``special'' in some way.
+For example, that is the ratio HWE would predict if all non-reference
+alleles had 0.5 frequency.  In contrast, homozygous non-reference positions would be quite
+rare if the reference genome exclusively recorded major alleles 
+(the allele with highest frequency at a given site, typically $\ge 0.5$), but---as predicted by neutral theory---most 
+variants were rare (frequency $\ll 0.5$).  
+
+We show below that
+the 2:1 ratio is expected, \emph{independent} of allele
+frequencies, given the way the reference genome was constructed.  Specifically, since the
+reference sequence is effectively a random haploid genome, it will record the
+major allele at most polymorphic positions, but will sometimes record
+a rare allele (equally rarely).  Re-sequenced individuals will only
+rarely appear to be homozygous non-reference relative to the former
+class of reference positions, but will commonly be homozygous non-reference with respect to
+the later class.  These effects counterbalance to yield the
+observed 2:1 ratio---exactly 2:1 when only biallelic positions are considered, and (slightly)
+greater than 2:1 when (typically rarer) multi-allelic positions are considered.
+% This is justified below, following a simple example.
+
+E.g., suppose there are 100 biallelic loci, each with a 0.1 minor allele
+frequency in a population in HWE.  In expectation, at
+each locus, $0.9^2=81\%$ of individuals are expected to be homozygous for the
+major allele, $2 \cdot 0.9 \cdot 0.1 = 18\%$ heterozygous, and only $0.1^2=1\%$ homozygous for the minor
+allele.  In one individual, the number of homozygous non-reference
+positions will depend on the reference, of course.  If the reference
+reflects the major allele at each locus, then only 1\% of these loci will be homozygous non-reference (vs
+18\% het, an 18:1 ratio), but if the reference records the minor
+allele at 10\% of loci (as expected in a random haplotype from this population),
+then the number of homozygous non-reference loci is expected to be
+$0.81 * 10 + 0.01 * 90 = 9.0$, so the het:homnr ratio is 2:1.
+
+More generally, consider a diploid 
+population in Hardy-Weinberg equilibrium.  Focus on a specific biallelic position 
+having minor allele frequency $0 \le q \le 1/2$ and $p = 1-q$. 
+When re-sequencing another individual drawn from the same population, determining 
+whether this position is heterozygous versus homozygous non-reference can be visualized as drawing 
+three independent samples from the HWE population---the first draw determines the reference haplotype, and the 
+other two define the genotype of the new individual.  If all three are the same, that site is 
+homozygous for the reference allele.   If the three are not all the same, then only three distinct possibilities are 
+relevant: Letting ``a'' denote the allele that was observed only once, and ``b'' the allele seen 
+twice, the three draws yield abb, bab, or bba.  Since the first letter defines the reference, outcome
+abb is the homozygous non-reference case, and the other two outcomes are heterozygous.  These three 
+outcomes are equally likely (with all three probabilities equal to $p^2q$ or or all equal to $q^2p$, depending on 
+whether ``b'' is the major or minor allele, resp.), so the heterozygous to homozygous non-reference ratio is 2:1.
+Inclusion of (a small number of) 3- and 4-state positions in the population will raise the
+proportion of heterozygous positions in a resequenced individual (by a similarly 
+small amount).
+
+\ifshowalgebra
+{\footnotesize 
+\textit{Thanks to Joe Felsenstein for suggesting the above proof.  My older version follows.  Again, 
+let's keep it, but I think the above is simpler.}
+
+Note: 3-/4-state sites add other cases to the "1 a, 2 b" draws where both are minor, but they maintain the 2:1 ratio.  They also add an "abc" draw as a possibility, necessarily a het site, with a probability that includes the product of 2 or 3 minor alleles, hence will increase the 2:1 ratio by, typically, a small amount.
+
+For the general case, consider a diploid population in Hardy-Weinberg
+equilibrium with $n$ bi-allelic positions, the $i^{th}$ having minor
+allele frequency $0 \le q_i \le 1/2$ and $p_i = 1-q_i, i=1,\ldots, n$.
+  %
+In a random diploid individual, the probability that position $i$ is
+heterozygous is, of course, $2 p_i q_i$ (independent of the reference
+sequence), and so the expected number of such positions is
+$$
+  N_{het} = 2 \sum_{i=1}^n p_i q_i .
+$$
+
+Again in a random diploid individual, we find the probability that
+position $i$ is homozygous for the non-reference allele (with respect
+to the fixed reference derived as above) as follows.  Let $Z_i$ be the
+event that position $i$ is homozygous non-reference, let $M_i (M_i^C)$ be the event
+that the reference genome shows the minor (major, resp\@.) allele at
+position $i$, and define $p(M_i)=r_i$.  Then
+\begin{align}
+  P(Z_i) & = P(Z_i \mid M_i  )P(M_i  ) 
+           + P(Z_i \mid M_i^C)P(M_i^C) 
+           = p_i^2 r_i + q_i^2 (1-r_i) \nonumber\\
+         & = p_i^2 q_i + q_i^2 p_i = p_i q_i(p_i+q_i) = p_i q_i , \label{eq:homnr}
+\end{align}
+where the last line follows from assuming $r_i=q_i$.  Given this, the
+expected number of homozygous non-reference positions is
+$$
+  N_{homnr} = \sum_{i=1}^n p_i q_i ,
+$$
+exactly half of $N_{het}$.
+}
+\fi
+\iffalse
+{\footnotesize
+{\it At one point I thought changing allele freqs in the resequenced pop could only lower the het:homnr ratio, but the analysis was flawed; making rare alleles less rare generally pushes pq up (its max is at p=q).  Keep this text for now, maybe something is salvagable...}
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ff}\hlkwb{<-}\hlkwa{function} \hlstd{(}\hlkwc{q}\hlstd{,}\hlkwc{d}\hlstd{)\{p} \hlkwb{<-} \hlnum{1}\hlopt{-}\hlstd{q;} \hlkwd{return}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{(p}\hlopt{+}\hlstd{d)}\hlopt{*}\hlstd{(q}\hlopt{-}\hlstd{d)}\hlopt{/}\hlstd{(p}\hlopt{*}\hlstd{q}\hlopt{+}\hlstd{d}\hlopt{^}\hlnum{2}\hlstd{))\}}
+\hlstd{q}\hlkwb{<-}\hlnum{0.1}\hlstd{;dd}\hlkwb{<-}\hlkwd{seq}\hlstd{(q}\hlopt{-}\hlnum{1}\hlstd{,q,}\hlkwc{length.out}\hlstd{=}\hlnum{100}\hlstd{);}
+\hlcom{#plot(dd,ff(q,dd),pch='.')}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The following is useful, but not required for the paper.  Phrased to match the newer presentation:}
+
+The above analysis assumed that the second cell was isolated from \emph{the same} population as the one from which the reference was constructed, or equivalently, from a population with an identical set of biallelic positions and identical allele frequencies.  Could a change in those frequencies skew the results towards a higher ratio higher than 2:1?  The answer is no.  Let ``a,'' ``b'' be the major, minor alleles at the designated position in the original population (frequencies $p \ge q = 1-p$, respectively) and suppose their frequencies in the resequenced population are $p+\delta, q-\delta$ (with no assumption about $\delta$ other than that these quantities are between 0 and 1, inclusive).  Then the homozygous nonreference draws ``abb'' or ``baa'' occur with probability 
+$$
+  p(q-\delta)^2+q(p+\delta)^2 = p q + \delta^2 > pq,
+$$ 
+and the four heterozygous draws occurs with probability 
+$$
+  2 q (p+\delta) (q-\delta) + 2 p (p+\delta) (q-\delta) = 2 (p+\delta) (q-\delta) = 2 (p q - \delta(p - q) - \delta^2) < 2pq.
+$$
+Thus, the heterozogous to homozygous-non-reference ratio is $ \le 2 $.
+I.e., altered allele frequencies in the resequenced population can only decrease the 2:1 ratio expected when the resequenced individual is sampled from the same population as the reference.
+
+{\it This matches the old presentation:}
+
+The above analysis assumed that the second cell was isolated from \emph{the same} population as the one from which the reference was constructed, or equivalently, from a population with an identical set of biallelic positions and identical $p_i$'s.  Could a change in those frequencies skew the results towards a higher het:homnr ratio?  The answer is no: letting the frequencies in the second population at position $i$ be $p_i+\delta_i, q_i-\delta_i$, Equation~\eqref{eq:homnr} becomes
+\begin{align*}
+  P(Z_i) & = P(Z_i \mid M_i  )P(M_i  ) 
+           + P(Z_i \mid M_i^C)P(M_i^C) 
+ %           \\
+ %         &
+ = (p_i+\delta_i)^2 q_i +
+             (q_i-\delta_i)^2 p_i
+           = p_i q_i + \delta_i^2
+         \ge p_i q_i
+\end{align*}
+This is to be compared to 
+$2(p_i + \delta_i)(q_i - \delta_i) = 2(p_i q_i - \delta_i(p_i - q_i) - \delta_i^2) \le 2 p_i q_i$, 
+since $p_i \ge q_i$.  So, the ratio of these two quantities is $\le 2$.
+Thus, changing frequencies in any way can only decrease the ratio of the expected counts.
+}
+\fi
+
+\ifshort\else
+\section{Our CCMP Re-Sequencing Cultures Were Isogenic}
+\label{sec:isogenic}
+
+As noted, the CCMP 1335 reference sequence\cite{Armbrust04} was derived from an isogenic cell
+culture---it was grown from a single isolated cell.  In contrast, each of our ``re-sequencing
+cultures'' was grown from an estimated 5--10 cells isolated by flow cytometry (Methods~\ref{supp-sec:selection}) from
+the relevant CCMP culture.  Genetic diversity in the re-sequencing culture could potentially mask
+genomic signals of interest.  E.g., a site that is homozygous non-reference in some but not all
+cells might be indistinguishable from a uniformly heterozygous site.  
+% Since one point in our argument for loss of sex within the L-isolates is their near-complete absence of homozygous non-reference positions in comparison to the $\approx$180K heterozygous positions observed in each, 
+Consequently, we considered whether each CCMP culture was isogenic.
+
+Perhaps the simplest way to establish a single-species culture from an asexual or homothallic
+unicellular organism is to establish it from a single isolated cell.  (CCMP 1335 is
+reputed\cite{Armbrust04} to have been established in this way.)  Additionally, in a culture
+established decades ago from a few cells, it is plausible that one genotype may have
+grown to dominance.  Thus, it is very plausible that all seven CCMP isolates are isogenic,
+but to be conservative, we looked to our data for direct confirmation.
+
+%Thus, one concern in analyzing our data is that a potential mixture of genotypes might obscure, especially, the homozygous non-reference positions.  We explore these issues in two alternative scenarios below (both assuming HWE in the wild and ignoring \textit{de novo} mutation, sequencing bias and other complications).  
+
+
+
+Suppose one of the CCMP cultures had several, say, $f$, founder cells, independently drawn
+from the HWE population.  
+%Genetic diversity among the $f$ founders makes it less likely that we would see near-complete absence of the reference nucleotide (``apparently homozygous non-reference'') at any position in the pool of sequenced DNA, especially as $f$ increases.  However, extending the results presented above, large $f$ alone is insufficient to make the number of ``apparently homozygous non-reference'' positions as small as observed.  Additionally, and even more tellingly, 
+Extending the analysis from Section~\ref{sec:hw-hap}, at a biallelic position having minor allele
+frequency $q = 1-p \le p$, the probability that the $2f$ chromosomes of the $f$ founder cells hold
+exactly $j = 0, \ldots, 2f$ copies of the non-reference allele is:
+$$
+  B(j,f) = p {{2f}\choose{j}} p^{2f-j} q^j + q {{2f}\choose{j}} p^j q^{2f-j} .
+$$
+This is the probability of exactly $j$ ``successes'' when performing $2f$ trials in a weighted \emph{mixture} of two binomial distributions, one with weight $p$ and success probability $q$, and the other with weight $q$ and success probability $p$.  Graphically, the probability mass function for this system will place all mass at the discrete points $j/(2f), j=0,\ldots,2f$.  
+% ``with a small ``bump'' of total mass $\approx q$ centered near $p$ (because with probability $q$ the minor allele is the reference allele at this genomic position, but most chromosomes will carry the major allele) and, dually, a large bump of total mass $\approx p$ centered near $q$ (with probability $p$ the major allele is the reference allele at this genomic position).'' -- this applies when q is >> 1/2f, but the small q case is he impotrant one, handled below.
+According to neutral theory, we should expect many positions to exhibit small minor allele frequencies $q$.
+Intuitively, when $q$ is sufficiently small, the most likely scenario is that the major allele is the reference nucleotide.
+In this case, the most likely number of copies of the nonreference allele captured among the $f$ founders is $j=0$, with $j=1$ being next most likely, and $j=2,3,\ldots$ being increasingly unlikely (the first term in the formula above).
+However, if the minor allele is the reference nucleotide (which happens with  probability $q$), then the most likely outcome is that $j=2f$ nonreference alleles (i.e., only major alleles) are seen, with $j=2f-1, 2f-2, \ldots$ being increasingly unlikely (the second term in the formula).
+These two series cross at $j \approx f$, and their sum in minimized when $j=f+1$, with the net result that $B(j,f)$, as a function of $j$, is convex (``U-shaped''), with most probability mass \emph{away} from the middle (except when $f=1$, when the $j=1$ case \emph{is} the middle). 
+The top row of Figure~\ref{fig:qonetenth.homnr} gives three examples of this, showing the probability mass function $B(j,f)$ versus non-reference fraction $j/(2f)$ corresponding to a minor allele frequency of $q=0.04$ and various numbers of founders $f$.  
+
+\newif\ifconvex\convextrue
+\ifconvex
+{\footnotesize
+\emph{Above intuition is probably adequate, but here's a proof.  Flip convex switch to false to hide in supplement but keep the text, in case...}
+
+We formally verify for each $f\ge1$ and $q \le 1/(4f+1)$ that $B(j,f)$ is a convex function of $j$ as follows. 
+% Specifically, we show for  $0 < j < 2f$, that $B(j-1,f) - 2 B(j,f) + B(j+1,f) > 0$.
+Let $c_i = {{2f}\choose{i}}$, let $r=q/p$ and note that $r \le \frac{1/(4f+1)}{(1-1/(4f+1)} = \frac{1}{4f}$.  Then 
+$$
+  B(j,f) = p {{2f}\choose{j}} p^{2f-j} q^j + q {{2f}\choose{j}} p^j q^{2f-j} = 
+             p^{2f+1} c_j r^{j} \left[1 + r^{2f-2j+1}\right] ,
+$$
+and, for  $0 < j < 2f$, 
+\begin{align*}
+  B(j-1,f) - 2 B(j,f) + B(j+1,f) 
+  %&= 
+  %  p^{2f+1} \left[ 
+  %      c_{j-1} r^{j-1} (1 + r^{2f-2j+3})
+  %   -2 c_j     r^j     (1 + r^{2f-2j+1})
+  %    + c_{j+1} r^{j+1} (1 + r^{2f-2j-1})
+  %\right]\\
+  &= 
+    p^{2f+1} c_j r^j\left[ 
+        \frac{c_{j-1}}{c_j} r^{-1} (1 + r^{2f-2j+3})
+     -2                    (1 + r^{2f-2j+1})
+      + \frac{c_{j+1}}{c_j} r^{1}  (1 + r^{2f-2j-1})
+  \right]\\
+  &= 
+    p^{2f+1} c_j r^j\left[ 
+        \left(\frac{c_{j-1}}{c_j} r^{-1} - 2 + \frac{c_{j+1}}{c_j} r     \right) +   
+        \left(\frac{c_{j-1}}{c_j} r      - 2 + \frac{c_{j+1}}{c_j} r^{-1}\right) r^{2f-2j+1}
+  \right]\\
+  &> 0 ,
+\end{align*}
+where the final inequality holds since 
+$$
+  \min_{0 < j < 2f}\left(\frac{c_{j-1}}{c_j}, \frac{c_{j+1}}{c_j}\right) r^{-1} = \frac{r^{-1}}{2f}  \ge 2 .
+$$
+Thus, $B(j,f)$ is convex.  
+Since sums of convex functions are themselves convex, any \emph{mixture} of sites with minor allele frequencies below $1/(4f+1)$ will also have its minimum near the middle, except when $f=1$.
+}
+\fi
+
+\newif\ifbitonic\bitonicfalse
+\ifbitonic
+{\footnotesize
+\emph{Here's an earlier, weaker proof (proves U-shaped, but doesn't prove convexity).  Flip bitonic switch to false to hide in supplement but keep the text, in case...}
+
+We formally verify for each $f\ge1$ that $B(j,f)$ is a ``U''-shaped function of $j$ as follows. 
+% It is convex, but we don't quite need it.
+Specifically, we show that if $q \le 1/(4f+1)$ 
+% I think 1/(2f+1) suffices for bitonic, but not for convex.
+then $B(j,f)/B(j+1,f) \ge 1$ for each $0 \le j \le f$, and
+     $B(j,f)/B(j+1,f) \le 1$ for each $f < j < 2f$.
+$$
+  B(j,f) = p {{2f}\choose{j}} p^{2f-j} q^j + q {{2f}\choose{j}} p^j q^{2f-j} = 
+          {{2f}\choose{j}} p^{2f+1} r^{-j} \left[r^{2j} + r^{2f+1}\right],
+$$
+where $r=q/p$. Then
+\newcommand{\bratio}{{\frac{j+1}{2f-j} \left[\frac{r^{2j} + r^{2f+1}}{r^{2j+1} + r^{2f}}\right]}}
+$$
+  \frac{B(j,f)}{B(j+1,f)} = \bratio.
+$$
+Note that $r \le 1/(4f+1)/(1-1/(4f+1)) = 1/(4f) < 1$, so for $0 \le j < f$, we have $r^{2j+1}>r^{2f}$, and
+$$
+  \frac{B(j,f)}{B(j+1,f)} %= \bratio
+  \ge \frac{1}{2f} \left[\frac{r^{2j}}{2r^{2j+1}}\right] = \frac{1}{4fr} \ge 1.
+$$
+Similarly, when $f < j < 2f$, we have $r^{2j} < r^{2f+1}$, so
+$$
+  \frac{B(j,f)}{B(j+1,f)} %= \bratio
+  \le \frac{2f}{1} \left[\frac{2r^{2f+1}}{r^{2f}}\right] =  4fr \le 1.
+$$
+Finally, when $j=f$,
+$$
+  \frac{B(j,f)}{B(j+1,f)} %= \bratio
+  = \frac{f+1}{f} \left[\frac{r^{2f} + r^{2f+1}}{r^{2f+1} + r^{2f}}\right] = \frac{f+1}{f} > 1.
+$$
+A careful look at this proof shows that the minimum always occurs at $j=f+1$.
+}
+\fi
+
+
+
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[t]
+\includegraphics[width=\maxwidth]{figure/qonetenth_homnr-1} \caption[Non-Reference Modeling]{Non-Reference Modeling: top row shows simulation results assuming $f=1$ (left), 2 (middle) or 6 (right) founder cells are sampled from a HWE population.  At sites having minor allele frequency $q=0.04,$ the probability $B(j,f)$ ($y$-axis) that these $f$ cells hold a specified fraction $j/(2f), j = 0, \ldots, 2f$ ($x$-axis) of the non-reference allele at that site is plotted (blue dots).  The superimposed gray bar graphs show the effect of sampling reads during sequencing---e.g., in the upper left panel, 8\% of biallelic sites having this minor allele frequency would be expected to be heterozygous (blue dot at $x=0.5$), but binomial sampling of reads for both alleles will spread their apparent nonreference proportions as shown (``hump'' in gray bar graph centered under 0.5). The theoretical model used assumes coverage 48 at all sites, with no errors or bias in sequencing or mapping.  Bottom row: analogous simulations, assuming a weighted mixture of minor allele frequencies $q$ (see legend), with weights inversely proportional to $q$.  (Note the change in $y$ scale in the lower row; the leftmost points and gray bars are clipped to expose more detail at small $y$ values.)}\label{fig:qonetenth.homnr}
+\end{figure}
+
+
+\end{knitrout}
+
+The ``R'' distributions (analogous to those histogrammed, e.g., in Fig.~\ref{figures-R-Dist} in the main paper) expected from the model outlined here, would reflect (a) a theoretical distribution similar to the dots shown in Fig~\ref{fig:qonetenth.homnr} for alleles captured in the founder population, but (b) summed over many positions with varying minor allele frequencies, and (c) ``blurred'' by binomial sampling as the sequencer accumulates reads from both alleles at sites not rendered completely mono-allelic by (a) or drift.  
+(We ignore in-culture selective pressure.)  
+The gray bar graphs in Fig~\ref{fig:qonetenth.homnr} reflect a simple simulation of this.  
+Note that the ``U'' shaped scenario does not apply individually to larger $q$ values (red and green points in the bottom panels of Figure~\ref{fig:qonetenth.homnr}), but does apply collectively to a mixture including many sites with small $q$, even when some sites with larger $q$ are present, as seen in Figure~\ref{fig:qonetenth.homnr}.
+In aggregate, these effects add variability to the data, but do not alter the main features of our model, namely, presence of a fair number of positions with apparent non-reference frequency near 1.0, and, with one key exception, absence of a peak in the R-distribution near 0.5.
+The key exception is when $f=1$: establishment of the culture from a single individual means that all heterozygous sites in that individual are retained at a 50-50 allele frequency in the descendant population (as fixed heterozygous sites in all offspring if only mitotic division happens in culture, and maintained on average if there is unobserved sexual reproduction in culture).
+In this case, the CCMP culture is isogenic.
+Two other exceptions that allow a peak near 0.5 are:
+\begin{itemize}
+  \item When the estimated $k=5$--10 cells isolated to start the sequencing culture are isogenic.  This would happen if $k=1$, or if $k \ge 2$, but all happened to be mitotic descendants of only one of the $f$ CCMP founders.  Neither event seems very likely, but neither is problematic for our analysis---this case is equivalent to the $f=1$ case, in that the \emph{sequenced} portion of the CCMP culture is isogenic, which is all that is needed for our subsequent analysis.
+  \item When most variants in the wild population are assumed to have allele frequencies near 0.5.  However, this strongly violates neutral theory, which predicts that rare variants will greatly outnumber common variants.  In the later situation, the dominant peaks will be at $0.0, 1.0$ and at $1/(2f)$ (rare alleles are more likely to be seen in one of the $2f$ chromosomes than in several), as seen in Fig~\ref{fig:qonetenth.homnr}.
+\end{itemize}
+
+Thus, the presence of the peak near 0.5 in the ``$R$'' histograms (e.g., Fig.~\ref{figures-R-Dist}) for 6 isolates demonstrates that each re-sequencing culture was isogenic (having been established from, or eventually dominated by the descendants of, a single isolated cell).  An important consequence is that the exact number of cells used to establish the re-sequencing culture (the ``$k=5$--10'' estimate) is not relevant for our subsequent analysis---all $k$ are genetically identical.  (Again, interpretation of CCMP 1014 is hampered by lower data quality.)
+
+\section{The H-clade retains sexual reproduction but the L-clade is asexual}
+
+Based on Section~\ref{sec:isogenic} each of our CCMP strains had a single founder cell.  Assuming each was drawn from a common population in HWE, the single founder cell of each (non-1335) strain would have had a heterozygous to homozygous non-reference ratio of at most 2:1 with respect to the CCMP 1335 reference, as shown in Section~\ref{sec:two-to-one}.  Homozygous non-reference positions in the founder will appear exclusively non-reference in its descendants, no matter how many were included in our re-sequencing culture, even if recombination were occurring in culture, for the simple reason that no alternative nucleotide exists at that position in any cell in the entire culture.  In consequence, the 2:1 ratio will be recapitulated when re-sequenced.
+%% I think this is an outgrowth of the bogus "delta" argument: An extension of the analysis given in Section~\ref{sec:two-to-one} shows that the ratio will only be lowered if the isolates are drawn from populations with different allele frequencies than the population from which the reference was obtained, i.e., homozygous non-reference positions become proportionately more common in this scenario.
+Thus, the dearth of homozygous non-reference positions in the L-isolates in comparison to the 
+$\approx$90k predicted by this analysis (1/2 of the $\approx$180k observed heterozygous positions
+reported in Table~\ref{figures-Table1}) argues strongly against sex in the wild for all five.
+
+In contrast, the $\approx$2:1 heterozygous to homozygous non-reference ratio observed in the H-isolates (with
+respect to the CCMP 1335-based reference) is consistent with HWE, and
+thus sexual reproduction in those populations, based on the assumption
+that the allele frequencies in the H-isolates have not drastically
+changed in the time since the L-clade founder emerged from the
+population that was the common ancestor to all isolates.
+
+\section{Sex in Culture?}
+
+At various points we have said things like:
+  ``argues against sex in culture for CCMP 1335 (at
+  least during the NNN year interval between the
+  original sequencing\cite{Armbrust04} and our re-sequencing).''
+I think this is in the current draft of the main paper too.  At this point I suggest we \emph{delete} it from the main paper, at least.  I believe it is true, but will be unsurprising to most, and although it would be nice to present some concrete evidence bearing on the question, I think the evidence we have may raise debate that will detract from the main story.  
+
+Specifically, I think our evidence is this: the arguments above show that all CCMP cultures are monoclonal, and the 5 L-cultures started with essentially the same clone (no sex in the wild).  From that point, sex in culture will not create new alleles, but will mix them.  \emph{IF} we had re-sequenced from single cells, homozygous non-reference counts would clearly show sex/nosex.  But since we sequenced $k=5$--10 cells, if we assume sex in culture, we are back to the scenario where mixing may hide the homnr positions.  Conveniently, the original simulations I did for a different purpose fit this scenario very well:  assume  HWE populations with all allele frequencies = 0.5 (or zero).  The conclusions I advocated before are still valid: small $k$ leaves a footprint clearly distinct from the observed data; larger $k$, say 10, gives a bell-shaped curve (the ``orange'' curves in the simulations, I think) like what we see in the L-clade, with few apparent homnr positions, but a distinctly wider bell than observed.  The latter situation is very implausible, IMHO.  
+
+But rather than invite debate on a less interesting topic, I propose we just remain silent on the question of sex in culture.  Another option would be a short section in the supplement outlining this argument (e.g., an elaboration of the previous paragraph, with a few of the simulations shown as a figure).  That would also be OK with me.
+\fi
+
+\iffalse
+\section{Multi-Cellular Extension?}
+
+** This section is subsumed by stuff above, but keep for the time being.. **
+
+Above applies to CCMP, assuming each isolate was effectively founded by a single cell.  What happens if isolates were actually grown from a small number of founders, and then re-sequenced based on a collection of $k=5$--10 cells?  The analysis doesn't seem so clean, since all cells share the same reference, and read counts from all are aggregated.
+
+As a simple warm up, what if all biallelic positions have the same minor allele frequency, say $q=0.1$.  One simple question is: for $i = 0, \ldots, 2k$, what is the probability that we have $i$ non-reference alleles at a given position.  Answer is:
+$$
+  B(i,k) = p {{2k}\choose{i}} p^{2k-i} q^i + q {{2k}\choose{i}} p^i q^{2k-i} .
+$$
+
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{BB} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{i}\hlstd{,}\hlkwc{k}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0.1}\hlstd{)\{}
+  \hlstd{p} \hlkwb{<-} \hlnum{1}\hlopt{-}\hlstd{q}
+  \hlkwd{return}\hlstd{(p} \hlopt{*} \hlkwd{choose}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k, i)} \hlopt{*} \hlstd{p}\hlopt{^}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k}\hlopt{-}\hlstd{i)} \hlopt{*} \hlstd{q}\hlopt{^}\hlstd{i} \hlopt{+} \hlstd{q} \hlopt{*} \hlkwd{choose}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k, i)} \hlopt{*} \hlstd{p}\hlopt{^}\hlstd{i} \hlopt{*} \hlstd{q}\hlopt{^}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k}\hlopt{-}\hlstd{i))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+E.g., for $k=1, 2, 5, 10$, these values, and ratios to the homozygous non-reference case are:
+
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{k} \hlkwb{<-} \hlnum{1}\hlstd{;} \hlkwd{rbind}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k) ,}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)}\hlopt{/}\hlkwd{BB}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k, k))}
+\end{alltt}
+\begin{verbatim}
+#          [,1] [,2] [,3]
+# [1,] 0.730000 0.18 0.09
+# [2,] 8.111111 2.00 1.00
+\end{verbatim}
+\begin{alltt}
+\hlstd{k} \hlkwb{<-} \hlnum{2}\hlstd{;} \hlkwd{rbind}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k) ,}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)}\hlopt{/}\hlkwd{BB}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k, k))}
+\end{alltt}
+\begin{verbatim}
+#          [,1]   [,2]     [,3]      [,4]   [,5]
+# [1,] 0.590500 0.2628 0.048600 0.0324000 0.0657
+# [2,] 8.987823 4.0000 0.739726 0.4931507 1.0000
+\end{verbatim}
+\begin{alltt}
+\hlstd{k} \hlkwb{<-} \hlnum{5}\hlstd{;} \hlkwd{rbind}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k) ,}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)}\hlopt{/}\hlkwd{BB}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k, k))}
+\end{alltt}
+\begin{verbatim}
+#           [,1]       [,2]      [,3]       [,4]       [,5]        [,6]        [,7]        [,8]
+# [1,] 0.3138106  0.3486784 0.1743393 0.05165694 0.01005801 0.001488035 0.001240029 0.005747436
+# [2,] 9.0000000 10.0000000 5.0000010 1.48150657 0.28846099 0.042676421 0.035563684 0.164834854
+#            [,9]      [,10]      [,11]
+# [1,] 0.01937135 0.03874206 0.03486784
+# [2,] 0.55556496 1.11111134 1.00000000
+\end{verbatim}
+\begin{alltt}
+\hlstd{k} \hlkwb{<-}\hlnum{10}\hlstd{;} \hlkwd{rbind}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k) ,}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)}\hlopt{/}\hlkwd{BB}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k, k))}
+\end{alltt}
+\begin{verbatim}
+#          [,1]       [,2]       [,3]       [,4]       [,5]       [,6]       [,7]        [,8]
+# [1,] 0.109419  0.2431533  0.2566618  0.1711079 0.08080095 0.02872923 0.00798034 0.001773409
+# [2,] 9.000000 20.0000000 21.1111111 14.0740741 6.64609053 2.36305441 0.65640401 0.145867587
+#              [,9]         [,10]          [,11]          [,12]         [,13]        [,14]
+# [1,] 0.0003202043 0.00004750194 0.000006442043 0.000005856403 0.00003562645 0.0001970488
+# [2,] 0.0263376437 0.00390715934 0.000529875033 0.000481704576 0.00293036950 0.0162077807
+#             [,15]       [,16]       [,17]      [,18]      [,19]      [,20]      [,21]
+# [1,] 0.0008867047 0.003192136 0.008977883 0.01901199 0.02851798 0.02701703 0.01215767
+# [2,] 0.0729337934 0.262561602 0.738454504 1.56378601 2.34567901 2.22222222 1.00000000
+\end{verbatim}
+\begin{alltt}
+\hlstd{opar} \hlkwb{<-} \hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
+\hlstd{k} \hlkwb{<-} \hlnum{1}\hlstd{;} \hlkwd{bplot}\hlstd{(k, qq,} \hlkwc{ymax}\hlstd{=}\hlkwd{max}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)))}
+\hlstd{k} \hlkwb{<-} \hlnum{2}\hlstd{;} \hlkwd{bplot}\hlstd{(k, qq,} \hlkwc{ymax}\hlstd{=}\hlkwd{max}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)))}
+\hlstd{k} \hlkwb{<-}\hlnum{10}\hlstd{;} \hlkwd{bplot}\hlstd{(k, qq,} \hlkwc{ymax}\hlstd{=}\hlkwd{max}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)))}
+\hlstd{k}\hlkwb{<-}\hlnum{200}\hlstd{;} \hlkwd{bplot}\hlstd{(k, qq,} \hlkwc{ymax}\hlstd{=}\hlkwd{max}\hlstd{(}\hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)))}
+\hlkwd{par}\hlstd{(opar)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
+
+\end{knitrout}
+
+The plots look VERY unlike any of our $R$ plots.  The dip at zero for larger $k$ is a consequence of implicitly assuming that all positions are bi-allelic; if we add 10x as many fixed positions (and assume all are reference), that will presumably vanish.  Likewise, redoing it for a \emph{mixture} of positions with different allele frequencies, favoring low minor frequencies (neutral model), would presumably give a U-shaped curve with a high peak at zero and a low peak at $2k$ ($R=1$). Adding binomial sampling would obviously blur it, but not erase the trends.  What is notably missing, except at $k=1$, is a peak at 1/2.  I think (but am not certain) that a mixture of allele frequencies could be simulated by simply averaging.  E.g., 2:1 rare vs $q=0.5$ would look like:
+
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{rare} \hlkwb{<-} \hlnum{2}
+\hlstd{k} \hlkwb{<-} \hlnum{5}
+\hlstd{bbvrare} \hlkwb{<-} \hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k)}
+\hlstd{bbvhalf} \hlkwb{<-} \hlkwd{BB}\hlstd{(}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k), k,} \hlkwc{q}\hlstd{=}\hlnum{.5}\hlstd{)}
+\hlkwd{plot} \hlstd{((}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k))}\hlopt{/}\hlnum{2}\hlopt{/}\hlstd{k, bbvrare,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwd{max}\hlstd{(bbvrare,bbvhalf}\hlopt{/}\hlstd{rare)),} \hlkwc{xlab}\hlstd{=}\hlstr{'R'}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{'Density'}\hlstd{)}
+\hlkwd{lines}\hlstd{((}\hlnum{0}\hlopt{:}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{k))}\hlopt{/}\hlnum{2}\hlopt{/}\hlstd{k, bbvhalf}\hlopt{/}\hlstd{rare,}\hlkwc{col}\hlstd{=}\hlstr{'blue'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
+
+\end{knitrout}
+
+This may be relevant because the bottleneck (even if it didn't squash sex) might have many positions at $q=0.5$.  Even playing with parameters, this still doesn't look much like our L-clade $R$ plots, but it's still crude and only tentatively correct.  Further analysis and parameter tweaking is needed to get a convincing graphic for the paper.
+\fi
+
+\bibliographystyle{../../../inst/doc/naturemag.bst}
+\bibliography{../../../inst/doc/sample.bib}
+
+%moot in git:
+% remember to do this to enable Id keyword substution: svn propset svn:keywords Id hwe2.rnw 
+\mbox{}\vfill\footnotesize\flushright SVN, I miss you $ $Id: hwe2.rnw  2016-03-05 or later  ruzzo $ $
+\end{document}
