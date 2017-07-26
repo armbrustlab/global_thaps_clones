@@ -1,0 +1,1465 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2016.7.7)  20 JUL 2017 12:10
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**nc-snps.tex
+(./nc-snps.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, lo
+aded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/share/texlive/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 130.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip43
+\fb@frw=\dimen105
+\fb@frh=\dimen106
+\FrameRule=\dimen107
+\FrameSep=\dimen108
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/alltt.sty
+Package: alltt 1997/06/16 v2.0g defines alltt environment
+)
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count88
+\Gm@cntv=\count89
+\c@Gm@tempcnt=\count90
+\Gm@bindingoffset=\dimen109
+\Gm@wd@mp=\dimen110
+\Gm@odd@mp=\dimen111
+\Gm@even@mp=\dimen112
+\Gm@layoutwidth=\dimen113
+\Gm@layoutheight=\dimen114
+\Gm@layouthoffset=\dimen115
+\Gm@layoutvoffset=\dimen116
+\Gm@dimlist=\toks15
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
+
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package hobsub Info: Skipping package `ifvtex' (already loaded).
+Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
+)
+Package: bitset 2011/01/30 v1.1 Handle bit-vector datatype (HO)
+Package: uniquecounter 2011/01/30 v1.2 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2010/09/02 v1.4 Let assignment for LaTeX macros (HO)
+Package: hopatch 2012/05/28 v1.2 Wrapper for package hooks (HO)
+Package: xcolor-patch 2011/01/30 xcolor patch
+Package: atveryend 2011/06/30 v1.8 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
+Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
+Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+)
+\@linkdim=\dimen117
+\Hy@linkcounter=\count91
+\Hy@pagecounter=\count92
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
+)
+\Hy@SavedSpaceFactor=\count93
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Option `breaklinks' set `true' on input line 4319.
+Package hyperref Info: Option `colorlinks' set `true' on input line 4319.
+Package hyperref Info: Hyper figures OFF on input line 4443.
+Package hyperref Info: Link nesting OFF on input line 4448.
+Package hyperref Info: Hyper index ON on input line 4451.
+Package hyperref Info: Plain pages OFF on input line 4458.
+Package hyperref Info: Backreferencing OFF on input line 4463.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4688.
+\c@Hy@tempcnt=\count94
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5041.
+\XeTeXLinkMargin=\dimen118
+\Fld@menulength=\count95
+\Field@Width=\dimen119
+\Fld@charsize=\dimen120
+Package hyperref Info: Hyper figures OFF on input line 6295.
+Package hyperref Info: Link nesting OFF on input line 6300.
+Package hyperref Info: Hyper index ON on input line 6303.
+Package hyperref Info: backreferencing OFF on input line 6310.
+Package hyperref Info: Link coloring ON on input line 6313.
+Package hyperref Info: Link coloring with OCG OFF on input line 6320.
+Package hyperref Info: PDF/A mode OFF on input line 6325.
+LaTeX Info: Redefining \ref on input line 6365.
+LaTeX Info: Redefining \pageref on input line 6369.
+\Hy@abspage=\count96
+\c@Item=\count97
+\c@Hfootnote=\count98
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
+\Fld@listcount=\count99
+\c@bookmark@seq@number=\count100
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip44
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/bookmark.sty
+Package: bookmark 2011/12/02 v1.24 PDF bookmarks (HO)
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/bkm-pdftex.def
+File: bkm-pdftex.def 2011/12/02 v1.24 bookmark driver for pdfTeX (HO)
+\BKM@id=\count101
+))
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/times.sty
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2013/01/14 v2.14 AMS math features
+\@mathmargin=\skip45
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks16
+\ex@=\dimen121
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen122
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count102
+LaTeX Info: Redefining \frac on input line 210.
+\uproot@=\count103
+\leftroot@=\count104
+LaTeX Info: Redefining \overline on input line 306.
+\classnum@=\count105
+\DOTSCASE@=\count106
+LaTeX Info: Redefining \ldots on input line 378.
+LaTeX Info: Redefining \dots on input line 381.
+LaTeX Info: Redefining \cdots on input line 466.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen123
+LaTeX Font Info:    Redeclaring font encoding OML on input line 566.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
+\macc@depth=\count107
+\c@MaxMatrixCols=\count108
+\dotsspace@=\muskip11
+\c@parentequation=\count109
+\dspbrk@lvl=\count110
+\tag@help=\toks17
+\row@=\count111
+\column@=\count112
+\maxfields@=\count113
+\andhelp@=\toks18
+\eqnshift@=\dimen124
+\alignsep@=\dimen125
+\tagshift@=\dimen126
+\tagwidth@=\dimen127
+\totwidth@=\dimen128
+\lineht@=\dimen129
+\@envbody=\toks19
+\multlinegap=\skip46
+\multlinetaggap=\skip47
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2665.
+LaTeX Info: Redefining \] on input line 2666.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/upquote/upquote.sty
+Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
+tim
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/textcomp.sty
+Package: textcomp 2005/09/27 v1.99g Standard LaTeX package
+Package textcomp Info: Sub-encoding information:
+(textcomp)               5 = only ISO-Adobe without \textcurrency
+(textcomp)               4 = 5 + \texteuro
+(textcomp)               3 = 4 + \textohm
+(textcomp)               2 = 3 + \textestimated + \textcurrency
+(textcomp)               1 = TS1 - \textcircled - \t
+(textcomp)               0 = TS1 (full)
+(textcomp)             Font families with sub-encoding setting implement
+(textcomp)             only a restricted character set as indicated.
+(textcomp)             Family '?' is the default used for unknown fonts.
+(textcomp)             See the documentation for details.
+Package textcomp Info: Setting ? sub-encoding to TS1/1 on input line 71.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ts1enc.def
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+)
+LaTeX Info: Redefining \oldstylenums on input line 266.
+Package textcomp Info: Setting cmr sub-encoding to TS1/0 on input line 281.
+Package textcomp Info: Setting cmss sub-encoding to TS1/0 on input line 282.
+Package textcomp Info: Setting cmtt sub-encoding to TS1/0 on input line 283.
+Package textcomp Info: Setting cmvtt sub-encoding to TS1/0 on input line 284.
+Package textcomp Info: Setting cmbr sub-encoding to TS1/0 on input line 285.
+Package textcomp Info: Setting cmtl sub-encoding to TS1/0 on input line 286.
+Package textcomp Info: Setting ccr sub-encoding to TS1/0 on input line 287.
+Package textcomp Info: Setting ptm sub-encoding to TS1/4 on input line 288.
+Package textcomp Info: Setting pcr sub-encoding to TS1/4 on input line 289.
+Package textcomp Info: Setting phv sub-encoding to TS1/4 on input line 290.
+Package textcomp Info: Setting ppl sub-encoding to TS1/3 on input line 291.
+Package textcomp Info: Setting pag sub-encoding to TS1/4 on input line 292.
+Package textcomp Info: Setting pbk sub-encoding to TS1/4 on input line 293.
+Package textcomp Info: Setting pnc sub-encoding to TS1/4 on input line 294.
+Package textcomp Info: Setting pzc sub-encoding to TS1/4 on input line 295.
+Package textcomp Info: Setting bch sub-encoding to TS1/4 on input line 296.
+Package textcomp Info: Setting put sub-encoding to TS1/5 on input line 297.
+Package textcomp Info: Setting uag sub-encoding to TS1/5 on input line 298.
+Package textcomp Info: Setting ugq sub-encoding to TS1/5 on input line 299.
+Package textcomp Info: Setting ul8 sub-encoding to TS1/4 on input line 300.
+Package textcomp Info: Setting ul9 sub-encoding to TS1/4 on input line 301.
+Package textcomp Info: Setting augie sub-encoding to TS1/5 on input line 302.
+Package textcomp Info: Setting dayrom sub-encoding to TS1/3 on input line 303.
+Package textcomp Info: Setting dayroms sub-encoding to TS1/3 on input line 304.
+
+Package textcomp Info: Setting pxr sub-encoding to TS1/0 on input line 305.
+Package textcomp Info: Setting pxss sub-encoding to TS1/0 on input line 306.
+Package textcomp Info: Setting pxtt sub-encoding to TS1/0 on input line 307.
+Package textcomp Info: Setting txr sub-encoding to TS1/0 on input line 308.
+Package textcomp Info: Setting txss sub-encoding to TS1/0 on input line 309.
+Package textcomp Info: Setting txtt sub-encoding to TS1/0 on input line 310.
+Package textcomp Info: Setting lmr sub-encoding to TS1/0 on input line 311.
+Package textcomp Info: Setting lmdh sub-encoding to TS1/0 on input line 312.
+Package textcomp Info: Setting lmss sub-encoding to TS1/0 on input line 313.
+Package textcomp Info: Setting lmssq sub-encoding to TS1/0 on input line 314.
+Package textcomp Info: Setting lmvtt sub-encoding to TS1/0 on input line 315.
+Package textcomp Info: Setting qhv sub-encoding to TS1/0 on input line 316.
+Package textcomp Info: Setting qag sub-encoding to TS1/0 on input line 317.
+Package textcomp Info: Setting qbk sub-encoding to TS1/0 on input line 318.
+Package textcomp Info: Setting qcr sub-encoding to TS1/0 on input line 319.
+Package textcomp Info: Setting qcs sub-encoding to TS1/0 on input line 320.
+Package textcomp Info: Setting qpl sub-encoding to TS1/0 on input line 321.
+Package textcomp Info: Setting qtm sub-encoding to TS1/0 on input line 322.
+Package textcomp Info: Setting qzc sub-encoding to TS1/0 on input line 323.
+Package textcomp Info: Setting qhvc sub-encoding to TS1/0 on input line 324.
+Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 325.
+Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 326.
+Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 327.
+Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 328.
+Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 329.
+Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 330.
+Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 331.
+Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 332.
+Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 333.
+Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 334.
+Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 335.
+Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 336.
+Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 337.
+Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 338.
+Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 339.
+Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 340.
+)) (./nc-snps.aux)
+\openout1 = `nc-snps.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 61.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 61.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
+File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 61.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count114
+\scratchdimen=\dimen130
+\scratchbox=\box28
+\nofMPsegments=\count115
+\nofMParguments=\count116
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count117
+\MPscratchDim=\dimen131
+\MPnumerator=\count118
+\makeMPintoPDFobject=\count119
+\everyMPtoPDFconversion=\toks22
+) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: letterpaper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=469.75502pt
+* \textheight=650.43001pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+\AtBeginShipoutBox=\box29
+Package hyperref Info: Link coloring ON on input line 61.
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
+)
+\c@section@level=\count120
+)
+LaTeX Info: Redefining \ref on input line 61.
+LaTeX Info: Redefining \pageref on input line 61.
+LaTeX Info: Redefining \nameref on input line 61.
+
+
+LaTeX Warning: No \author given.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 65.
+(./nc-snps.toc
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
+)
+\tf@toc=\write3
+\openout3 = `nc-snps.toc'.
+
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 82.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Package color Info: Redefining color shadecolor on input line 103.
+
+[1
+
+{/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <8> not available
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 105.
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 105.
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
+File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+)
+LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <8> not available
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 105.
+
+Overfull \hbox (10.24529pt too wide) in paragraph at lines 105--105
+[][]\OT1/pcr/b/n/8 source[][]\OT1/pcr/m/n/8 ([][]\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8
+ ../../../R/wlr.R\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 )[] []\OT1/pcr/m/sl/8 # loa
+d util code; path relative this folder or sibling in scripts/larrys [][] 
+ []
+
+
+Overfull \hbox (29.4453pt too wide) in paragraph at lines 109--109
+[]\OT1/pcr/m/n/8 ## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I mi
+ss you.  $Id: wlr.R  2017-07-20 or later $[] 
+ []
+
+
+Overfull \hbox (15.04529pt too wide) in paragraph at lines 111--111
+[][]\OT1/pcr/b/n/8 setup.my.wd[][]\OT1/pcr/m/n/8 ([][]\TS1/pcr/m/n/8 '\OT1/pcr/
+m/n/8 nc-snps\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 )[]     []\OT1/pcr/m/sl/8 # set
+ working dir; UPDATE if this file moves, or if COPY/PASTE to new file[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 124.
+LaTeX Font Info:    Try loading font information for OMS+pcr on input line 139.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omspcr.fd
+File: omspcr.fd 
+)
+LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 139.
+Package color Info: Redefining color shadecolor on input line 150.
+Package color Info: Redefining color shadecolor on input line 165.
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 #      strain   chr  start    end length filtered     type  co
+v_ratio   dup_frac   iStart     iEnd[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 # 1    tp1012  Chr1  10601  13500   2900    FALSE CNVnator 0.6
+3738000 0.41187900    10601    13500[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 # 2    tp1012  Chr1 112001 116500   4500    FALSE CNVnator 1.5
+4893000 0.00907677   112001   116500[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 # 3    tp1012  Chr1 215001 221100   6100    FALSE CNVnator 1.6
+5381000 0.01178470   215001   221100[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 # 4    tp1012  Chr1 358901 370300  11400     TRUE CNVnator 0.0
+0204431 0.97997300   358901   370300[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 # 1955 tp1335 Chr24 259901 278000  18100    FALSE CNVnator 1.4
+1458000 0.38091100 31264334 31282433[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 196--196
+[]\OT1/pcr/m/n/8 # 1956 tp1335 Chr24 286901 289800   2900    FALSE CNVnator 1.7
+4941000 0.74228100 31291334 31294233[] 
+ []
+
+[2]
+Package color Info: Redefining color shadecolor on input line 207.
+LaTeX Font Info:    Font shape `TS1/pcr/m/it' in size <8> not available
+(Font)              Font shape `TS1/pcr/m/sl' tried instead on input line 216.
+ [3]
+Package color Info: Redefining color shadecolor on input line 292.
+LaTeX Font Info:    Font shape `OMS/pcr/m/it' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 309.
+
+Overfull \hbox (24.6453pt too wide) in paragraph at lines 430--430
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 all_exon_%\TS1/pcr/m/n/8 '[]     []\OT1/
+pcr/m/n/8 =[] []100[] []*[] []data.exon[][]/[][]data.len,[]                    
+   []\OT1/pcr/m/sl/8 # % exonic positions (all data) [][] 
+ []
+
+
+Overfull \hbox (19.84529pt too wide) in paragraph at lines 433--433
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 des_%\TS1/pcr/m/n/8 '[]          []\OT1/
+pcr/m/n/8 =[] []100[] []*[] []des.frac,[]                                 []\OT
+1/pcr/m/sl/8 # % desert positions (all data)[][] 
+ []
+
+
+Overfull \hbox (29.4453pt too wide) in paragraph at lines 434--434
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 tot_snps\TS1/pcr/m/n/8 '[]       []\OT1/
+pcr/m/n/8 = snp.tot,[]                                        []\OT1/pcr/m/sl/8
+ # total number of SNPs (all data)[][] 
+ []
+
+
+Overfull \hbox (15.04529pt too wide) in paragraph at lines 435--435
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 nonex_snps/Kb\TS1/pcr/m/n/8 '[]  []\OT1/
+pcr/m/n/8 =[] []1000[] []*[] [](snp.nc)[][]/[][](data.len[][]-[][]data.exon),[]
+           []\OT1/pcr/m/sl/8 # SNPS per kilobase, non-exons[][] 
+ []
+
+
+Overfull \hbox (19.84529pt too wide) in paragraph at lines 438--438
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 nd_snps/Kb\TS1/pcr/m/n/8 '[]     []\OT1/
+pcr/m/n/8 =[] []1000[][]*[][]snp.nd[][]/[][](data.len[][]-[][]des.len),[]      
+           []\OT1/pcr/m/sl/8 # SNPS per kilobase, non-desert[][] 
+ []
+
+
+Overfull \hbox (24.6453pt too wide) in paragraph at lines 441--441
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 d5_exon_%\TS1/pcr/m/n/8 '[]      []\OT1/
+pcr/m/n/8 =[] []100[] []*[] []exon.d5[] []/[] []des5.len,[]                    
+   []\OT1/pcr/m/sl/8 # % exonic in big deserts (> 5k)[][] 
+ []
+
+
+Overfull \hbox (24.6453pt too wide) in paragraph at lines 442--442
+[]    []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 d5_snp/Kb\TS1/pcr/m/n/8 '[]      []\OT1/
+pcr/m/n/8 =[] []1000[] []*[] []snp.d5[] []/[] []des5.len,[]                    
+   []\OT1/pcr/m/sl/8 # SNPS/Kb, in big deserts (> 5k)[][] 
+ []
+
+
+Overfull \hbox (15.04529pt too wide) in paragraph at lines 444--444
+[]    []\OT1/pcr/m/n/8 des.len.uncnv,[]                                        
+             []\OT1/pcr/m/sl/8 #   ditto, minus CNVnator dels[][] 
+ []
+
+
+Overfull \hbox (1.30925pt too wide) in paragraph at lines 450--450
+[]  []\OT1/pcr/m/sl/8 # return summary stats as a large blob;  all vars defined
+ at the top of the function,  + summary[][] 
+ []
+
+[4]
+Underfull \vbox (badness 10000) detected at line 475
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 475
+ []
+
+[5]
+Package color Info: Redefining color shadecolor on input line 479.
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 482--482
+[]  []\OT1/pcr/m/sl/8 # desert snp density plots.  Param \TS1/pcr/m/sl/8 '\OT1/
+pcr/m/sl/8 ddb\TS1/pcr/m/sl/8 ' \OT1/pcr/m/sl/8 is the \TS1/pcr/m/sl/8 '\OT1/pc
+r/m/sl/8 desert density blob\TS1/pcr/m/sl/8 ' \OT1/pcr/m/sl/8 returned by des.d
+ens.calc.[][] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 488--488
+[]  []\OT1/pcr/b/n/8 layout[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 matrix[][]\OT
+1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 c[][]\OT1/pcr/m/n/8 ([][]1[][]:[][]7[][],[][]8[
+][],[][]8[][]),[][]nrow[][]=[][]3[][],[][]ncol[][]=[][]3[][],[][]byrow[][]=T))[
+] []\OT1/pcr/m/sl/8 # more general than mfrow - doublewide 8th panel[][] 
+ []
+
+
+Overfull \hbox (4.89534pt too wide) in paragraph at lines 525--525
+[]      []\OT1/pcr/b/n/8 cat[][]\OT1/pcr/m/n/8 ([][]\TS1/pcr/m/n/8 '\OT1/pcr/m/
+n/8 Some points in\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 ,[] []\OT1/pcr/b/n/8 st.lo
+c[][]\OT1/pcr/m/n/8 (st),[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 clipped;  xrange i
+s\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 , xrange,[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/
+8 , yrange is\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 , yrange,[] []\TS1/pcr/m/n/8 '\
+OMS/cmsy/m/n/8 n\OT1/pcr/m/n/8 n\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 )[][] 
+ []
+
+[6]
+Underfull \vbox (badness 10000) detected at line 600
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 600
+ []
+
+[7]
+Package color Info: Redefining color shadecolor on input line 604.
+ [8]
+Package color Info: Redefining color shadecolor on input line 638.
+ <figs-knitr/snp-ex-vs-deslen-1.pdf, id=73, 614.295pt x 794.97pt>
+File: figs-knitr/snp-ex-vs-deslen-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/snp-ex-vs-deslen-1.pdf>
+Package pdftex.def Info: figs-knitr/snp-ex-vs-deslen-1.pdf used on input line 6
+43.
+(pdftex.def)             Requested size: 469.75502pt x 607.9196pt.
+Package color Info: Redefining color shadecolor on input line 672.
+
+<figs-knitr/snp-ex-deslen-pairs-1.pdf, id=78, 614.295pt x 614.295pt>
+File: figs-knitr/snp-ex-deslen-pairs-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/snp-ex-deslen-pairs-1.pdf>
+Package pdftex.def Info: figs-knitr/snp-ex-deslen-pairs-1.pdf used on input lin
+e 679.
+(pdftex.def)             Requested size: 469.75502pt x 469.75604pt.
+Package color Info: Redefining color shadecolor on input line 688.
+ [9] [10 <./figs-knitr/snp-ex-vs-deslen-1.pdf>] [11 <./figs-knitr/snp-ex-deslen
+-pairs-1.pdf>]
+<figs-knitr/snp-ex-vs-deslen-full-1.pdf, id=106, 614.295pt x 794.97pt>
+File: figs-knitr/snp-ex-vs-deslen-full-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/snp-ex-vs-deslen-full-1.pdf>
+Package pdftex.def Info: figs-knitr/snp-ex-vs-deslen-full-1.pdf used on input l
+ine 723.
+(pdftex.def)             Requested size: 469.75502pt x 607.9196pt.
+Package color Info: Redefining color shadecolor on input line 730.
+
+<figs-knitr/snp-ex-deslen-pairs-full-1.pdf, id=107, 614.295pt x 614.295pt>
+File: figs-knitr/snp-ex-deslen-pairs-full-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/snp-ex-deslen-pairs-full-1.pdf>
+Package pdftex.def Info: figs-knitr/snp-ex-deslen-pairs-full-1.pdf used on inpu
+t line 737.
+(pdftex.def)             Requested size: 469.75502pt x 469.75604pt.
+Package color Info: Redefining color shadecolor on input line 781.
+
+Overfull \hbox (28.34541pt too wide) in paragraph at lines 783--783
+[][]\OT1/pcr/m/n/8 sz[] []<-[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 scriptsize\TS1/
+pcr/m/n/8 '[] []\OT1/pcr/m/n/8 ; fw[] []<-[] []6.5[] []; fh[] []<-[] []5[] []; 
+fa[] []<-[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 center\TS1/pcr/m/n/8 '[] []\OT1/pc
+r/m/sl/8 # knitr params: size, fig.\OMS/cmsy/m/n/8 f\OT1/pcr/m/sl/8 width,heigh
+t,align\OMS/cmsy/m/n/8 g[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 837.
+LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <7> not available
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 839.
+<figs-knitr/ny-coding-3k-o-1.pdf, id=108, 469.755pt x 361.35pt>
+File: figs-knitr/ny-coding-3k-o-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/ny-coding-3k-o-1.pdf>
+Package pdftex.def Info: figs-knitr/ny-coding-3k-o-1.pdf used on input line 851
+.
+(pdftex.def)             Requested size: 469.75386pt x 361.34912pt.
+ [12] [13 <./figs-knitr/snp-ex-vs-deslen-full-1.pdf>] [14 <./figs-knitr/snp-ex-
+deslen-pairs-full-1.pdf>]
+Underfull \vbox (badness 1092) detected at line 1001
+ []
+
+[15 <./figs-knitr/ny-coding-3k-o-1.pdf>]
+Underfull \vbox (badness 10000) detected at line 1001
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1001
+ []
+
+[16]
+Package color Info: Redefining color shadecolor on input line 1007.
+ <figs-knitr/it-coding-3k-o-1.pdf, id=148, 469.755pt x 361.35pt>
+File: figs-knitr/it-coding-3k-o-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/it-coding-3k-o-1.pdf>
+Package pdftex.def Info: figs-knitr/it-coding-3k-o-1.pdf used on input line 102
+1.
+(pdftex.def)             Requested size: 469.75386pt x 361.34912pt.
+ [17]
+Underfull \vbox (badness 1092) detected at line 1181
+ []
+
+[18 <./figs-knitr/it-coding-3k-o-1.pdf>]
+Underfull \vbox (badness 10000) detected at line 1181
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1181
+ []
+
+[19]
+Package color Info: Redefining color shadecolor on input line 1278.
+
+Overfull \hbox (28.89536pt too wide) in paragraph at lines 1316--1316
+[]  []\OT1/pcr/b/n/8 cat[][]\OT1/pcr/m/n/8 ([][]\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 
+Largest 30 deserts per strain; ordered\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 ,[] []
+\OT1/pcr/b/n/8 substr[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 st.locs[][]\OT1/pcr
+/m/n/8 ([][]1[][]:[][]7[][],[][]loc[][]=F),[] []5[][],[][]8[][])[[][]\OT1/pcr/b
+/n/8 c[][]\OT1/pcr/m/n/8 ([][]1[][],[][]2[][],[][]4[][],[][]5[][],[][]7[][],[][
+]3[][],[][]6[][])],[] []\TS1/pcr/m/n/8 '\OMS/cmsy/m/n/8 n\OT1/pcr/m/n/8 n\TS1/p
+cr/m/n/8 '[][]\OT1/pcr/m/n/8 )[][] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 #      Start   iStart Length Len.eff    Chr   Start   iStart L
+ength Len.eff   Chr   Start   iStart[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 1    86447    86447  87666   87578   Chr1   91986    91986  
+81045   80947  Chr1   91986    91986[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 2  1375768  1375768 320634  320574   Chr1 1376223  1376223 3
+19994  319913  Chr1 1376223  1376223[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 3  2734786  2734786  52797   52797   Chr2 1058550  4101135  
+65971   65971  Chr2 1058459  4101044[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 4  1055991  4098576  66547   66547   Chr2 1413975  4456560  
+66304   66304  Chr2 1413685  4456270[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 5  1413467  4456052  89481   89481   Chr2 2304492  5347077 1
+76396  176364  Chr2 2239502  5282087[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 6  2240370  5282955  58129   58129   Chr5  798373 11390528 1
+53878  153878  Chr2 2304333  5346918[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 7  2303718  5346303 178045  178020   Chr5 1703729 12295884  
+96135   96135  Chr5  798329 11390484[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 8   798283 11390438 155010  155010   Chr5 2119647 12711802 1
+07108  107108  Chr5 1703538 12295693[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 9  1702551 12294706  97681   97681   Chr6  350440 13248567 1
+11828  111818  Chr5 2119568 12711723[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 10 2119193 12711348 108513  108513   Chr8 1060806 18022847 1
+05965  105954  Chr6  350354 13248481[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 11  350288 13248415 112333  112333   Chr9  825287 19054526  
+86587   86587  Chr7  693486 15663093[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 12 1514641 14412768  53420   53420   Chr9  995501 19224740  
+55409   55404  Chr8 1060717 18022758[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 13 1568670 14466797  60963   60958   Chr9 1061031 19290270  
+62141   62141  Chr9  808017 19037256[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 14 1060806 18022847 105983  105969  Chr10  510263 19930562  
+50930   50928  Chr9  995586 19224825[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 15  806621 19035860 106374  106369 Chr11a   42513 20568480 1
+33483  131709  Chr9 1059962 19289201[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 16  994768 19224007 129602  129602 Chr11a  226885 20752852 2
+58344  257328 Chr10  510493 19930792[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 17  510179 19930478  51035   51033 Chr11a  488445 21014412  
+55954   55954 Chr12   86223 21501175[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 18  946602 22361554  55089   51576 Chr11a  544609 21070576  
+87609   87609 Chr12  947336 22362288[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 19       1 22543335  53516   53516  Chr13       1 22543335  
+53346   53342 Chr13       1 22543335[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 20  124789 22668123 116100  116092  Chr13  125227 22668561 1
+13678  113650 Chr13  125227 22668561[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 21  487469 23030803 102423  102403  Chr13  488706 23032040 1
+00813  100787 Chr13  488706 23032040[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 22  697580 23240914  81087   81087  Chr13  698665 23241999  
+79617   79608 Chr13  698665 23241999[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 23  264204 26418797  51305   51305  Chr17  264400 26418993  
+51074   51071 Chr17  264204 26418797[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 24  499807 26654400  63208   63196  Chr17  499794 26654387  
+62974   62969 Chr17  499611 26654204[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 25  563839 26718432  68020   68020  Chr17  563866 26718459  
+67500   67499 Chr17  563803 26718396[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 26  134397 26948914  52676   52589  Chr18  136001 26950518  
+50642   50557 Chr18  135701 26950218[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 27  189799 27004316 115668  115668  Chr18  189835 27004352 1
+13374  113354 Chr18  189825 27004342[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 28       1 29491915 127127   74454  Chr22       1 29491915 1
+12025   59840 Chr22       1 29491915[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 29  156665 29648579  51065   51065  Chr22  157075 29648989  
+50655   50655 Chr22  157075 29648989[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 30  797849 30289763 103830  103825  Chr22  798291 30290205  
+84677   84669 Chr22  797909 30289823[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 31      NA       NA  51035   51033   Min:      NA       NA  
+50642   50557  Min:      NA       NA[] 
+ []
+
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 32      NA       NA 320634  320574   Max:      NA       NA 3
+19994  319913  Max:      NA       NA[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 #    Length Len.eff       Chr   Start   iStart Length Len.eff 
+  Chr   Start   iStart Length Len.eff[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 1   81045   80960      Chr1  332712   332712  39367   27933 
+ Chr1  330737   330737  40971   29577[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 2  319994  319943      Chr2  665676  3708261  12646   12646 
+ Chr2 1515552  4558137  17026   17026[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 3   66062   66062      Chr2 2327989  5370574  19615   19600 
+ Chr2 1600432  4643017  13991   13991[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 4   88350   88350      Chr2 2409780  5452365  12082   12082 
+ Chr2 2164635  5207220  13765   13765[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 5   58997   58997      Chr2 2664737  5707322  18610   18610 
+ Chr2 2329924  5372509  14675   14663[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 6  273340   99126      Chr4 1126400  9316232  12038   12038 
+ Chr2 2408729  5451314  15858   15858[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 7  153922  153922      Chr4 2111249 10301081  11254   11245 
+ Chr2 2661656  5704241  19852   19852[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 8   96326   96326      Chr5   31571 10623726  12411   12411 
+ Chr3 1650177  7399957  14845   14845[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 9  107412  107412      Chr5 2072197 12664352  17103   17025 
+ Chr4   20687  8210519  15840   15840[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 10 112226  112226      Chr5 2274803 12866958  14272   14272 
+ Chr4   94053  8283885  15082   15082[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 11  50166   50166      Chr6 1372617 14270744  12613   12613 
+ Chr4 1148253  9338085  14635   14635[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 12 135858  135843      Chr6 1759576 14657703  15140   15140 
+ Chr5  393711 10985866  21374   21374[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 13 104379  104376      Chr6 2046236 14944363  18698   18683 
+ Chr5 1504244 12096399  13884   13884[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 14  55678   55678      Chr7       1 14969608  12271   12129 
+ Chr5 2072471 12664626  17826   17816[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 15  63278   63278      Chr8   14584 16976625  25735   25735 
+ Chr5 2142394 12734549  19650   19650[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 16  50702   50702      Chr9  163296 18392535  14720   14720 
+ Chr8   15586 16977627  25215   25215[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 17  49803   49803      Chr9 1003970 19233209  41669   41669 
+ Chr9  570855 18800094  25223   25223[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 18  53955   50433     Chr12  641238 22056190  28549   28243 
+ Chr9 1002413 19231652  44580   44580[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 19  53387   53385     Chr12  693433 22108385  12929   12929 
+Chr10  327254 19747553  14180   14180[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 20 113678  113671     Chr12  755960 22170912  13503   13503 
+Chr12   99678 21514630  15421   15421[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 21 100813  100804     Chr12  947935 22362887  48242   44720 
+Chr12  642125 22057077  26870   26556[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 22  79788   79785     Chr13  993368 23536702  14320   14320 
+Chr12  755258 22170210  15327   15327[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 23  51270   51270     Chr15  907874 25502047  19657   19657 
+Chr12  948542 22363494  16775   16775[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 24  63157   63151    Chr16b   80675 26065892  12800   12800 
+Chr12  966724 22381676  29339   25823[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 25  67572   67569     Chr17  590347 26744940  39605   39601 
+Chr14   34634 23630164  15916   15916[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 26  50942   50857     Chr18  541405 27355922  33899   33899 
+Chr17  589849 26744442  41419   41414[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 27 113906  113906 Chr19a_19  561315 28202885  14789   14789 
+Chr17  631536 26786129  19035   19035[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 28 114623   62482 Chr19a_19  585569 28227139  12404   11930 
+Chr18  542703 27357220  18013   18013[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 29  50835   50835     Chr22  501449 29993363  11179   11179 
+Chr22  662851 30154765  18887   18887[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 30 103567  103552     Chr22  685423 30177337  18411   14127 
+Chr22  685752 30177666  19725   15441[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 31  49803   49803      Min:      NA       NA  11179   11179 
+ Min:      NA       NA  13765   13765[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 1464--1464
+[]\OT1/pcr/m/n/8 # 32 319994  319943      Max:      NA       NA  48242   44720 
+ Max:      NA       NA  44580   44580[] 
+ []
+
+[20] [21]
+Underfull \vbox (badness 10000) detected at line 1490
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1490
+ []
+
+[22] <bign-xlsx.pdf, id=182, 794.97pt x 614.295pt>
+File: bign-xlsx.pdf Graphic file (type pdf)
+ <use bign-xlsx.pdf>
+Package pdftex.def Info: bign-xlsx.pdf used on input line 1501.
+(pdftex.def)             Requested size: 686.56094pt x 448.17151pt.
+
+
+LaTeX Warning: Float too large for page by 43.69585pt on input line 1505.
+
+Package color Info: Redefining color shadecolor on input line 1510.
+
+Overfull \hbox (43.90126pt too wide) in paragraph at lines 1527--1527
+[]      []\OT1/pcr/b/n/8 text[][]\OT1/pcr/m/n/8 ([][]0.62[][],[][]0.0092[][],pa
+nel,[][]cex[][]=[][]1.1[][])[] []\OT1/pcr/m/sl/8 # for 2B, coords empirically s
+et to roughly match rel pos in panel 2A[][] 
+ []
+
+[23] [24 <./bign-xlsx.pdf>]
+Package color Info: Redefining color shadecolor on input line 1541.
+ [25]
+Package color Info: Redefining color shadecolor on input line 1633.
+Package color Info: Redefining color shadecolor on input line 1653.
+
+Overfull \hbox (15.10124pt too wide) in paragraph at lines 1660--1660
+[]  []\OT1/pcr/b/n/8 text[][]\OT1/pcr/m/n/8 ([][]0.62[][],[][]0.0092[][],[][]\T
+S1/pcr/m/n/8 '\OT1/pcr/m/n/8 B\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 ,[][]cex[][]=[
+][]1.1[][])[] []\OT1/pcr/m/sl/8 # for 2B, coords empirically set to roughly mat
+ch rel pos in panel 2A[][] 
+ []
+
+<figs-knitr/unnamed-chunk-9-1.pdf, id=276, 505.89pt x 505.89pt>
+File: figs-knitr/unnamed-chunk-9-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/unnamed-chunk-9-1.pdf>
+Package pdftex.def Info: figs-knitr/unnamed-chunk-9-1.pdf used on input line 16
+65.
+(pdftex.def)             Requested size: 469.75502pt x 469.76265pt.
+
+Overfull \hbox (15.0pt too wide) in paragraph at lines 1665--1666
+[][] 
+ []
+
+[26]
+Underfull \vbox (badness 2512) detected at line 1737
+ []
+
+[27 <./figs-knitr/unnamed-chunk-9-1.pdf>]
+<../paperfigs/Fig2A-desert-distribution-figs-mine/Fig2A-desert-distribution-fig
+q.pdf, id=291, 469.755pt x 151.56625pt>
+File: ../paperfigs/Fig2A-desert-distribution-figs-mine/Fig2A-desert-distributio
+n-figq.pdf Graphic file (type pdf)
+
+<use ../paperfigs/Fig2A-desert-distribution-figs-mine/Fig2A-desert-distribution
+-figq.pdf>
+Package pdftex.def Info: ../paperfigs/Fig2A-desert-distribution-figs-mine/Fig2A
+-desert-distribution-figq.pdf used on input line 1743.
+(pdftex.def)             Requested size: 469.75386pt x 151.56587pt.
+
+Overfull \hbox (6.79883pt too wide) in paragraph at lines 1743--1743
+ [] 
+ []
+
+
+<figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf, id=292, 469.755pt x 151.56625pt>
+File: figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf Graphic file (type pdf)
+
+<use figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf>
+Package pdftex.def Info: figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf used on in
+put line 1744.
+(pdftex.def)             Requested size: 469.75386pt x 151.56587pt.
+
+Overfull \hbox (6.79883pt too wide) in paragraph at lines 1744--1745
+ [][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 1753.
+[28] [29 <../paperfigs/Fig2A-desert-distribution-figs-mine/Fig2A-desert-distrib
+ution-figq.pdf> <./figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf>]
+<figs-mine/bigdes-snpdens-it.pdf, id=313, 469.755pt x 151.56625pt>
+File: figs-mine/bigdes-snpdens-it.pdf Graphic file (type pdf)
+
+<use figs-mine/bigdes-snpdens-it.pdf>
+Package pdftex.def Info: figs-mine/bigdes-snpdens-it.pdf used on input line 179
+6.
+(pdftex.def)             Requested size: 469.75386pt x 151.56587pt.
+
+Overfull \hbox (14.99884pt too wide) in paragraph at lines 1796--1797
+[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 1801.
+
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1803--1803
+[][]\OT1/pcr/m/n/8 cnv.chronly[cnv.chronly[][]$[][]strain[][]==[][]\TS1/pcr/m/n
+/8 '\OT1/pcr/m/n/8 tp1335\TS1/pcr/m/n/8 '[] []\OT1/pcr/m/n/8 &[] []cnv.chronly[
+][]$[][]chr[][]==[][]\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 Chr22\TS1/pcr/m/n/8 '[] []\
+OT1/pcr/m/n/8 &[] []cnv.chronly[][]$[][]start[] []<[] []211000[][],][][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 1827.
+[30 <./figs-mine/bigdes-snpdens-it.pdf>]
+<figs-knitr/ch22-undes-1.pdf, id=324, 469.755pt x 361.35pt>
+File: figs-knitr/ch22-undes-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/ch22-undes-1.pdf>
+Package pdftex.def Info: figs-knitr/ch22-undes-1.pdf used on input line 1835.
+(pdftex.def)             Requested size: 469.75386pt x 361.34912pt.
+Package color Info: Redefining color shadecolor on input line 1846.
+ [31 <./figs-knitr/ch22-undes-1.pdf>]
+<figs-mine/bigdes-snpdens-nc-ny.pdf, id=337, 469.755pt x 151.56625pt>
+File: figs-mine/bigdes-snpdens-nc-ny.pdf Graphic file (type pdf)
+
+<use figs-mine/bigdes-snpdens-nc-ny.pdf>
+Package pdftex.def Info: figs-mine/bigdes-snpdens-nc-ny.pdf used on input line 
+1920.
+(pdftex.def)             Requested size: 469.75386pt x 151.56587pt.
+
+Overfull \hbox (14.99884pt too wide) in paragraph at lines 1920--1921
+[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 1925.
+[32 <./figs-mine/bigdes-snpdens-nc-ny.pdf>]
+<figs-mine/bigdes-snpdens-nc-it.pdf, id=348, 469.755pt x 151.56625pt>
+File: figs-mine/bigdes-snpdens-nc-it.pdf Graphic file (type pdf)
+
+<use figs-mine/bigdes-snpdens-nc-it.pdf>
+Package pdftex.def Info: figs-mine/bigdes-snpdens-nc-it.pdf used on input line 
+1981.
+(pdftex.def)             Requested size: 469.75386pt x 151.56587pt.
+
+Overfull \hbox (14.99884pt too wide) in paragraph at lines 1981--1982
+[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 1990.
+[33 <./figs-mine/bigdes-snpdens-nc-it.pdf>]
+Package color Info: Redefining color shadecolor on input line 2005.
+Package color Info: Redefining color shadecolor on input line 2017.
+Package color Info: Redefining color shadecolor on input line 2048.
+
+<figs-knitr/unnamed-chunk-17-1.pdf, id=359, 505.89pt x 505.89pt>
+File: figs-knitr/unnamed-chunk-17-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/unnamed-chunk-17-1.pdf>
+Package pdftex.def Info: figs-knitr/unnamed-chunk-17-1.pdf used on input line 2
+070.
+(pdftex.def)             Requested size: 469.75502pt x 469.76265pt.
+
+Overfull \hbox (15.0pt too wide) in paragraph at lines 2070--2071
+[][] 
+ []
+
+[34] <figs-knitr/unnamed-chunk-17-2.pdf, id=364, 505.89pt x 505.89pt>
+File: figs-knitr/unnamed-chunk-17-2.pdf Graphic file (type pdf)
+
+<use figs-knitr/unnamed-chunk-17-2.pdf>
+Package pdftex.def Info: figs-knitr/unnamed-chunk-17-2.pdf used on input line 2
+082.
+(pdftex.def)             Requested size: 469.75502pt x 469.76265pt.
+
+Overfull \hbox (15.0pt too wide) in paragraph at lines 2082--2083
+[][] 
+ []
+
+[35 <./figs-knitr/unnamed-chunk-17-1.pdf>]
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 2122--2122
+[]\OT1/pcr/m/n/8 #   [1] 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 2122--2122
+[]\OT1/pcr/m/n/8 #  [47] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 2122--2122
+[]\OT1/pcr/m/n/8 #  [93] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 2122--2122
+[]\OT1/pcr/m/n/8 # [139] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 2122--2122
+[]\OT1/pcr/m/n/8 # [185] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0[] 
+ []
+
+
+Overfull \hbox (5.44528pt too wide) in paragraph at lines 2122--2122
+[]\OT1/pcr/m/n/8 # [231] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0[] 
+ []
+
+[36 <./figs-knitr/unnamed-chunk-17-2.pdf>]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 2133.
+Package color Info: Redefining color shadecolor on input line 2137.
+ [37]
+Package color Info: Redefining color shadecolor on input line 2194.
+Package color Info: Redefining color shadecolor on input line 2232.
+ [38]
+Package color Info: Redefining color shadecolor on input line 2261.
+Package color Info: Redefining color shadecolor on input line 2274.
+ [39]
+Package color Info: Redefining color shadecolor on input line 2340.
+Package color Info: Redefining color shadecolor on input line 2379.
+ [40]
+Package color Info: Redefining color shadecolor on input line 2419.
+
+<figs-knitr/unnamed-chunk-25-1.pdf, id=407, 505.89pt x 505.89pt>
+File: figs-knitr/unnamed-chunk-25-1.pdf Graphic file (type pdf)
+
+<use figs-knitr/unnamed-chunk-25-1.pdf>
+Package pdftex.def Info: figs-knitr/unnamed-chunk-25-1.pdf used on input line 2
+462.
+(pdftex.def)             Requested size: 469.75502pt x 469.76265pt.
+
+Overfull \hbox (15.0pt too wide) in paragraph at lines 2462--2463
+[][] 
+ []
+
+[41]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2476.
+ [42 <./figs-knitr/unnamed-chunk-25-1.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2476.
+ (./nc-snps.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2476.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 2476.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2476.
+ ) 
+Here is how much of TeX's memory you used:
+ 7220 strings out of 495063
+ 107196 string characters out of 3182181
+ 276355 words of memory out of 3000000
+ 10216 multiletter control sequences out of 15000+200000
+ 25217 words of font info for 60 fonts, out of 3000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 29i,11n,32p,820b,418s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/typ
+e1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/ut
+mri8a.pfb>
+Output written on nc-snps.pdf (42 pages, 841583 bytes).
+PDF statistics:
+ 521 PDF objects out of 1000 (max. 8388607)
+ 394 compressed objects within 4 object streams
+ 62 named destinations out of 1000 (max. 500000)
+ 188 words of extra memory for PDF output out of 10000 (max. 10000000)
+

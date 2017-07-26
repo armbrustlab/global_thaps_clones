@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Intro}{1}{section.1}
+\contentsline {section}{\numberline {2}Preliminaries}{2}{section.2}
+\contentsline {section}{\numberline {3}Correlation with CNVnator}{2}{section.3}
+\contentsline {section}{\numberline {4}Background}{4}{section.4}
+\contentsline {section}{\numberline {5}SNP Rate Plots, Coding \& Noncoding}{12}{section.5}
+\contentsline {section}{\numberline {6}Big Deserts \& Fig 2B for paper}{20}{section.6}
+\contentsline {section}{\numberline {7}Small Deserts}{34}{section.7}
+\contentsline {section}{\numberline {8}What's a Desert?}{34}{section.8}
+\contentsline {section}{\numberline {9}Deserts-by-Chance}{37}{section.9}
+\contentsline {subsection}{\numberline {9.1}Simple Simulation}{37}{subsection.9.1}
+\contentsline {subsection}{\numberline {9.2}One-Giant-Exon Simulation}{38}{subsection.9.2}
+\contentsline {subsection}{\numberline {9.3}A Permutation Test}{40}{subsection.9.3}

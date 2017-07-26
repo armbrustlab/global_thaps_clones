@@ -1,0 +1,379 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+%% see hack below which.snp.tables to see how this is patched via the .aux file:
+\providecommand{\whichsnptables}{(re-run latex to see which.snp.tables())} 
+
+\begin{document}
+\title{FigS7: It/Wales HWE-Histo for ``Supplement''\\\large\whichsnptables}
+\maketitle
+
+\tableofcontents
+
+\section{Intro}
+A simple driver script to build above fig.  (Once upon a time, this was called something else; renumbered since then, but not sure all trace of that is gone...)
+
+\section{Preliminaries}
+Load utility R code and do setup:
+
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('paperfigs')   # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr('FigS7-hwe-histo-figs-knitr/') # knitr's "unnamed-chunk-nnn" figures
+my.figs.dir <- 'FigS7-hwe-histo-figs-mine'  # my named figures
+generic.setup(my.figs.dir)
+@
+
+\iffalse
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+
+<<size='footnotesize'>>=
+# attempt to calibrate print width in footnotesize (this chunk) and scriptsize, tiny (next 2)
+#        1         2         3         4         5         6         7         8         9         A
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+
+<<size='scriptsize'>>=
+#        1         2         3         4         5         6         7         8         9         A         B
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+
+<<size='tiny'>>=
+#        1         2         3         4         5         6         7         8         9         A         B         C         D         E         F         G
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+\fi
+
+\section{Major Analysis/Performance Parameters.}
+\label{sec:params}
+
+Choices set here alter how this file is processed, what data is analyzed, how fast it runs, etc.  
+Set them carefully before running ``make.''  Major choices are:
+\begin{enumerate}
+
+  \item WHICH SNP TABLES ARE LOADED???  The logical vector {\tt load.tb} selects the desired 
+    combination of SNP tables to load, in the  order
+    %
+      {\tt full.unfiltered, chr1.unfiltered, full.qfiltered,  chr1.qfiltered}.   
+    %
+    E.g., {\tt load.tb=(T, F, T, F)} loads \emph{full} tables for \emph{both} q- and un-qfiltered 
+    data.  Primary analysis is only performed on one of them, but the others are retained for 
+    comparison/debugging.
+    
+  \item WHICH MAIN ANALYSIS???  If multiple tables are loaded, which is used for the main analysis? 
+    Parameter {\tt pri} is a permutation of 1:4, corresponding to {\tt load.tb}; the first loaded
+    table in that order becomes the analysis focus.  The default {\tt pri=c(1,2,3,4)} looks at 
+    un-q-filtered data in preference to q-filtered, and full tables in preference to Chr1 within 
+    each group.   (See {\tt tset.picker} for for details.)
+    
+    Hmmm.  I actually think this is \emph{ignored} now; gen figs \& stats for all loaded table sets.
+
+  \item CLEAR CACHE???  {\tt clear.cache=T} forces Knitr cache removal at the start of the run; 
+    especially important if the previous parameters have changed since the last run.
+
+\end{enumerate}
+The following code chunk sets all these parameters based on where it's run.  To prototype/debug on a
+laptop, faster is better---run on Chr1; when run on the linux servers, I 
+typically do full genomes.  Just override them if these defaults don't work for you.  
+N.B.: Loading all 4 table sets pushed VM > 50Gb; fails on my laptop, so run this on server only.
+
+<<>>=
+# for Makefile, params can be command line args, else base on system; see wlr.r for details.
+# load.tb order: full.un, chr1.un, full.qfil,  chr1.qfil
+
+params <- pick.params(
+ mac   = list(load.tb=c(F,F,F,T), pri=c(3,4,1,2), clear.cache=F), # quick on lap
+#mac   = list(load.tb=c(F,F,T,T), pri=c(3,4,1,2), clear.cache=T), # full qfil on lap
+#linux = list(load.tb=c(F,F,F,T), pri=c(3,4,1,2), clear.cache=F), # quick qfil on server
+ linux = list(load.tb=c(T,T,T,T), pri=c(3,4,1,2), clear.cache=T)  # full on server
+)
+
+# Alternatively, edit/uncomment the following to override the above as needed
+#params <- pick.params(default=list(load.tb = c(T,T,T,T), pri=1:4, clear.cache = T, nboot = 1000))
+print(params)
+@
+
+CLEAR CACHE??!!  Some code chunks use the knitr cache, but extent of cache consistency checks unknown.  
+If in doubt, delete ``cache/'' (knitr's)  directory to force rebuild; following call does this if
+\verb|params$clear.cache=T|:
+%% *TODO* read about knitr cache dependency stuff.
+
+<<>>=
+decache(params$clear.cache)
+@ 
+
+\noindent If still in doubt, also manually remove ``00common/mycache/'' (mine).
+
+Load the main SNP data file(s) based on the parameters set in section~\ref{sec:params}.
+
+<<>>=
+# short names to keep the following chunk compact
+tb <- params$load.tb
+tset <- list(NULL, NULL, NULL, NULL) # tset = 'table set'
+@
+<<load.tables>>=
+# see wlr.R for load paths
+if(tb[1]){tset[[1]] <- load.snp.tables(use.chr1.tables = FALSE, data.name='full.tables.01.26.14')}
+if(tb[2]){tset[[2]] <- load.snp.tables(use.chr1.tables = TRUE , data.name='full.tables.01.26.14')}
+if(tb[3]){tset[[3]] <- load.snp.tables(use.chr1.tables = FALSE, data.name='full.tables.02.25.15')}
+if(tb[4]){tset[[4]] <- load.snp.tables(use.chr1.tables = TRUE , data.name='full.tables.02.25.15')}
+@
+
+I Initially forgot to excluded non-Chr contigs from full genome runs.  This is accomplished via make.mask later, rather than via the trunc.tables hack used in shared-snps.  (See notes in wlr.r::make.mask for assumptions.)
+
+Which tables have we got?:
+
+<<>>=
+which.snp.tables.str <- paste(unlist(lapply(tset,which.snp.tables)),collapse=', ')
+cat('This analysis uses: (', which.snp.tables.str , ') SNP tables.\n')
+@
+
+A \LaTeX{} hack: I want which.snp.tables info in doc title/page headers, but it is unknown until now, 
+so the following writes a command definition \verb|\whichsnptables| into the .aux file, which is 
+read during the \emph{next} \LaTeX{} run, when \verb|\begin{document}| is processed:
+\makeatletter
+\immediate\write\@auxout{\noexpand\gdef\noexpand\whichsnptables{\Sexpr{which.snp.tables.str}}}
+\makeatother
+{\small
+\begin{verbatim}
+  \makeatletter
+  \immediate\write\@auxout{\noexpand\gdef\noexpand\whichsnptables{\Sexpr{which.snp.tables.str}}}
+  \makeatother
+\end{verbatim}
+}
+
+\section{Make All Figures}
+
+What's happening: find all positions in Chrs with coverage in $\mu \pm \sigma$ (since sites with more extreme coverage are likely to reflect various artifacts such as repeats and hemizygous deletions).
+
+<<>>=
+model.humpth <- c(.18,.78)
+@ 
+
+\noindent 
+Count positions as hets if $R \in [\Sexpr{model.humpth[1]},\Sexpr{model.humpth[2]}]$ (empirical values, based on eyeballing the dips in the histograms) and there are at least 3 nonref reads.
+Since $\mu-\sigma > 20$ on Chr1, that means at least 5 nonref reads, which should be confident snp calls. 
+E.g., for Italy, qfiltered Chr1, there are $N=12464$ of them.  
+I had not noticed this before, but coverage is slightly higher and variance is a lot higher on full data compared to Chr1, resulting in $\mu-\sigma \approx 11.6$ for IT full genome. That rounded to 12 (and in Wales full genome, $\mu-\sigma>12$), so the ``at least 3 nonref'' constraint is moot;  25\% is always $\ge 3$.
+I ALSO forgot to exclude mito, plastid and BD contigs; fixing that reduces variance a bit, so all mins are above 14.
+From our model we should see $\approx N/2$ homozygous nonref positions; assuming every position with $R>\Sexpr{model.humpth[2]}$ is such a position, there are $\approx 8$k of them (8820 for $R>0.75$); a little high, but in the ballpark.
+The orange curve reflects the following simulation (repeated 10 times and averaged if on Chr1):
+\begin{itemize}
+  \item Sample 0, 1 or 2 nonreference alleles at each of $2 N$ positions (binomial, $p=0.5$).
+  \item Then for the $i^{th}$ simulated het site, sample a coverage $C_i$ from the empirical distribution of coverages observed in the range $\mu \pm \sigma$.
+  \item Then sample $C_i$ ref+nonref reads (binomial, $p=0.5$) for each site.
+  \item Finally, count the number of sites with $nonref_i/C_i$ falling in each of the 41 equal-size bins between 0.0 and 1.0.    
+\end{itemize}
+Other parameters and notes (numerical values are for IT, Chr1, qfilt; they may shift a bit for other data sets, counts go up $\approx 10\times$ for genome wide):
+\begin{itemize}
+  \item $Y$ axis clipped just above 8000; set empirically to show max orange, not clip annotation.
+  \item Using a prime number of bins (41) seems to minimize some binning artifacts, (e.g. the dimple at .5). 
+  \item This does NOT model mapping bias, hence orange peak at $\texttt{binom.fobs}=0.5$, but blue peak at $\approx 0.42$.  This is easily changed by setting $\texttt{binom.fobs}=0.42$, but then we'd need to explain it.  If we do so, we could also justify running the ``het'' range a little lower, perhaps $0.42 \pm .25$, which I think would push us closer to 2:1 het:homnr, but it really begs a formal analysis of the effect of mapping bias on SNP calls, rather than the totally ad hoc assumption of symmetric $\pm 0.25$.  At this point, I favor forwarding the simplest convincing model, and I think the discrepancy between $\texttt{binom.fobs}=0.5$ orange and empirical blue is not going to be a sticking point for most readers.
+  \item Does NOT model read/map errors, hence orange jumps at $R = 1$  vs blue's gradual rise near $R=1$ (ditto near 0).  We could add Poisson error model at each end.  This would improve the fit, but it's still not perfect, and again I think simpler is better.
+  \item Orange not shown below \Sexpr{model.humpth[1]} since we’re really only interested in het vs hom nonref.
+\end{itemize}
+
+\noindent Code below also shows a slightly more detailed exploration of the R distributions.  
+\begin{itemize}
+  \item Plot the ``CDF'' of the R distribution: cumulative count of the number of sites (after masking as above) having R below each threshold in [0,1].  The extreme linearity (on log scale) of the segment from 0 to about 0.05, and of the segment from about 0.95 to 1 suggests to me that these are dominated by random read/mapping errors, (exponentially declining proportion of erroneous non-ref reads on the left and exponentially declining proportion of erroneous ref reads at truely hom-nonref positions at the right).
+  \item The ``reverse CDF'' (cum sum as R goes from 1 to 0) shows the same.
+  \item Also plot the usual R histogram but with much higher resolution---301 bins.  Note that this histo only includes points with at least 3 nonref reads, which is why the 0.0 bin is empty, and on some of the plots you can see sharp rise then fall at the left peak.
+  
+  The extra detail may help in eyeballing appropriate boundary thresholds for the heterzygous ``hump.''  In the Wales, Chr 1 plot at least, this showed a rather clear separation between the ``linear'' regime near 0.0 and a small ``bump'' centered near 0.05.  This is less clear in other plots and may be a fluke, but one thought is that \emph{if} the sequencing culture was founded by $\approx 10$ cells, and \emph{if} there had been an accumulation of one-off mutations during years in culture, then a number of sites with apparent minor allele freq $\approx 0.05$ is exactly what would be expected.  Maybe less obvious in Italy because less time in culture, higher seq error rate, and/or more cells?
+  
+  Note also that bins at small rational values (1/2, 1/3, 2/3, 1/4, ...) show elevated counts relative to their immediate neighbors.  This is expected---max coverage is $<100$ in masked data, so any position with even coverage might show $R=0.5$, exactly, but the next smallest allowed R is $< 49/100$; next largest is $>51/100$.
+  
+  \item Do an unplotted 1000-bin histogram of the R distribution so that we can take a more detailed look at the effect of twiddling the [0.18, 0.78] ``humpth'' thresholds on the het:homnonref ratios.  For each combination of IT/Wales x Full/Chr1, these ratios are printed in a table for various choices for the lo/hi threshold.
+  
+  Bottom line for me is that the [.18, .78] threshold I picked by eye earlier seems reasonable, and reasonably conservative.  Perhaps [.15, .80] is a little closer to the correct crossovers between left/right tails of the het hump in the middle vs the tails of the error distributions from 1.0 and 0.0 (or 0.05, if my guess about that feature is correct), but it makes a relatively modest change to the het:homnr ratio, and may look like cherry-picking.  To bring Italy near 2:1, you need to raise the hi threshold to 0.85 or higher, which does not seem justifiable to me---that pretty clearly looks like it's on the tail of read/mapping errors falling off from 1.0, and raising the hi threshold that much for Wales puts its het:homnr ration \emph{above} 2.0.  (The thresholds don't need to be the same for both strains, but we don't really have any principled way to choose them separately.)
+
+  \item For meaning of yellow bars in histograms, see Section~\ref{sec:rvsam}.
+\end{itemize}
+
+<<>>=
+fig.names <- character(0)  # accumulate list of file names here
+for(tab in 1:4){
+  if(!is.null(tset[[tab]])){
+    chr.mask <- make.mask(who=1,chrs.only=T,snp.tables=tset[[tab]])
+    
+    wst      <- which.snp.tables(tables=tset[[tab]], string.val=TRUE)
+    wst.full <- which.snp.tables(tables=tset[[tab]], string.val=FALSE)[1] == 'full'
+    
+    cat('***\n*\n* Processing',wst, '\n*\n***\n')
+
+    # out of curiousity, get stats with & without mito & junk
+    cov.means.all <- unlist(lapply(tset[[tab]], function(x)(mean(x$Cov))))
+    cov.sigs.all  <- unlist(lapply(tset[[tab]], function(x)(sd(x$Cov))))
+    
+    cov.means <- unlist(lapply(tset[[tab]], function(x)(mean(x$Cov[chr.mask]))))
+    cov.sigs  <- unlist(lapply(tset[[tab]], function(x)(sd(x$Cov[chr.mask]))))
+    
+    cat(wst, 'coverage stats:\n')
+    print(
+      rbind(
+        cov.means.all = cov.means.all, cov.sigs.all = cov.sigs.all, 
+        cov.means     = cov.means    , cov.sigs     = cov.sigs,
+        cov.min = (cov.means-cov.sigs) ))
+    cat('\n\n')
+
+    mm <- list(NULL,NULL,NULL,NULL,NULL,NULL,NULL)
+    for(i in 1:7) { # or in c(3,6)
+      mumsig <- cov.means[i] - cov.sigs[i]
+      mupsig <- cov.means[i] + cov.sigs[i]
+      mm[[i]] <- make.mask(i, min.cover=mumsig, max.cover=mupsig, region=chr.mask, 
+                           snp.tables=tset[[tab]])
+      cat(names(tset[[tab]])[i],'coverage summary for retained sites:\n')
+      print(summary(tset[[tab]][[i]]$Cov[mm[[i]]]))
+      fig.name <- paste(my.figs.dir, '/S7-', wst, '-', names(tset[[tab]])[i],
+                        ifelse(wst.full,'chronly',''), '.pdf', sep='')
+      cat(fig.name, ':\n  based on', sum(mm[[i]]), 'positions with coverage in [', 
+          mumsig, ',', mupsig, ']\n')
+      fig.names[length(fig.names)+1] <- fig.name
+      pdf(fig.name,width=6, height=4)
+      show.allele.scatter(i,mask=mm[[i]], thresh=3, ncells=1, show.main.ttl=F, scatter=F, 
+                          hist=T, hist.bins=41, models='D', binom.fobs=0.5, model.humpth=model.humpth,
+                          modelD.double=T, modelD.olay=T, one.grey=T, hist.plain=T, 
+                          hist.max=ifelse(wst.full,99e3,8200), 
+                          oversample=ifelse(wst.full,1,10), snp.tables=tset[[tab]])
+      # add ID to plot; usr coords seem to be 0-1 in x, but weird in y, hence par() 
+      text(0.15,0.93*par()$usr[4], st.loc(i,id=T,loc=F,locabbrv=T), adj=c(0,0))
+      dev.off()
+      cat(fig.name, 'written; 301-bin histo follows:\n\n')
+
+      layout(matrix(1), widths = lcm(7*2.54), heights = lcm(4*2.54))
+      rr <- sort(1 - tset[[tab]][[i]]$.match[mm[[i]]]/tset[[tab]][[i]]$Cov[mm[[i]]])
+      show.allele.scatter(i, mask=mm[[i]], thresh=3, ncells=1, scatter=F, hist=T, hist.bins=301, 
+                          one.grey=T, hist.plain=T, hist.max=ifelse(wst.full,12.5e3,1.0e3), 
+                          snp.tables=tset[[tab]], show.snps=TRUE)
+      hh <- hist(rr, breaks=1000,plot=F)
+      yl <- 'Log10 counts'
+      
+      layout(matrix(c(1,2), 1, 2, byrow = TRUE), respect=TRUE)
+      
+      m1 <- paste(names(tset[[tab]])[i], wst, 'R CDF')
+      m2 <- paste(names(tset[[tab]])[i], wst, 'reverse R CDF')
+      plot(  hh$mids,log10(cumsum(    hh$counts)), pch='.', xlab='R', ylab=yl, main=m1, cex.main=1.1)
+      plot(1-hh$mids,log10(cumsum(rev(hh$counts))),pch='.', xlab='R', ylab=yl, main=m2, cex.main=1.1)
+
+      cat('\nhomnr:het ratios vs mod.humpth lo x hi,', wst, ':\n')
+      nn <- cumsum(hh$counts)
+      hi <- c(70,75:80,85,90)*10
+      lo <- c(10,15:20,25)*10
+      mat <- matrix(nrow=length(lo),ncol=length(hi), dimnames=list(lo=lo/1000, hi=hi/1000))
+      for(k in 1:length(lo)){
+        mat[k,] <- (nn[hi]-nn[lo[k]])/(nn[1000]-nn[hi])
+      }
+      rownames(mat) <- lo/1000
+      colnames(mat) <- hi/1000
+      print(mat)
+      cat('\n\n')
+    }
+    cat('\n')
+  }
+}
+@
+
+<<>>=
+tex.show.figs <- function(fig.names){
+  # quick hack to latex the figs, two per line.
+  # goal is to return a string something like this for each pair:
+  #
+  # \par\noindent fig.names[1], fig.names[2]:
+  #
+  # \noindent\includegraphics[width=.5\linewidth]{\Sexpr{fig.names[1]}}
+  # \noindent\includegraphics[width=.5\linewidth]{\Sexpr{fig.names[2]}}
+  
+  npairs <- ceiling(length(fig.names)/2)
+  texstr <- character(npairs)
+  for(i in 1:npairs){
+    if(!is.na(fig.names[2*i])){
+      texstr[i] <- paste('\\par\\noindent ', fig.names[2*i-1], ', ', fig.names[2*i], ':\n\n',
+                         '\\noindent\\includegraphics[width=.5\\linewidth]{', fig.names[2*i-1], '}\n',
+                         '\\noindent\\includegraphics[width=.5\\linewidth]{', fig.names[2*i], '}\n',
+                         sep='')
+    } else {
+      texstr[i] <- paste('\\par\\noindent ', fig.names[2*i-1], ':\n\n',
+                         '\\noindent\\includegraphics[width=.5\\linewidth]{', fig.names[2*i-1], '}\n',
+                         sep='')
+      
+    }
+  }
+  return(paste(texstr,collapse='\n'))
+}
+@
+
+\Sexpr{tex.show.figs(fig.names)}
+
+\section{R vs SAMtools SNP calls}
+\label{sec:rvsam}
+
+A quick tangent: How do SAMtools SNP calls correlate to R stats?  Code below makes a quick-and-dirty R histogram, overlaid with histo of number of SNP calls in each bin.  Short answer is that $\approx80\%$ of points in the middle hump are called SNPs by SAMtools and, in un-q-filtered data, $<25\%$ of points above $R=\Sexpr{model.humpth[2]}$ are called SNPs.  At first glance, this seems like good discrimination of heterozygous from homozygous, but whether this is because SAMtools considered them to be homozygous, or because the alignment quality was low on average (or both) is unclear.  But the $25\%$ rises to $\approx50\%$ in q-filtered H-clade, which we believe to be homozygous nonreference.  (We did not re-run SAMtoold after q-filter.)  In short, mis-classification of homozygous non-reference as heterozygus may be a significant contributor to the large SNP-counts seen in H-clade.  
+
+NOTE: After writing this code chunk, I modified code in the preceding section to add the analogous histo based on $\mu\pm\sigma$, etc. to the 301 bin plots, so those plots are more accurate, but the numerical summary below is still a useful ballpark.
+
+<<>>=
+snp.vs.r <- function(tables,st=3,breaks=41,maxy=2000,hump=model.humpth){
+ #cov <- tables[[st]]$Cov
+  mat <- tables[[st]]$.match
+  nr  <- pmax(tables[[st]]$a,tables[[st]]$c,tables[[st]]$g,tables[[st]]$t)
+  r   <- nr/(nr+mat)
+  snp <-tables[[st]]$snp
+  aa <- hist(r,ylim=c(0,maxy),breaks=breaks,col='blue')
+  bb <- hist(r[snp==1],ylim=c(0,maxy),breaks=breaks,col='yellow',add=T)
+  #should use breaks not mids but this is easier:
+  df <- data.frame(
+    r.mid   = sum(aa$counts[hump[1] <= aa$mids & aa$mids <= hump[2]]),
+    sam.mid = sum(bb$counts[hump[1] <= bb$mids & bb$mids <= hump[2]]),
+    sam.over.r.mid = NA,
+    r.hi   = sum(aa$counts[hump[2] < aa$mids]),
+    sam.hi = sum(bb$counts[hump[2] < bb$mids]),
+    sam.over.r.hi = NA,
+    tables = which.snp.tables(tables),
+    isolate = st.loc(st)
+  )
+  df$sam.over.r.mid <- df$sam.mid/df$r.mid
+  df$sam.over.r.hi  <- df$sam.hi /df$r.hi
+  return(df)
+}
+all.df <- NULL
+for(tab in 1:4){
+  if(!is.null(tset[[tab]])){
+    wst.full <- which.snp.tables(tables=tset[[tab]], string.val=FALSE)[1] == 'full'
+    temp3 <- snp.vs.r(tset[[tab]],3,maxy=2000*ifelse(wst.full,10,1))
+    temp6 <- snp.vs.r(tset[[tab]],6,maxy=2000*ifelse(wst.full,10,1))
+    all.df <- rbind(all.df,temp3,temp6)
+  }
+}
+print(all.df)
+# note that snp calls were not changed in q-filtered data.  E.g.:
+if(!is.null(tset[[2]]) && !is.null(tset[[4]])){
+  print(all(tset[[2]][[1]]$snp == tset[[4]][[1]]$snp))
+}
+@
+
+\section{The Specific S7 Figures}
+
+These are the ones intended for Supp Fig S7, full size:
+
+\noindent
+\includegraphics{\Sexpr{paste(my.figs.dir,'S7-full-qfiltered-1013chronly.pdf',sep='/')}}\\
+\includegraphics{\Sexpr{paste(my.figs.dir,'S7-full-qfiltered-3367chronly.pdf',sep='/')}}
+
+\section{To Do/Improvements?}
+
+I think the axis labels take up more space than is reasonable, would look better if a bit more 
+compact.  The best resource I've seen on this is:
+\href{http://www.carlislerainey.com/2012/12/17/controlling-axes-of-r-plots/}{http://www.carlislerainey.com/2012/12/17/controlling-axes-of-r-plots/} .
+But not sure it's compatible with Histo, and would need work to plot 2-in-1.
+
+
+% remember to do this to enable Id keyword substution: svn propset svn:keywords Id fig1b.rnw 
+\vfill\footnotesize\flushright SVN Id, I miss you.\  $ $Id: 2017-07-12 or later. $ $
+\end{document}

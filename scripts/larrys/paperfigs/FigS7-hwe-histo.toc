@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}Intro}{1}{section.1}
+\contentsline {section}{\numberline {2}Preliminaries}{1}{section.2}
+\contentsline {section}{\numberline {3}Major Analysis/Performance Parameters.}{1}{section.3}
+\contentsline {section}{\numberline {4}Make All Figures}{3}{section.4}
+\contentsline {section}{\numberline {5}R vs SAMtools SNP calls}{70}{section.5}
+\contentsline {section}{\numberline {6}The Specific S7 Figures}{80}{section.6}
+\contentsline {section}{\numberline {7}To Do/Improvements?}{81}{section.7}

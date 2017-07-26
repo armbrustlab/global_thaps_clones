@@ -1,0 +1,656 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx} knitr adds this
+%\usepackage[]{color}  knitr adds this
+
+% for purposes of latexing this whole file, figpath is abs path (or rel to dir containing this file) to figures ;
+% this is defined separately in weblib::solheader() when producing sols for selected problems.  Typical figure then
+% looks like \includegraphics{\solpath/thefig.jpg}
+%\newcommand{\figpath}{../figs/}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{} 
+
+\begin{document}
+\title{Exploration of Shared SNPs in Thaps}
+\maketitle
+
+Some rather raw ramblings on SNP positions shared between two or more of the isolates.  I've included my code, but I
+presume it will be largely uninteresting to you.  I will summarize it as we go.
+
+Load the data file, and prune it to just Chromosome 1:
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{load}\hlstd{(}\hlstr{"~/Documents/s/papers/Thaps/tonys-svn/data/full.tables.ch1p100.rda"}\hlstd{)}
+\hlstd{tables} \hlkwb{<-} \hlkwd{lapply}\hlstd{(full.tables.ch1,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+    \hlstd{x[x}\hlopt{$}\hlstd{chr} \hlopt{==} \hlstr{"Chr1"}\hlstd{, ]}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Is brief, ``tables'' will be a list of 7 data frames, one per strain, giving read counts for each nucleotide at each
+position, SNP calls, etc.
+
+For a given strain, the following function returns a vector of 0:4 to indicate which nonreference nucleotide has the
+maximum read count at the corresponding position.  The value 0 means all nonreference counts are 0; the values 1..4
+indicate that the max count occurred at A, G, C, T, resp.  (Ties are resolved arbitrarily, and there is no attempt to
+control for low covergae levels.  Both issues possibly deserve further attention.)
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{nref.nuc} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{strain} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{mask} \hlstd{= T) \{}
+    \hlcom{# get read count for max nonref nuc}
+    \hlstd{nref} \hlkwb{<-} \hlkwd{apply}\hlstd{(tables[[strain]][mask,} \hlkwd{c}\hlstd{(}\hlstr{"a"}\hlstd{,} \hlstr{"g"}\hlstd{,} \hlstr{"c"}\hlstd{,} \hlstr{"t"}\hlstd{)],} \hlnum{1}\hlstd{, max)}
+    \hlcom{# where does nref count match a (g,c,t, resp) count}
+    \hlstd{as} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(nref} \hlopt{==} \hlstd{tables[[strain]][mask,} \hlstr{"a"}\hlstd{],} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{gs} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(nref} \hlopt{==} \hlstd{tables[[strain]][mask,} \hlstr{"g"}\hlstd{],} \hlnum{2}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{cs} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(nref} \hlopt{==} \hlstd{tables[[strain]][mask,} \hlstr{"c"}\hlstd{],} \hlnum{3}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{ts} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(nref} \hlopt{==} \hlstd{tables[[strain]][mask,} \hlstr{"t"}\hlstd{],} \hlnum{4}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlcom{# most positions will show 3 zeros and one of 1:4, so max identifies max}
+    \hlcom{# nonref count; ties broken arbitrarily}
+    \hlstd{merge} \hlkwb{<-} \hlkwd{pmax}\hlstd{(as, gs, cs, ts)}
+    \hlcom{# but if max nonref count is zero, return 0}
+    \hlstd{merge[nref} \hlopt{==} \hlnum{0}\hlstd{]} \hlkwb{<-} \hlnum{0}
+    \hlkwd{return}\hlstd{(merge)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+Get union and intersection of the sets of called SNPs. (``\$snp'' is 0/1.)
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{union.snps} \hlkwb{<-} \hlstd{tables[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{snp}
+\hlstd{intersect.snps} \hlkwb{<-} \hlstd{tables[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{snp}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{7}\hlstd{) \{}
+    \hlstd{union.snps} \hlkwb{<-} \hlkwd{pmax}\hlstd{(union.snps, tables[[i]]}\hlopt{$}\hlstd{snp)}
+    \hlstd{intersect.snps} \hlkwb{<-} \hlkwd{pmin}\hlstd{(intersect.snps, tables[[i]]}\hlopt{$}\hlstd{snp)}
+\hlstd{\}}
+\hlstd{nusnps} \hlkwb{<-} \hlkwd{sum}\hlstd{(union.snps)}
+\hlstd{nisnps} \hlkwb{<-} \hlkwd{sum}\hlstd{(intersect.snps)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+There are nusnps=47499 positions called as SNPs in one or more strains (but only nisnps=1641 that are
+shared among all 7).  It is appropriate that SNP calls should be conservative, to avoid many false positives, but, if a
+position is called a SNP in one strain, we often see a significant number of reads for the same non-reference nucleotide
+at that position in other strains, even if they are not called as SNPs. For my purposes below, these will be
+considered ``shared SNPs.''  This may seem an overly permissive definition, but, e.g., $>85\%$ of all positions have
+zero reads for any non-reference nucleotide:
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{unlist}\hlstd{(}\hlkwd{lapply}\hlstd{(tables,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+    \hlkwd{sum}\hlstd{(x}\hlopt{$}\hlstd{Cov} \hlopt{==} \hlstd{x}\hlopt{$}\hlstd{.match)}
+\hlstd{\}))}\hlopt{/}\hlkwd{nrow}\hlstd{(tables[[}\hlnum{1}\hlstd{]])}
+\end{alltt}
+\begin{verbatim}
+## tp1007 tp1012 tp1013 tp1014 tp1015 tp3367 tp1335 
+## 0.9249 0.8887 0.8496 0.8651 0.9063 0.8647 0.8523
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Build a table of max non-reference nucleotides at each position in the union.snps set. 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{non.refs} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{= nusnps,} \hlkwc{ncol} \hlstd{=} \hlnum{7}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{7}\hlstd{) \{}
+    \hlstd{non.refs[, i]} \hlkwb{<-} \hlkwd{nref.nuc}\hlstd{(i, union.snps} \hlopt{==} \hlnum{1}\hlstd{)}
+\hlstd{\}}
+\hlkwd{row.names}\hlstd{(non.refs)} \hlkwb{<-} \hlkwd{paste}\hlstd{(tables[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{chr[union.snps} \hlopt{==} \hlnum{1}\hlstd{],} \hlstr{":"}\hlstd{, tables[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{pos[union.snps} \hlopt{==}
+    \hlnum{1}\hlstd{],} \hlkwc{sep} \hlstd{=} \hlstr{""}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+``non.refs'' indicates non-ref nucleotide has the highest read count in each strain.  If, for a given position, the max
+of this code is the same as the min (among non-zero values), then every strain having any nonref reads in that position,
+in fact has most non-reference reads on the \emph{same} nucleotide.  These are defined as the ``consistent'' SNPs. 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{non.refs.max} \hlkwb{<-} \hlkwd{apply}\hlstd{(non.refs,} \hlnum{1}\hlstd{, max)}
+\hlstd{non.refs.min} \hlkwb{<-} \hlkwd{apply}\hlstd{(non.refs,} \hlnum{1}\hlstd{,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+    \hlkwd{min}\hlstd{(x[x} \hlopt{>} \hlnum{0}\hlstd{])}
+\hlstd{\})}
+\hlstd{consistent} \hlkwb{<-} \hlstd{non.refs.min} \hlopt{==} \hlstd{non.refs.max}
+\hlkwd{sum}\hlstd{(consistent)}
+\end{alltt}
+\begin{verbatim}
+## [1] 36040
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Of the 47499 positions in which a SNP is called, 36040 are consistent.  (I suspect, but have not yet
+systematically checked, that most of the rest are positions with low coverage and/or very low read counts on the mixture
+of non-reference nucleotides.)  
+
+The following analysis looks at the sharing patterns among the consistent SNPs.  I assume that shared SNPs reflect shared
+ancestry, and that SNPs accumulate slowly over time.  Then, in outline, the story is consistent whith what we have seen
+in other analyses---there seem to be 3 groups 1013 (Wales) in one, 3367 (Italy) in another, and the other 5 in a third,
+with some hints as to the order of divergence.
+
+The analysis is broken into cases based on how many strains
+share a particular SNP, counted as follows:
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{snp.counts} \hlkwb{<-} \hlkwd{apply}\hlstd{(non.refs} \hlopt{>} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{, sum)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+
+First look at completely shared SNPs, those found in all 7 strains.
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{7}\hlstd{)}  \hlcom{# 8593 on Chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 8593
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+I.e., of the 36040 consistent positions, 23.8\% are
+shared by all 7 strains.
+
+Next look at singletons---SNPs that are called in one strain and no other strain has any non-ref reads at that
+position. Presumably these are variants that arose in a given population after it separated from the others.
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{1}\hlstd{)}  \hlcom{#  9669 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 9669
+\end{verbatim}
+\begin{alltt}
+\hlstd{singles} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlstr{"integer"}\hlstd{,} \hlnum{7}\hlstd{)}
+\hlkwd{names}\hlstd{(singles)} \hlkwb{<-} \hlkwd{names}\hlstd{(tables)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{7}\hlstd{) \{}
+    \hlstd{singles[i]} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{1}\hlstd{, i]} \hlopt{>} \hlnum{0}\hlstd{)}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(singles)}
+\end{alltt}
+\begin{verbatim}
+## tp1007 tp1012 tp1013 tp1014 tp1015 tp3367 tp1335 
+##     10     29   4954     22     90   4551     13
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The high counts for Italy and Wales suggest that they have been separated from each other and from the rest for a long
+time.  Conversely, the low counts for the other 5 suggest that none of them has been isolated for very long (if at
+all).
+
+Next look at consistent SNPs shared between just a pair of isolates.
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{2}\hlstd{)}  \hlcom{# 7641 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 7641
+\end{verbatim}
+\begin{alltt}
+\hlstd{pairs} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{7}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{7}\hlstd{)}
+\hlkwd{rownames}\hlstd{(pairs)} \hlkwb{<-} \hlkwd{names}\hlstd{(tables)}
+\hlkwd{colnames}\hlstd{(pairs)} \hlkwb{<-} \hlkwd{names}\hlstd{(tables)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlstd{(i} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{7}\hlstd{) \{}
+        \hlstd{pairs[i, j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{2}\hlstd{, i]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&}
+            \hlstd{snp.counts} \hlopt{==} \hlnum{2}\hlstd{, j]} \hlopt{>} \hlnum{0}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(pairs)}
+\end{alltt}
+\begin{verbatim}
+##        tp1007 tp1012 tp1013 tp1014 tp1015 tp3367 tp1335
+## tp1007      0      9    105      2      5     93      1
+## tp1012      0      0    165      7      5    150      3
+## tp1013      0      0      0    222    125   5920    243
+## tp1014      0      0      0      0     10    179      6
+## tp1015      0      0      0      0      0    141     11
+## tp3367      0      0      0      0      0      0    239
+## tp1335      0      0      0      0      0      0      0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+I.e., of the 7641 paired SNPs, 5920 or
+77.5\%  are found between Italy and Wales, with comparatively
+few shared between any pair \emph{not} including one of the European isolates.
+
+SNPs shared among exactly 3 isolates are relatively rare, and the 5 trios containg both Italy and Wales predominate. 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{3}\hlstd{)}  \hlcom{# 1438 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 1438
+\end{verbatim}
+\begin{alltt}
+\hlstd{triples} \hlkwb{<-} \hlkwa{NULL}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{5}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlstd{(i} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{6}\hlstd{) \{}
+        \hlkwa{for} \hlstd{(k} \hlkwa{in} \hlstd{(j} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{7}\hlstd{) \{}
+            \hlstd{temp} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{3}\hlstd{, i]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&}
+                \hlstd{snp.counts} \hlopt{==} \hlnum{3}\hlstd{, j]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==}
+                \hlnum{3}\hlstd{, k]} \hlopt{>} \hlnum{0}\hlstd{)}
+            \hlkwa{if} \hlstd{(temp} \hlopt{>} \hlnum{0}\hlstd{) \{}
+                \hlstd{triples} \hlkwb{<-} \hlkwd{rbind}\hlstd{(triples,} \hlkwd{data.frame}\hlstd{(}\hlkwc{i} \hlstd{=} \hlkwd{names}\hlstd{(tables)[i],} \hlkwc{j} \hlstd{=} \hlkwd{names}\hlstd{(tables)[j],}
+                  \hlkwc{k} \hlstd{=} \hlkwd{names}\hlstd{(tables)[k],} \hlkwc{count} \hlstd{= temp))}
+            \hlstd{\}}
+        \hlstd{\}}
+    \hlstd{\}}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(triples[}\hlkwd{order}\hlstd{(triples[}\hlnum{4}\hlstd{],} \hlkwc{decreasing} \hlstd{= T), ])}
+\end{alltt}
+\begin{verbatim}
+##         i      j      k count
+## 29 tp1013 tp3367 tp1335   327
+## 25 tp1013 tp1014 tp3367   324
+## 17 tp1012 tp1013 tp3367   227
+## 27 tp1013 tp1015 tp3367   185
+## 7  tp1007 tp1013 tp3367   134
+## 23 tp1012 tp3367 tp1335    21
+## 26 tp1013 tp1014 tp1335    20
+## 32 tp1014 tp3367 tp1335    17
+## 15 tp1012 tp1013 tp1014    13
+## 18 tp1012 tp1013 tp1335    12
+## 6  tp1007 tp1013 tp1015    11
+## 14 tp1007 tp3367 tp1335    11
+## 21 tp1012 tp1015 tp3367    11
+## 24 tp1013 tp1014 tp1015    11
+## 1  tp1007 tp1012 tp1013    10
+## 3  tp1007 tp1012 tp3367     9
+## 16 tp1012 tp1013 tp1015     9
+## 20 tp1012 tp1014 tp3367     9
+## 28 tp1013 tp1015 tp1335     9
+## 30 tp1014 tp1015 tp3367     9
+## 33 tp1015 tp3367 tp1335     9
+## 8  tp1007 tp1013 tp1335     8
+## 5  tp1007 tp1013 tp1014     7
+## 31 tp1014 tp1015 tp1335     7
+## 2  tp1007 tp1012 tp1015     6
+## 22 tp1012 tp1015 tp1335     6
+## 10 tp1007 tp1014 tp3367     4
+## 13 tp1007 tp1015 tp1335     4
+## 12 tp1007 tp1015 tp3367     3
+## 4  tp1007 tp1012 tp1335     2
+## 9  tp1007 tp1014 tp1015     1
+## 11 tp1007 tp1014 tp1335     1
+## 19 tp1012 tp1014 tp1015     1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Four-way sharing is even less common, with the non-European coastal isolates (i.e., not gyre) dominating.
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{4}\hlstd{)}  \hlcom{# 564 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 564
+\end{verbatim}
+\begin{alltt}
+\hlstd{quads} \hlkwb{<-} \hlkwa{NULL}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{4}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlstd{(i} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{5}\hlstd{) \{}
+        \hlkwa{for} \hlstd{(k} \hlkwa{in} \hlstd{(j} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{6}\hlstd{) \{}
+            \hlkwa{for} \hlstd{(l} \hlkwa{in} \hlstd{(k} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{7}\hlstd{) \{}
+                \hlstd{temp} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{4}\hlstd{, i]} \hlopt{>} \hlnum{0} \hlopt{&}
+                  \hlstd{non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{4}\hlstd{, j]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&}
+                  \hlstd{snp.counts} \hlopt{==} \hlnum{4}\hlstd{, k]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==}
+                  \hlnum{4}\hlstd{, l]} \hlopt{>} \hlnum{0}\hlstd{)}
+                \hlkwa{if} \hlstd{(temp} \hlopt{>} \hlnum{0}\hlstd{) \{}
+                  \hlstd{quads} \hlkwb{<-} \hlkwd{rbind}\hlstd{(quads,} \hlkwd{data.frame}\hlstd{(}\hlkwc{i} \hlstd{=} \hlkwd{names}\hlstd{(tables)[i],} \hlkwc{j} \hlstd{=} \hlkwd{names}\hlstd{(tables)[j],}
+                    \hlkwc{k} \hlstd{=} \hlkwd{names}\hlstd{(tables)[k],} \hlkwc{l} \hlstd{=} \hlkwd{names}\hlstd{(tables)[l],} \hlkwc{count} \hlstd{= temp))}
+                \hlstd{\}}
+            \hlstd{\}}
+        \hlstd{\}}
+    \hlstd{\}}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(quads[}\hlkwd{order}\hlstd{(quads[}\hlnum{5}\hlstd{],} \hlkwc{decreasing} \hlstd{= T), ])}
+\end{alltt}
+\begin{verbatim}
+##         i      j      k      l count
+## 9  tp1007 tp1012 tp1015 tp1335   320
+## 30 tp1013 tp1014 tp3367 tp1335    30
+## 21 tp1012 tp1013 tp1015 tp3367    25
+## 31 tp1013 tp1015 tp3367 tp1335    22
+## 23 tp1012 tp1013 tp3367 tp1335    18
+## 5  tp1007 tp1012 tp1014 tp1015    16
+## 13 tp1007 tp1013 tp1015 tp3367    12
+## 28 tp1013 tp1014 tp1015 tp3367    12
+## 3  tp1007 tp1012 tp1013 tp3367    11
+## 15 tp1007 tp1013 tp3367 tp1335    10
+## 4  tp1007 tp1012 tp1013 tp1335     9
+## 12 tp1007 tp1013 tp1014 tp3367     9
+## 22 tp1012 tp1013 tp1015 tp1335     9
+## 2  tp1007 tp1012 tp1013 tp1015     8
+## 19 tp1012 tp1013 tp1014 tp3367     8
+## 8  tp1007 tp1012 tp1015 tp3367     7
+## 25 tp1012 tp1014 tp1015 tp1335     6
+## 17 tp1007 tp1015 tp3367 tp1335     5
+## 14 tp1007 tp1013 tp1015 tp1335     4
+## 29 tp1013 tp1014 tp1015 tp1335     4
+## 24 tp1012 tp1014 tp1015 tp3367     3
+## 6  tp1007 tp1012 tp1014 tp3367     2
+## 11 tp1007 tp1013 tp1014 tp1015     2
+## 18 tp1012 tp1013 tp1014 tp1015     2
+## 20 tp1012 tp1013 tp1014 tp1335     2
+## 27 tp1012 tp1015 tp3367 tp1335     2
+## 1  tp1007 tp1012 tp1013 tp1014     1
+## 7  tp1007 tp1012 tp1014 tp1335     1
+## 10 tp1007 tp1012 tp3367 tp1335     1
+## 16 tp1007 tp1014 tp3367 tp1335     1
+## 26 tp1012 tp1014 tp3367 tp1335     1
+## 32 tp1014 tp1015 tp3367 tp1335     1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Five-way sharing is much more common, and is strongly dominated by the 5 non-Europeans.
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{5}\hlstd{)}  \hlcom{# 3969 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 3969
+\end{verbatim}
+\begin{alltt}
+\hlstd{quints} \hlkwb{<-} \hlkwa{NULL}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlstd{(i} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{4}\hlstd{) \{}
+        \hlkwa{for} \hlstd{(k} \hlkwa{in} \hlstd{(j} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{5}\hlstd{) \{}
+            \hlkwa{for} \hlstd{(l} \hlkwa{in} \hlstd{(k} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{6}\hlstd{) \{}
+                \hlkwa{for} \hlstd{(m} \hlkwa{in} \hlstd{(l} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{7}\hlstd{) \{}
+                  \hlstd{temp} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{5}\hlstd{, i]} \hlopt{>} \hlnum{0} \hlopt{&}
+                    \hlstd{non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{5}\hlstd{, j]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&}
+                    \hlstd{snp.counts} \hlopt{==} \hlnum{5}\hlstd{, k]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==}
+                    \hlnum{5}\hlstd{, l]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{5}\hlstd{, m]} \hlopt{>}
+                    \hlnum{0}\hlstd{)}
+                  \hlkwa{if} \hlstd{(temp} \hlopt{>} \hlnum{0}\hlstd{) \{}
+                    \hlstd{quints} \hlkwb{<-} \hlkwd{rbind}\hlstd{(quints,} \hlkwd{data.frame}\hlstd{(}\hlkwc{i} \hlstd{=} \hlkwd{names}\hlstd{(tables)[i],}
+                      \hlkwc{j} \hlstd{=} \hlkwd{names}\hlstd{(tables)[j],} \hlkwc{k} \hlstd{=} \hlkwd{names}\hlstd{(tables)[k],} \hlkwc{l} \hlstd{=} \hlkwd{names}\hlstd{(tables)[l],}
+                      \hlkwc{m} \hlstd{=} \hlkwd{names}\hlstd{(tables)[m],} \hlkwc{count} \hlstd{= temp))}
+                  \hlstd{\}}
+                \hlstd{\}}
+            \hlstd{\}}
+        \hlstd{\}}
+    \hlstd{\}}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(quints[}\hlkwd{order}\hlstd{(quints[}\hlnum{6}\hlstd{],} \hlkwc{decreasing} \hlstd{= T), ])}
+\end{alltt}
+\begin{verbatim}
+##         i      j      k      l      m count
+## 8  tp1007 tp1012 tp1014 tp1015 tp1335  3484
+## 5  tp1007 tp1012 tp1013 tp1015 tp1335   201
+## 10 tp1007 tp1012 tp1015 tp3367 tp1335   125
+## 18 tp1012 tp1013 tp1015 tp3367 tp1335    33
+## 4  tp1007 tp1012 tp1013 tp1015 tp3367    30
+## 20 tp1013 tp1014 tp1015 tp3367 tp1335    17
+## 6  tp1007 tp1012 tp1013 tp3367 tp1335    12
+## 14 tp1007 tp1013 tp1015 tp3367 tp1335    11
+## 15 tp1012 tp1013 tp1014 tp1015 tp3367     9
+## 7  tp1007 tp1012 tp1014 tp1015 tp3367     8
+## 1  tp1007 tp1012 tp1013 tp1014 tp1015     7
+## 16 tp1012 tp1013 tp1014 tp1015 tp1335     7
+## 19 tp1012 tp1014 tp1015 tp3367 tp1335     5
+## 11 tp1007 tp1013 tp1014 tp1015 tp3367     4
+## 3  tp1007 tp1012 tp1013 tp1014 tp1335     3
+## 9  tp1007 tp1012 tp1014 tp3367 tp1335     3
+## 13 tp1007 tp1013 tp1014 tp3367 tp1335     3
+## 17 tp1012 tp1013 tp1014 tp3367 tp1335     3
+## 2  tp1007 tp1012 tp1013 tp1014 tp3367     2
+## 12 tp1007 tp1013 tp1014 tp1015 tp1335     2
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Six-way sharing is also common, with the set \emph{ex}cluding Italy having the most mutually-shared SNPs.  
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{6}\hlstd{)}  \hlcom{# 4166 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 4166
+\end{verbatim}
+\begin{alltt}
+\hlstd{sexts} \hlkwb{<-} \hlkwa{NULL}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{7}\hlstd{) \{}
+    \hlstd{temp} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent} \hlopt{&} \hlstd{snp.counts} \hlopt{==} \hlnum{6}\hlstd{, i]} \hlopt{==} \hlnum{0}\hlstd{)}
+    \hlkwa{if} \hlstd{(temp} \hlopt{>} \hlnum{0}\hlstd{) \{}
+        \hlstd{sexts} \hlkwb{<-} \hlkwd{rbind}\hlstd{(sexts,} \hlkwd{data.frame}\hlstd{(}\hlkwc{EXclude} \hlstd{=} \hlkwd{names}\hlstd{(tables)[i],} \hlkwc{count} \hlstd{= temp))}
+    \hlstd{\}}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(sexts[}\hlkwd{order}\hlstd{(sexts[}\hlnum{2}\hlstd{],} \hlkwc{decreasing} \hlstd{= T), ])}
+\end{alltt}
+\begin{verbatim}
+##   EXclude count
+## 6  tp3367  1756
+## 3  tp1013  1343
+## 4  tp1014   951
+## 7  tp1335    45
+## 1  tp1007    43
+## 5  tp1015    17
+## 2  tp1012    11
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+So, overall, the picture looks like a long shared history (8600 7-way shared positions), followed by a split of the 5
+from Europe, then a long shared history in the 5 (3484 quintuples), in parallel with a long shared history in Europe
+(5920 pairs), then long separate histories in Italy and Wales ($>$4500), and essentially nolimited differentiation among the 5
+non-Europeans, but if we split hairs, we get the following tree (newick format):
+\begin{verbatim}
+(((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Australia:29):9,
+(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8593);
+\end{verbatim}
+rendered via {\tt http://iubio.bio.indiana.edu/treeapp/treeprint-form.html} as Fig~\ref{fig:tree}.
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=.4]{shared-snp-tree-annotated.pdf}
+    \caption{Inferred Tree.}
+    \label{fig:tree}
+  \end{center}
+\end{figure}
+Note: to visually resolve the edges among the 5, I scaled those length by 5x - 10x.
+
+Maybe I can plot a tree:
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{newick} \hlkwb{<-} \hlstr{"(((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Australia:29):9,(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8593,imaginary_outgroup:0);"}
+\hlkwd{library}\hlstd{(ape)}
+\hlkwd{plot}\hlstd{(}\hlkwd{read.tree}\hlstd{(}\hlkwc{text} \hlstd{= newick))}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{)}
+\hlkwd{axis}\hlstd{(}\hlnum{2}\hlstd{)}
+\hlkwd{text}\hlstd{(}\hlnum{3000}\hlstd{,} \hlnum{3.5}\hlstd{,} \hlstr{"an edge\textbackslash{}nlabel"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{/Users/ruzzo/Documents/s/papers/Thaps/tonys-svn/7_strains/trunk/code/snpNB/scripts/larrys/scatter-plus/figs/newick-tree} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Looking at pairwise counts of shared SNPs (without regard to how many other strains share the SNP), we have:
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(consistent)}  \hlcom{# 36040 on chr1}
+\end{alltt}
+\begin{verbatim}
+## [1] 36040
+\end{verbatim}
+\begin{alltt}
+\hlstd{pairwise} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{7}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{7}\hlstd{)}
+\hlkwd{rownames}\hlstd{(pairwise)} \hlkwb{<-} \hlkwd{names}\hlstd{(tables)}
+\hlkwd{colnames}\hlstd{(pairwise)} \hlkwb{<-} \hlkwd{names}\hlstd{(tables)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlstd{(i} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{:}\hlnum{7}\hlstd{) \{}
+        \hlstd{pairwise[i, j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(non.refs[consistent, i]} \hlopt{>} \hlnum{0} \hlopt{&} \hlstd{non.refs[consistent,}
+            \hlstd{j]} \hlopt{>} \hlnum{0}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+\hlkwd{print}\hlstd{(pairwise)}
+\end{alltt}
+\begin{verbatim}
+##        tp1007 tp1012 tp1013 tp1014 tp1015 tp3367 tp1335
+## tp1007      0  16992  11989  15328  16975  11470  16893
+## tp1012      0      0  12241  15400  17076  11727  16992
+## tp1013      0      0      0  11189  12170  17058  12390
+## tp1014      0      0      0      0  15419  10715  15387
+## tp1015      0      0      0      0      0  11675  17001
+## tp3367      0      0      0      0      0      0  11885
+## tp1335      0      0      0      0      0      0      0
+\end{verbatim}
+\begin{alltt}
+\hlstd{pw} \hlkwb{<-} \hlstd{pairwise} \hlopt{+} \hlkwd{t}\hlstd{(pairwise)}
+\hlstd{p} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{7}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{6}\hlstd{)}
+\hlkwd{print}\hlstd{(pw[p, p])}
+\end{alltt}
+\begin{verbatim}
+##        tp1007 tp1012 tp1015 tp1335 tp1014 tp1013 tp3367
+## tp1007      0  16992  16975  16893  15328  11989  11470
+## tp1012  16992      0  17076  16992  15400  12241  11727
+## tp1015  16975  17076      0  17001  15419  12170  11675
+## tp1335  16893  16992  17001      0  15387  12390  11885
+## tp1014  15328  15400  15419  15387      0  11189  10715
+## tp1013  11989  12241  12170  12390  11189      0  17058
+## tp3367  11470  11727  11675  11885  10715  17058      0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+{\Large\bf Noise:} Various sources of ``noise'' in the data:
+\begin{enumerate}
+  \item deep coalescence
+  \item read errors
+  \item low reads depth
+  \item skew because 1335 is the reference
+  \item varying error rates and sequencing depth among the 7
+  \item varying numbers of founder cells in the sequencing cultures
+  \item tri-allelic positions where stochastic fluctuation is sequence sampling promotes the rare allele to prominence
+\end{enumerate}
+
+{\Large\bf To Do:}
+\begin{enumerate}
+  \item try filtering out singleton reads
+  \item any spacial structure to various sub-classes?
+  \item any association of .8 group to various subclasses?
+  \item after top level split, should I reanalyze halves of partition in isolation?
+\end{enumerate}
+
+\iffalse
+\begin{description}
+  \item[Plotting:] Plotting, which may be needed in later assignments, is also easy, including the ability to overlay
+    additional points or lines on a plot:
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(x, x}\hlopt{^}\hlnum{2} \hlopt{-} \hlnum{1}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'x' not found}}\begin{alltt}
+\hlstd{xsmooth} \hlkwb{<-} \hlstd{(}\hlopt{-}\hlnum{300}\hlopt{:}\hlnum{300}\hlstd{)}\hlopt{/}\hlnum{100}
+\hlkwd{lines}\hlstd{(xsmooth, xsmooth}\hlopt{^}\hlnum{2} \hlopt{-} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: plot.new has not been called yet}}\begin{alltt}
+\hlkwd{points}\hlstd{(x,} \hlnum{7} \hlopt{-} \hlnum{2} \hlopt{*} \hlkwd{abs}\hlstd{(x),} \hlkwc{pch} \hlstd{=} \hlstr{"*"}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'x' not found}}\end{kframe}
+\end{knitrout}
+
+\end{description}
+\fi
+
+\end{document}

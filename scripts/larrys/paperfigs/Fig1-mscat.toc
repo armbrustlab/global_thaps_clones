@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Intro}{1}{section.1}
+\contentsline {section}{\numberline {2}Packages}{1}{section.2}
+\contentsline {section}{\numberline {3}Preliminaries}{2}{section.3}
+\contentsline {section}{\numberline {4}Major Analysis/Performance Parameters.}{2}{section.4}
+\contentsline {section}{\numberline {5}Compactr Patches}{3}{section.5}
+\contentsline {section}{\numberline {6}Load Tables}{6}{section.6}
+\contentsline {section}{\numberline {7}The Fig}{7}{section.7}
+\contentsline {subsection}{\numberline {7.1}Filtering}{7}{subsection.7.1}
+\contentsline {section}{\numberline {8}``6+1'' with dots}{14}{section.8}
+\contentsline {section}{\numberline {9}Post-Analysis}{19}{section.9}
+\contentsline {subsection}{\numberline {9.1}Extract shared positions used in pairwise plots}{19}{subsection.9.1}
+\contentsline {subsection}{\numberline {9.2}Discordant ``Nonreference Alleles''}{20}{subsection.9.2}
+\contentsline {subsection}{\numberline {9.3}Other measures of discordance}{27}{subsection.9.3}
+\contentsline {subsection}{\numberline {9.4}Discordance in UN-selected positions}{30}{subsection.9.4}
+\contentsline {section}{\numberline {10}Tangents}{31}{section.10}
+\contentsline {section}{\numberline {11}To Do/Improvements?}{33}{section.11}

@@ -1,0 +1,3 @@
+"-v1" files are my initial brute-force calc of shared snps, even based on 1 read.
+"-v1.5" is a partial update with the new unified approach.  Newer code is definitely
+cleaner, but keep both for a while for comparision purposes.

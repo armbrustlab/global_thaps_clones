@@ -1,0 +1,2347 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage[section]{placeins} % provides \FloatBarrier
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+%% see hack below which.snp.tables to see how this is patched via the .aux file:
+\providecommand{\whichsnptables}{(re-run latex to see which.snp.tables())} 
+
+\begin{document}
+\pagestyle{headings}
+\title{Exploration of Shared SNPs in Thaps\\\large\whichsnptables}
+\maketitle
+
+Rambling exploration of SNP positions shared between two or more of the isolates.  Code is included to 
+document it thoroughly, (even if largely uninteresting to anyone else), and I will summarize it as I go.
+
+\tableofcontents
+
+\section{History}
+This was added to SVN 1/26/2014; not sure when it was started, but earliest related emails I see are from 1/21/14.
+{\scriptsize
+\begin{verbatim}
+        r413 | ruzzo | 2014-01-26 08:22:37 -0800 (Sun, 26 Jan 2014) | 2 lines
+
+        adding shared-snp analysis.
+\end{verbatim}
+}
+
+\section{Preliminaries}
+
+NOTE: Some comments in code and some parts of the text, especially specific numbers and general 
+conclusions, are based on Unqfiltered, Chr1, Medium stringency (i.e., ``[[2]]'' below) analysis.  
+The broad picture does not appear to change with other choices, but details do, and the text is  
+neither fully parameterized nor fully updated, so proceed with caution.  
+
+Load utility R code; do setup:
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('shared-snps') # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr('figs-knitr/')
+generic.setup('figs-mine/')
+@
+
+\section{Major Analysis/Performance Parameters.}
+\label{sec:params}
+
+Choices here control how this file is processed, what data is analyzed, speed, etc.  
+Set them carefully before running ``make.''  Major choices are:
+\begin{enumerate}
+
+  \item WHICH SNP TABLES ARE LOADED???  The logical vector {\tt load.tb} selects the desired 
+    combination of SNP tables to load, in the  order
+    %
+      {\tt full.unfiltered, chr1.unfiltered, full.qfiltered,  chr1.qfiltered}.   
+    %
+    E.g., {\tt load.tb=(T, F, T, F)} loads \emph{full} tables for \emph{both} q- and un-qfiltered 
+    data.  Primary analysis is only performed on one of them, but the others are retained for 
+    comparison/debugging.
+    
+  \item WHICH MAIN ANALYSIS???  If multiple tables are loaded, which is used for the main analysis? 
+    Parameter {\tt pri} is a permutation of 1:4, corresponding to {\tt load.tb}; the first loaded
+    table in that order becomes the analysis focus.  The default {\tt pri=c(1,2,3,4)} looks at 
+    un-q-filtered data in preference to q-filtered, and full tables in preference to Chr1 within 
+    each group.  
+    
+    (Choice of data for the ``Table 1'' coverage summary in section \ref{sec:table1} is independent
+    of this; full genome data is prefered over Chr 1 for both q- and unq-filtered reads; change 
+    {\tt tset.picker} calls near the end of that section to modify this.)
+
+  \item CLEAR CACHE???  {\tt clear.cache=T} forces Knitr cache removal at the start of the run; 
+    especially important if the previous parameters have changed since the last run.
+
+  \item HOW MANY BOOTSTRAP REPLICATES???  The variable {\tt nboot} is a major performance factor; 
+    1000 reps takes several hours.  Set to 5 for debug and quick look; 100 or more for final run.
+    
+  \item TRUNCATE TABLES TO Chrs ONLY???  I.e., remove mitochondrial-, plastid-, and BD- contigs.
+
+\end{enumerate}
+The following code chunk sets the first four parameters based on where it's run.  To prototype/debug
+on a laptop, faster is better---run on Chr1 with small {\tt nboot}; when run on the linux servers, I 
+typically do full genomes, more replicates.  Just override them if these defaults don't work for you.
+
+<<>>=
+# for Makefile, params can be command line args, else base on system; see wlr.r for details.
+# load.tb order: full.un, chr1.un, full.qfil,  chr1.qfil
+
+params <- pick.params(
+  mac   = list(load.tb=c(F,T,F,F), pri=1:4, clear.cache=F, nboot=  1, trunc.tables=T), # quick on lap
+ #linux = list(load.tb=c(F,F,F,T), pri=1:4, clear.cache=F, nboot=  5, trunc.tables=T), # quick qfil on server
+  linux = list(load.tb=c(T,F,T,F), pri=1:4, clear.cache=T, nboot=101, trunc.tables=T)  # full on server
+)
+
+# Alternatively, edit/uncomment the following to override the above as needed
+#params<-pick.params(default=list(load.tb=c(T,T,T,T),pri=1:4,clear.cache=T,nboot=1000,trunc.tables=T))
+print(params)
+@
+
+CLEAR CACHE??!!  Some code chunks use the knitr cache, but extent of cache consistency checks unknown.  
+If in doubt, delete ``cache/'' (knitr's)  directory to force rebuild. T/F set in params above 
+will/won't force removal (actually, rename):
+%% *TODO* read about knitr cache dependency stuff.
+
+<<>>=
+decache(params$clear.cache)
+@ 
+
+If still in doubt, also manually remove ``00common/mycache/'' (mine).
+
+Load the main SNP data file(s) based on the parameters set in section~\ref{sec:params}.
+
+<<>>=
+# short names to keep the following chunk compact
+tb <- params$load.tb
+tset <- list(NULL, NULL, NULL, NULL) # tset = 'table set'
+@
+<<load.tables>>=
+# see wlr.R for load paths
+if(tb[1]){tset[[1]] <- load.snp.tables(use.chr1.tables = FALSE, data.name='full.tables.01.26.14')}
+if(tb[2]){tset[[2]] <- load.snp.tables(use.chr1.tables = TRUE , data.name='full.tables.01.26.14')}
+if(tb[3]){tset[[3]] <- load.snp.tables(use.chr1.tables = FALSE, data.name='full.tables.02.25.15')}
+if(tb[4]){tset[[4]] <- load.snp.tables(use.chr1.tables = TRUE , data.name='full.tables.02.25.15')}
+@
+
+Grrr! I should have excluded non-Chr contigs from full genome runs.  Rather than change tons of code
+below to add mask params, I'm just going to truncate the tables, as follows.  (See notes in 
+wlr.r::make.mask for assumptions.)
+
+<<trunc.tables>>=
+if(params$trunc.tables){
+  for(i in 1:4){
+    if(!is.null(tset[[i]])){
+      first.mito <- match("mitochondria.fasta", tset[[i]][[7]]$Chr)
+      if(!is.na(first.mito)){ # will be NA for Chr1 tables
+        for(j in 1:7){
+          # hmmm... slow; wonder whether head(tset[[i]][[j]],first.mito-1) is faster;
+          # ok, simple tests suggest not: system.time(head(data.frame(1:1e7,1:1e7),5e6)) 
+          tset[[i]][[j]] <- tset[[i]][[j]][1:(first.mito-1),]
+        }
+      }
+    }
+  }
+} else {
+    cat('***\n*** DID YOU *REALLY* WANT UNTRUNCATED TABLES???\n***\n')
+}
+@
+
+The tersely-named {\tt tset} list is sometimes convenient, but give them more descriptive names, too.
+
+<<>>=
+snp.tables.full.unfiltered <- tset[[1]]; names(tset)[1] <- 'snp.tables.full.unfiltered'
+snp.tables.chr1.unfiltered <- tset[[2]]; names(tset)[2] <- 'snp.tables.chr1.unfiltered'
+snp.tables.full.qfiltered  <- tset[[3]]; names(tset)[3] <- 'snp.tables.full.qfiltered'
+snp.tables.chr1.qfiltered  <- tset[[4]]; names(tset)[4] <- 'snp.tables.chr1.qfiltered'
+@
+
+Main analysis may just use one of the potentially 4 table sets.  Pick it according to the priority
+specified in section~\ref{sec:params}, using the shorter name 'snp.tables' for this default choice.
+
+<<>>=
+snp.tables <- tset.picker(priority=params$pri, table.set=tset)
+@
+
+<<>>=
+# Sanity check: unlike unqfiltered tables, bug in early code gave qfiltered ones different numbers
+# of rows per strain, which breaks much code.  Verify this is no longer happening.
+check.eq.nrows <- function(tables){
+  if(!is.null(tables)){
+    nrow.snp.tables <- unlist(lapply(tables,nrow))
+    print(nrow.snp.tables)
+    if(all(nrow.snp.tables == nrow.snp.tables[1])){
+      cat('OK, all strains have same number of rows.\n')
+    } else {
+      cat('***\n*** Warning: Different strains have different numbers of rows! ***\n***\n')
+    }
+  }
+}
+
+dummy<-lapply(tset, check.eq.nrows)
+@
+
+Which tables have we got?:
+
+<<>>=
+# 'which.snp.tables' return summary of which tables, either as a char string (default), e.g.
+# "Chr1-qfiltered", or as vector of 2 strings, e.g. c("full","unfiltered").
+cat('This analysis uses: (', paste(unlist(lapply(tset,which.snp.tables)),collapse=', '), ') SNP tables.\n')
+cat('Main shared SNP analysis focuses on', which.snp.tables(snp.tables), '\n')
+@
+
+A \LaTeX{} hack: I want which.snp.tables info in doc title/page headers, but it is unknown until now, 
+so the following writes a command definition \verb|\whichsnptables| into the .aux file, which is 
+read during the \emph{next} \LaTeX{} run, when \verb|\begin{document}| is processed:
+\makeatletter
+\immediate\write\@auxout{\noexpand\gdef\noexpand\whichsnptables{\Sexpr{which.snp.tables()}}}
+\makeatother
+{\small
+\begin{verbatim}
+  \makeatletter
+  \immediate\write\@auxout{\noexpand\gdef\noexpand\whichsnptables{\Sexpr{which.snp.tables()}}}
+  \makeatother
+\end{verbatim}
+}
+
+Subsequent analysis was initially all directed at Chr1.  In general, I 
+have \emph{not} updated the discussion to reflect genome-wide analysis.
+
+<<>>=
+if(exists('snp.tables.chr1.qfiltered') && exists('snp.tables.chr1.unqfiltered')){
+  # If have both, where is new unequal to old?
+  uneq <- snp.tables.chr1.qfiltered[[1]]$Ref[1:chr1.len] != snp.tables.chr1.unqfiltered[[1]]$Ref[1:chr1.len]
+  cat('Sum uneq:', sum(uneq,na.rm=T), '\n')
+  cat('Sum NA:  ', sum(is.na(uneq)),  '\n')
+  print(which(is.na(uneq))[1:10])
+  seecounts(which(is.na(uneq))[1:4],snp.tables=snp.tables.qfiltered,debug=F)
+}
+@
+
+In brief, ``\texttt{snp.tables}'' will be a list of 7 data frames, one per strain, giving read 
+counts for each nucleotide at each position, SNP calls, etc.:
+
+<<>>=
+names(snp.tables)
+str(snp.tables[[1]])
+@
+
+Just for background, also load the desert tables:
+
+<<>>=
+# from svn+ssh://ceg1.ocean.washington.edu/var/svn/7_strains/trunk/code/snpNB/data
+#load('../../../data/ungit-data/des.rda')
+load('../../../data/des.rda')
+@
+
+What's the total length of all deserts in each strain?  Big deserts (defined as ``big.threshold'' or longer)?
+
+<<>>=
+some.desert.stats <- function(big.threshold=0){
+  desert.len <- unlist(lapply(des,function(x){sum(unlist(lapply(x,function(y){sum(y[,'Length'])})))}))
+  bigdes.len <- unlist(lapply(des,function(x){sum(unlist(lapply(x,function(y){
+                                                   sum(y[y[,'Length']>=big.threshold,'Length'])})))}))
+  rbind(desert.len, desert.pct=round( desert.len / genome.length.constants()$genome.length.trunc * 100),
+        bigdes.len, bigdes.pct=round( bigdes.len / genome.length.constants()$genome.length.trunc * 100))
+}
+some.desert.stats(big.threshold=50000)
+@
+
+I.e., looking at all deserts, about 1/3 of L-clade, 1/5 of H-clade are in deserts, whereas, looking at the largest deserts ($>50k$), only about 12\% in L-clade (and none in H-clade).  Note that the rough stats above include artifactual ``deserts'' created by gaps in the reference sequence, large genomic deletions, etc.  A more careful analysis of this is found in nc-snps.rnw.
+
+\section{Refined SNP Calls}
+\label{sec:refined}
+\subsection{Method}
+
+It is appropriate that SNP calls should be conservative, to avoid many false positives, but, when a position is called a SNP in one isolate, we often see a significant number of reads for the same non-reference nucleotide at that position in other isolates, even if they are not called as SNPs.  On the other hand, we sometimes see a position called a SNP in two or more isolates, but with \emph{different} pairs of nucleotides, potentially suggesting technical errors.  Analysis in this section attempts to refine the SNP calls by  looking for issues such as these by looking at all 7 isolates jointly, at each position called a SNP in any of them.
+
+For a given strain, the following function returns a vector of 0:4 to indicate which nonreference nucleotide has the
+maximum read count at the corresponding position.  The values 1..4 indicate that the max count occurred at A, G, C, T,
+resp.  (Ties are resolved arbitrarily ($a<g<c<t$), which possibly deserves further attention.)  The value 0 means all
+nonreference counts are below threshold, based \emph{either} on absolute count \emph{or} as a fraction of coverage.
+Default only excludes 0 counts.
+
+<<>>=
+nref.nuc.new <- function(strain=1, mask=T, thresh.count=0, thresh.rate=0.0){
+	# get read count for max nonref nuc
+	nref <- apply(snp.tables[[strain]][mask, c('a', 'g', 'c', 't')], 1, max)
+	# where does nref count match a (g,c,t, resp) count
+	as <- ifelse(nref == snp.tables[[strain]][mask,'a'],1,0)
+	gs <- ifelse(nref == snp.tables[[strain]][mask,'g'],2,0)
+	cs <- ifelse(nref == snp.tables[[strain]][mask,'c'],3,0)
+	ts <- ifelse(nref == snp.tables[[strain]][mask,'t'],4,0)
+	# most positions will show 3 zeros and one of 1:4, so max identifies max nonref count;
+	# ties broken arbitrarily  (a<g<c<t)
+	merge <- pmax(as,gs,cs,ts)
+	# but if max nonref count is zero or below threshold, return 0
+	merge[nref == 0 | nref < thresh.count] <- 0
+	merge[nref/snp.tables[[strain]][mask,'Cov'] < thresh.rate] <- 0
+	return(merge)
+}
+@
+
+Get union and intersection of the sets of called SNPs. (``\$snp'' is 0/1.)  Also, 5-way (L-clade) and 4-way (L- excluding Gyre).
+
+<<>>=
+# 4-way union/intersection
+u4.snps <- snp.tables[[1]]$snp
+i4.snps <- snp.tables[[1]]$snp
+for(i in c(2,5,7)) {
+	u4.snps <- pmax(u4.snps, snp.tables[[i]]$snp)
+	i4.snps <- pmin(i4.snps, snp.tables[[i]]$snp)
+}
+# 5-way: add gyre
+u5.snps <- pmax(u4.snps, snp.tables[[4]]$snp)
+i5.snps <- pmin(i4.snps, snp.tables[[4]]$snp)
+# 7-way
+union.snps     <- pmax(u5.snps, snp.tables[[3]]$snp, snp.tables[[6]]$snp)
+intersect.snps <- pmin(i5.snps, snp.tables[[3]]$snp, snp.tables[[6]]$snp)
+nu4snps <- sum(u4.snps)
+nu5snps <- sum(u5.snps)
+ni4snps <- sum(i4.snps)
+ni5snps <- sum(i5.snps)
+nusnps  <- sum(union.snps)
+nisnps  <- sum(intersect.snps)
+c(n4u=nu4snps, n5u=nu5snps, n7u=nusnps, n4i=ni4snps, n5i=ni5snps, n7i=nisnps)
+@
+
+There are nusnps=\Sexpr{nusnps} positions called as SNPs in one or more strains (but only nisnps=\Sexpr{nisnps} that are shared among all 7).  Note that the 4-way union is only modestly larger (\Sexpr{nu4snps/ni4snps} times larger) than the 4-way intersection, emphasizing the inherent similarities among these SNP sets. The corresponding 5-way numbers show that Gyre adds relatively little to the 5-way union vs the 4-way union, whereas it removes a fair bit from the 5-way intersection.  However, much of that loss is simply because Gyre has fewer called SNPs: only \Sexpr{sum(snp.tables[[4]]$snp)} vs \Sexpr{ni4snps} in the 4-way intersection, and they are highly concordant:
+
+<<>>=
+sum(snp.tables[[4]]$snp*i4.snps)/sum(snp.tables[[4]]$snp)
+@
+
+So, a likely source of the Gyre's difference in called SNPs is technical (lower read coverage, higher read error rate) rather than biological.
+
+Inclusion of the 2 H-clade members, however, causes more dramatic changes in both union and intersection numbers.  I examine all these relationships in more detail below, but first I examine what I believe to be a significant source of technical error in these comparisons---erroneous SNP calls, especially false negative calls.
+
+It is appropriate that SNP calls should be conservative, to avoid many false positives, but, if a
+position is called a SNP in one strain, we often see a significant number of reads for the same non-reference nucleotide
+at that position in other strains, even if they are not called as SNPs. For my purposes below, these will be considered
+``shared SNPs,'' based on three different levels of permissiveness.  Note that, e.g.,
+  $\geq$ 84\%  % \ S e x p r {floor(min(unlist(lapply(snp.tables,function(x){sum(x$Cov==x$.match)}))/nrow(snp.tables[[1]]))*100)}$\%$ 
+of all positions have zero reads for any non-reference nucleotide, and only a small fraction have 2 or more
+non-reference reads:
+
+<<cache=TRUE>>=
+nonmatch <- rbind(
+  unlist(lapply(snp.tables,function(x){sum(x$Cov-x$.match == 0)})),
+  unlist(lapply(snp.tables,function(x){sum(x$Cov-x$.match == 1)})),
+  unlist(lapply(snp.tables,function(x){sum(x$Cov-x$.match == 2)})),
+  unlist(lapply(snp.tables,function(x){sum(x$Cov-x$.match == 3)})),
+  unlist(lapply(snp.tables,function(x){sum(x$Cov-x$.match >= 4)})),
+  unlist(lapply(snp.tables,function(x){sum((x$Cov-x$.match)[union.snps==0] >= 4)}))
+)/nrow(snp.tables[[1]])*100
+rownames(nonmatch) <- c('% ==0','% ==1','% ==2','% ==3','% >=4', '% >=4, nonSNP')
+nonmatch
+@
+
+Build a table of max non-reference nucleotides at each position in the union.snps set.  The three criteria are
+\begin{itemize}
+  \item{} [[1]]: any non-zero count at any coverage is considered significant
+  \item{} [[2]]: (count $\geq 2$ and count/coverage $\geq$ 0.05) is considered significant
+  \item{} [[3]]: (count $\geq 4$ and count/coverage $\geq$ 0.10) is considered significant
+\end{itemize}
+In all three cases, the nonref nucleotide must also be consistent across all strains passing that threshold; see below.
+
+<<cache=TRUE>>=
+non.refs <- vector('list',4)
+for(i in 1:4){
+  non.refs[[i]] <- matrix(0, nrow=nusnps, ncol=7)
+  colnames(non.refs[[i]]) <- names(snp.tables)
+  rownames(non.refs[[i]]) <- 
+            paste(snp.tables[[1]]$chr[union.snps==1], ':', snp.tables[[1]]$pos[union.snps==1], sep='')
+}
+for(j in 1:7){
+  non.refs[[1]][,j] <- nref.nuc.new(j, mask=union.snps==1, thresh.count=0, thresh.rate=0.00)
+  non.refs[[2]][,j] <- nref.nuc.new(j, mask=union.snps==1, thresh.count=2, thresh.rate=0.05)
+  non.refs[[3]][,j] <- nref.nuc.new(j, mask=union.snps==1, thresh.count=4, thresh.rate=0.10)
+}
+@
+
+For comparison, I want to look at unfiltered SAMTools SNP calls.  In complete opposition to the measures of consistency imposed above, I'm going to simply force this into the ``non.refs'' structure constructed above by imagining that any position called a SNP in any strain has its max nonref count on ``A'', so any given position called a SNP in any strain will automatically be declared ``consistent.''  This will allow the tree-code, etc. given below to work in a uniform way (even though interpretation of the results is different.)  Results will be jammed into a 4th component of the ``non.refs'' list; i.e., we have a 4th criterion:
+\begin{itemize}
+  \item{} [[4]]: all called SNPs at a given position are considered ``consistent.''
+\end{itemize}
+As this case was a late addition to the analysis, the commentary throughout this document has not necessarily been updated to reflect that this case is distinct from the first three.
+
+<<cache=TRUE>>=
+for(j in 1:7){
+  non.refs[[4]][,j] <- snp.tables[[j]]$snp[union.snps==1]  
+}
+@
+
+<<size='tiny'>>=
+str(non.refs[[4]])
+@
+
+\noindent ``non.refs'' indicates, among those positions in the union of all called SNPS having any non-reference read
+count above the thresholds listed above, the non-ref nucleotide having the highest read count in each strain.  If, for a
+given position, the max of this code is the same as the min (among non-zero values), then every strain having
+over-threshold nonref reads in that position, in fact has most non-reference reads on the \emph{same} nucleotide.  These
+are defined as the ``consistent'' SNPs.
+
+<<cache=TRUE>>=
+find.consistent <- function(nr){
+  nr.max <- apply(nr,1,max)
+  nr.min <- apply(nr,1,function(x){ifelse(max(x)==0,0,min(x[x>0]))})
+  return(nr.min == nr.max)
+}
+consistent  <- lapply(non.refs, find.consistent)
+@
+
+\subsection{Save them}
+
+<<>>=
+# wrap this in a data structure to be cached:
+Description <- 'Contents of this .rda file:
+
+  * Description: this text
+
+  * Data -- 5 items defining refined SNPs, at 4 different stringency levels, as defined
+    in shared-snps.rnw:
+
+    * based.on.which.snp.tables: {"Chr1","full","trunc"}-{"unfiltered","qfiltered"}, 
+      depending on which snp tables were used to build this data. ("trunc" = all Chrs.)
+
+    * number.union.snps: the total number of SNPs (SAMtools calls) in the union of SNPs 
+      across all 7 strains.
+
+    * number.intersection.snps: similar, for the 7-way intersection.
+
+      nusnps/nisnps are easily recalculated from the data below, but their inclusion 
+      may be convenient, e.g., to quickly see if the .rda represents the full genome 
+      (nusnps=488848), or the chr 1 subset (nusnps=47499); (redundant with "based.on...";
+      numbers above are for unfiltered, perhaps slightly different if qfiltered)
+
+    * non.ref.nucleotide: 4 arrays, each nusnps x 7, of values 0..4 (0..1 in the 4th 
+      array).  In the 1st 3 arrays, 0 means the given position in the given strain did
+      not have nonreference read counts above the corresponding filtering threshold,
+      i.e., is NOT a refined SNP in that strain, whereas 1..4 mean that it did pass
+      threshold, for A,C,G,T resp.  In the 4th array, this value is just 1/0,
+      indicating is/is not a called SNP in that strain.
+
+    * consistent.snps: 4 Bool vectors of length nusnps flagging positions whose nonref
+      nucs (wrt to the 4 filtering criteria) are deemed *consistent* across
+      all 7 strains.  For the 1st 3, this means all nonzero entries of non.ref.nuc 
+      are equal, i.e., nonref read counts passing threshold are on the SAME nonref
+      nucleotide in all strains having over-threshold counts.  Just for comparison
+      and uniformity of data structures, the 4th is all TRUE, i.e., union of SNPs
+      across all strains, without any regard for thresholds or consistency.
+
+      In short, the refined SNPs according to our medium filtering criteria are
+      strains/positions where consistent.snps[[2]]==TRUE and non.ref.nucleotide[[2]]>0.
+
+      Rownames in both non.ref.nucs and consistent define location, e.g. "Chr1:333".
+
+  * Code -- simple routines to extract refined SNPs in (potentially) convenient formats:
+
+    * get.snps(strain, stringency=2)
+      returns nusnps x 1 Bool vector of consistent SNPs @ specified stringency in
+      given strain
+
+    * get.snp.locs.char(strain, stringency=2)
+      returns n x 1 char vector of locations of consistent SNPs @ specified stringency
+      in given strain, e.g. "Chr1:1234", where n == sum(get.snps(...))
+
+    * get.snp.locs.df(strain, stringency=2){
+      As above, but returns data frame (char vector Chr, int vector Pos) with the same info.
+'
+
+refined.snps <- 
+  list(Description=Description,
+       
+       Data=list(
+         based.on.which.snp.tables=which.snp.tables(),
+         number.union.snps=nusnps, 
+         number.intersection.snps=nisnps, 
+         non.ref.nucleotide=non.refs,
+         consistent.snps=consistent),
+       
+       Code=list(
+         get.snps = function(strain, stringency=2){
+           # return nusnps x 1 Bool vector of consistent SNPs @ specified stringency & strain
+           return(refined.snps$Data$consistent.snps[[stringency]] & 
+                  refined.snps$Data$non.ref.nucleotide[[stringency]][,strain] > 0)
+         }
+         ,
+         get.snp.locs.char = function(strain, stringency=2){
+           # return char vector of locations of consistent SNPs @ specified stringency & strain
+           snps <- refined.snps$Code$get.snps(strain, stringency)
+           return(names(snps)[snps])
+         }
+         ,
+         get.snp.locs.df = function(strain, stringency=2){
+           # return data frame (Chr/Pos) of locations of consistent SNPs @ specified stringency & strain
+           snplist <- strsplit(refined.snps$Code$get.snp.locs.char(strain, stringency), ':', fixed=TRUE)
+           # strsplit returns long list of 2-vectors, 1st=chr, 2nd=char position
+           df <- data.frame(Chr=           unlist(lapply(snplist,function(x){return(x[1])})),
+                            Pos=as.integer(unlist(lapply(snplist,function(x){return(x[2])}))),
+                            stringsAsFactors = FALSE)
+           return(df)
+         }
+       )
+  )
+
+# dont't clobber existing .rda, but save if absent.  (delete to re-save)
+# result for trunc, unfiltered tables saved to "data" else "mycache"
+if(which.snp.tables() == 'trunc-unfiltered'){
+  rda.refined <- '../../../data/refined.snps-trunc-unfiltered.rda'
+} else {
+  rda.refined <- paste('../00common/mycache/refined.snps', which.snp.tables(), 'rda', sep='.')
+}
+if(file.exists(rda.refined)){
+  cat('Pre-existing file', rda.refined, 'unchanged.\n')
+} else {
+  cat('Saving', rda.refined, '...')
+  save(refined.snps, file=rda.refined, compress=TRUE)
+  cat('Saved.\n')
+}
+@
+
+Knitr seems to be failing to format the long char string above, which says:
+
+<<>>=
+cat(refined.snps$Description)
+@
+<<size='tiny'>>=
+str(consistent[[1]])
+@
+<<>>=
+consistent.count <- unlist(lapply(consistent, sum)) ; consistent.count
+inconsistent.count <- consistent.count[4] - consistent.count; inconsistent.count
+inconsistent.percent <- inconsistent.count/consistent.count[4]*100; inconsistent.percent
+@
+
+\noindent I.e., of the \Sexpr{nusnps} positions in which a SNP is called, \Sexpr{sum(consistent.count[1])} are
+consistent by my loose definition, and \Sexpr{sum(consistent.count[3])} are consistent by my tightest definition.  The
+increase in concordance supports the view that the loose definition is too loose.  Perhaps misleadingly, these counts
+include positions that are ``consistent SNPs'' in only one strain; more below.  (*TODO* I suspect, but have not yet
+systematically checked, that most of the rest are positions with low coverage and/or very low read counts on the mixture
+of non-reference nucleotides.)
+
+\subsection{Examples: Consistent}
+Here are a few (nonrandomly selected) prototypical consistent SNPs:
+
+<<>>=
+esnps <- names(consistent[[2]][consistent[[2]]])
+esnps2 <- as.integer(unlist(lapply(strsplit(esnps[c(7,11:13,92)],':',fixed=TRUE),function(x){x[2]})))
+seecounts(esnps2,snp.tables=snp.tables)
+@
+
+\subsection{Examples: Inconsistent}
+Here is a brief look at some \emph{in-}consistent positions.  E.g., Chr1:2013 shows nontrivial counts on 3 alleles in Wales, as do 2319, 3286, 5002, 5433, whereas 7878 shows a different alternate allele in Italy than in Wales.
+
+<<>>=
+unc <- names(consistent[[2]][!consistent[[2]]])
+unc2 <- as.integer(unlist(lapply(strsplit(unc[1:10],':',fixed=TRUE),function(x){x[2]})))
+seecounts(unc2,snp.tables=snp.tables)
+@
+
+\subsection{Examples: Homozygous nonref}
+And at some \emph{homozygous nonreference} positions (defined to be those with nonref fraction $>0.75$):
+
+<<>>=
+hnr <- lapply(snp.tables, function(x){x$.match/x$Cov < 0.25})       # find them
+hnr <- lapply(hnr, function(x){ifelse(is.na(x),FALSE,x)})           # remove NA
+unlist(lapply(hnr,sum))                                             # count per strain
+@
+
+Hmm, in L-clade, excluding the ref isolate (1335) this tracks time-in culture to some degree;  Maybe many of these are in hemizygous regions.  Next two chunks lifted from nc-snps to get tables for hemi-deletion.
+
+<<loadcnvtables>>=
+cnv.chronly <- load.cnv.tables('../../../data/cnv.txt', chrs.only=TRUE)
+
+str(cnv.chronly)
+cnv.chronly[c(1:4,nrow(cnv.chronly)+c(-1,0)),]                     ## first/last few rows
+@
+
+<<cnvdels>>=
+get.cnv.dels <- function(cov.thresh.lo = 0.0,
+                         cov.thresh.hi = 0.8,
+                         cnv,
+                         snp.tables = NULL,
+                         DEBUG = FALSE
+){
+  # build list of 7 Bool vectors of genome length, with i-th == T iff 
+  #  * i-th pos is 'NA' in genome seq (if snp.tables are provided), or 
+  #  * in CNVnator call for coverage in half-open [cov.thresh.lo, hi), and
+  #  * not marked 'filtered' by CNVnator
+  cnv.deletions <- vector(mode='list',7)                # make list of bool vectors
+  if(is.null(snp.tables)){
+    # if no tables, assume full
+    t.len <- genome.length.constants()$genome.length.trunc
+  } else {
+    t.len <- nrow(snp.tables[[1]])
+  }
+  for(st in 1:7){
+    if(is.null(snp.tables)){
+      cnv.deletions[[st]] <- logical(t.len)                        # all F
+    } else  {
+      cnv.deletions[[st]] <- is.na(snp.tables[[st]]$Pos[1:t.len])  # NA positions in genome
+    }
+  }
+  strain.names <- c(paste('tp10',c('07',12:15),sep=''),'IT','tp1335')
+  names(cnv.deletions) <- strain.names
+  for(i in 1:nrow(cnv)){
+    if(!cnv$filtered[i] && 
+       cnv$cov_ratio[i] >= cov.thresh.lo && 
+       cnv$cov_ratio[i] <  cov.thresh.hi) 
+    {
+      if(DEBUG){
+        print(cnv[i,])
+        print(as.character(cnv$strain[i]))
+      }
+      # following ASSUMES no CNVnator call crosses a chromosome bdry, & that 
+      # t.len ends at chr end (typically chr1 or chr24)
+      if(cnv$iEnd[i] <= t.len){
+        cnv.deletions[[as.character(cnv$strain[i])]][cnv$iStart[i]:cnv$iEnd[i]] <- TRUE
+      }
+    }
+  }
+  return(cnv.deletions)
+}
+
+# sanity check:
+cnv.dels.38 <- get.cnv.dels(0.3, 0.8, cnv.chronly, snp.tables = NULL)
+unlist(lapply(cnv.dels.38,sum)) # does it match low.length.38 in tic ?
+# 1672500 1781500 1399400 1313700 988400 336500 1453000 <== low.length.38 from tic (circa page 8)
+# 1672500 1781500 1399400 1313700 988400 336500 1453000 <== low.length.38 from tic (pg9, 6/28/17)
+rm(cnv.dels.38)
+@
+
+Slight discrepancy in H-clade that I should hunt down, but basically OK. (hmm; maybe untrunc tbls.)
+
+<<>>=
+# the ones we want for the current analysis:
+hemi.masks <- get.cnv.dels(0.3, 0.8, cnv.chronly, snp.tables=snp.tables)
+
+rbind(
+  homnr        = unlist(lapply(hnr,sum)),
+  hemi         = unlist(lapply(hemi.masks, sum)),
+  homnr.unhemi = unlist(lapply(list(1,2,3,4,5,6,7), function(i){sum(hnr[[i]] & !hemi.masks[[i]])}))
+)
+@
+
+<<>>=
+# based on the thought that hnr in 1335 may reflect errors in the ref seq, 
+# are they shared with others?
+unlist(lapply(hnr, function(x){sum(x & hnr[[7]])}))                 # hnr shared with 1335
+# answer: around 300 in each strain, of 558 in NY, genomewide, 
+# so that seems like a plausibly important factor.
+
+hnr.lclade <- hnr[[1]] | hnr[[2]] | hnr[[4]] | hnr[[5]] | hnr[[7]]  # union over L-clade
+sum(hnr.lclade)                                                     # count all in L-clade
+
+sum(hnr[[3]] | hnr[[6]])                                            # present in H-clade
+sum(hnr[[3]] & hnr[[6]])                                            # shared in H-clade
+
+# look at a few in L-clade
+w.hnr.l <- which(hnr.lclade)
+seecounts(w.hnr.l[1:10],snp.tables=snp.tables)
+
+# one of those is a little weird:
+xx<-snp.tables[[1]][149457,]
+for (i in 2:7){xx <- rbind(xx,snp.tables[[i]][149457,])}
+row.names(xx)<-names(snp.tables)
+# My guess is that Chr/Pos/Ref are left as NA if coverage is zero.
+xx
+@
+
+\section{Table 1 stats}
+\label{sec:table1}
+
+Here is a brief summary of per-strain SNP counts, pairwise overlaps, and other conveniently available 
+stats, such as those shown in Table 1 of the paper.
+
+<<>>=
+snp.counts    <- matrix(NA,7,4)
+snp.pctofny   <- matrix(NA,7,4)
+snp.pctofself <- matrix(NA,7,4)
+snp.inter  <- matrix(NA,7,7)
+snp.union  <- matrix(NA,7,7)
+rownames(snp.counts)    <- names(snp.tables)
+rownames(snp.pctofny)   <- names(snp.tables)
+rownames(snp.pctofself) <- names(snp.tables)
+rownames(snp.inter)  <- names(snp.tables)
+colnames(snp.inter)  <- names(snp.tables)
+rownames(snp.union)  <- names(snp.tables)
+colnames(snp.union)  <- names(snp.tables)
+for(stringency in 1:4){
+  cat('\nStringency', stringency, ifelse(stringency==4,'(i.e. raw SAMTools SNP calls)',''), 
+      ':\n--------------\n')
+  for(i in 1:7){
+    f.snps.i <- refined.snps$Code$get.snps(i, stringency)
+    snp.counts[i,stringency] <- sum(f.snps.i)
+    for(j in i:7){
+      f.snps.j <- refined.snps$Code$get.snps(j, stringency)
+      snp.inter[i,j] <- sum(f.snps.i & f.snps.j)
+      snp.union[i,j] <- sum(f.snps.i | f.snps.j)
+    }
+  }
+  snp.pctofny  [,stringency] <- snp.inter[,7]/snp.counts[7,stringency]
+  snp.pctofself[,stringency] <- snp.inter[,7]/snp.counts[ ,stringency]
+  cat('Union Counts:\n');                  print(snp.union)
+  cat('Intersect Counts:\n');              print(snp.inter)
+  cat('Intersect as percent of union:\n'); print(snp.inter/snp.union*100,digits=3)
+}
+vs.stringency <- cbind(snp.counts, matrix(NA,7,1), round(snp.counts[,1:3]/snp.counts[,4]*100,1))
+colnames(vs.stringency) <- c('[[1]]', '[[2]]', '[[3]]', '[[4]]', '----', '[[1]]%', '[[2]]%', '[[3]]%')
+
+# SNPs vs filtering stringency (raw counts and as % of [[4]]).  Medium filter
+# adds 10-20% in most cases.  Big exception is Gyre, where low coverage,
+# high err rate and SAMTools conservatism seemed to seriously undercall:
+print(vs.stringency)
+
+# Intersect NY as % of self (vs stringency):
+print(snp.pctofself*100, digits=3)
+
+# Intersect NY as % of NY (vs stringency):
+print(snp.pctofny*100, digits=3)
+@
+
+Quick look at coverage. Are there any NA?:
+
+<<>>=
+nacount <- NULL
+for(i in 1:4){
+  if(!is.null(tset[[i]])){
+    nacount <- rbind(nacount,
+                     unlist(lapply(tset[[i]], function(x){sum(is.na(x$Cov))}))
+                     )
+    rownames(nacount)[nrow(nacount)] <- names(tset)[i]
+  }
+}
+nacount
+@
+
+Seemingly no.  What's average in unq- vs q-filtered:
+
+<<>>=
+snp.tables.unqfil <- tset.picker(c(1,2), table.set = tset)
+snp.tables.qfil   <- tset.picker(c(3,4), table.set = tset)
+cov.unqfil <- unlist(lapply(snp.tables.unqfil, function(x){mean(x$Cov)}))
+cov.qfil   <- unlist(lapply(snp.tables.qfil,   function(x){mean(x$Cov,na.rm=T)}))
+cov.both <- rbind(cov.unqfil,cov.qfil,cov.qfil/cov.unqfil)
+i <- 1
+if(!is.null(snp.tables.unqfil)){
+  rownames(cov.both)[i] <- which.snp.tables(snp.tables.unqfil)
+  i <- i+1
+}
+if(!is.null(snp.tables.qfil)){
+  rownames(cov.both)[i] <- which.snp.tables(snp.tables.qfil)
+  i <- i+1
+}
+if(i==3){
+  rownames(cov.both)[i] <- 'Ratio'
+}
+cat('Mean Coverage:\n'); cov.both
+@
+
+\subsection{Table 1 Data}
+Throw together the conveniently-available Table 1 data, \emph{in Table 1 row order}:
+
+<<>>=
+# if coverage unavailable, build NA vector
+if(!is.null(cov.unqfil)){cov.unqfilv <- cov.unqfil} else {cov.unqfilv <- rep(NA,times=7)}
+if(!is.null(cov.qfil  )){cov.qfilv   <- cov.qfil  } else {cov.qfilv   <- rep(NA,times=7)}
+t1data.df <- data.frame(
+  id        = st.locs(1:7, id=T, loc=F, date=F),
+  loc       = st.locs(1:7, id=F, loc=T, date=F),
+  date      = st.locs(1:7, id=F, loc=F, date=T),
+  cov.unq   = cov.unqfilv,
+  cov.q     = cov.qfilv,
+  SNPs.4    = snp.counts[,4],
+  SNPs.2    = snp.counts[,2],
+  olap.ny.4 = snp.pctofny[,4]*100,
+  olap.ny.2 = snp.pctofny[,2]*100
+)
+t1row.order <- c(7,1,2,5,3,6,4)
+print(t1data.df[t1row.order,],digits=3)
+@
+
+\section{Shared-SNPs P-Value}
+
+Text of the main paper quotes a ``p-value'' for the observed degree of SNP sharing in L-clade (and/or L-clade excluding Gyre) under a null model that these isolates were sampled from a population globally in Hardy-Weinberg equilibrium.   Details of this analysis are as follows.  
+
+\subsection{SNP Concordance}
+
+Arbitrarily pick one isolate, say, $A$, as the ``template''.  Arbitrarily pick a heterozygous (aka ``SNP'') position in $A$.  Let $p_1$, and $q_1=1-p_1$ be the frequencies in the overall population of the two nucleotides observed at that position in $A$.  (Positions having 3 or 4 nucleotide variants segregating in the population are assumed to be negligibly rare.)  Under the HWE null model, a second isolate $B$ will also be heterozygous at the same position with probability $2p_1q_1 \leq 1/2$.  Similarly, this position will be heterozygous in a third isolate $C$ with the same probability, \emph{independently}, and so on for isolates $D$ and $E$.  Overall, (assuming HWE) the probability that a heterozygous position in $A$ is simultaneously heterozygous in the other 4 isolates is at most $1/2^4=1/16$.  Continuing, suppose we pick a second heterozygous position in $A$, \emph{on a different chromosome} with allele frequencies $p_2, q_2=1-p_2$, say.  Again assuming HWE, this position will be a SNP in all of $B, C, D$ and $E$ with probability $(2p_2q_2)^4 \leq 1/16$, and this is independent of the first position, since segregation on different chromosomes is unlinked.  Repeat this at 24 heterozygous positions in $A$, one per chromosome.  Then, the number of five-way concordant positions observed should be dominated by the number observed when sampling from a binomial distribution with parameters $n=24$ and $p=1/16$, i.e., we expect at most $1/16=6.25\%$ of positions to agree, or at most $24/16=1.5$ five-way concordant positions in total.  In sharp contrast, choosing CCMP 1014 (North Pacific Gyre) as the template, we see many more five-way concordant positions than predicted under these assumptions:
+
+<<>>=
+gyre.count <- sum(snp.tables[[4]]$snp)
+# NOTE: what we now calle "refined" SNPs were once called "filtered" SNPs and I have NOT tried
+# to update variable names and annotation in the code below to reflect the terminology change...
+# 'unfil.' => unfiltered for consistency; see below.
+unfil.fiveway.count   <- sum( snp.tables[[4]]$snp * i4.snps)
+unfil.fiveway.percent <- unfil.fiveway.count / gyre.count * 100
+unfil.p.value <- pbinom(floor(unfil.fiveway.count/gyre.count*24)-1, 24, 1/16, lower.tail = FALSE)
+consistency.comparison <- 
+  data.frame(
+    fiveway.count   = unfil.fiveway.count,   
+    fiveway.percent = unfil.fiveway.percent, 
+    p.value         = unfil.p.value
+  )
+consistency.comparison
+@
+
+Namely,  
+  \Sexpr{gyre.count} positions are called as SNPs in CCMP1014, of which 
+  \Sexpr{unfil.fiveway.count} or 
+  \Sexpr{unfil.fiveway.percent}\% are also called as SNPs in \emph{all four} other L-clade isolates.  
+  \Sexpr{unfil.fiveway.percent}\% of 24 is 
+  \Sexpr{unfil.fiveway.percent/100*24}, and the probability of seeing 
+  \Sexpr{floor(unfil.fiveway.percent/100*24)} or more ``Heads'' in 24 flips of a biased coin with $P(\textrm{Heads}) \leq 1/16$, i.e., our p-value under the HWE null hypothesis, is at most:
+  \Sexpr{unfil.p.value} based on this simple binomial model. This is obviously strong evidence against the null hypothesis.
+
+This analysis is potentially overly-simplistic in four respects, addressed below. 
+\begin{enumerate}
+  \item \label{item:neutral}``$2pq\leq1/2$'' is conservative.  Neutral theory predicts that most variant nucleotides are rare in the population, so $2pq \ll 1/2$ is to be expected.  This should make our quoted p-value very conservative.
+  \item Effect of Erroneous SNP calls.  We base our analysis on \emph{predicted} (by SAMTOOLS) heterozygous positions, not absolute-truth, which may affect our conclusions.  However, 
+  \begin{itemize} 
+    \item False negatives in $A$ are irrelevant, since we never examine those positions.  (This is the motivation for using CCMP1014 as the template; it has the lowest predicted SNP rate, likely due to a high false negative rate in that sequencing run.  As noted elsewhere, it had the lowest coverage and lowest sequence quality of the 7 isolates, both of which impare SNP calling.)
+    \item False negatives in $BCDE$ make such positions appear \emph{non-}concordant.  For our purpose, this makes our statistic more conservative since it can only deflate a statistic that we argue is nevertheless unexpectedly large.
+    \item False positive calls in $A$ are conservatively treated, as well: barring simultaneous false-positive calls in all of $BCDE$, such a position will appear non-concordant, again deflating the statistic.  The \emph{false} positive rates in $B,C,D$ and $E$ are unknown, but cannot exceed SAMTOOLS \emph{total} positive rate, which is below 1\% in all 7 isolates, suggesting a simultaneous $BCDE$ false positive rate $<10^{-8}$, which will have a negligible effect.
+    \item A potentially more serious issue is a true positive in $A$ aligned to false positives in $BCD$ and/or $E$.  (I.e., a position that is polymorphic in the population and heterozygous in A, under the HWE null model is likely to be homozygous for one of the two alleles in one or more of $BCDE$; false positive SNP calls in all of those isolates would make the site appear concordant, i.e., provide evidence against the null model.) However, (a) my impression is that SAMTOOLS is more prone to false negative calls than to false positive calls (see Section~\ref{sec:refined}), and (b) we would need a high rate of false positives to turn a truely heterozygous but non-concordant $A$ call into a false ``concordant'' call---I'd expect at most half (especially given point ~\ref{item:neutral} above) of $BCDE$ to be heterozygous, but all would need to be falsely declared heterozygous. Such a high false positive rate on $BCDE$ seems unlikely (see previous bullet), and would likely be counterbalanced by a similarly increased rate of false positives on $A$, which, as noted, tend to deflate our statistic (previous bullet again). 
+% Additionally, as noted in item~\ref{item:neutral} above, ``$2pq \leq 1/2$'' is very conservative, to a degree that likely dominates the SAMTOOLS false-positive error rate. %% correct, I think, but unnecessary complexity.
+    \item Systematic errors.  If there were, say, a sequence-context-dependent bias in the DNA sequencing, mapping and/or SNP-calling that tended to suggest (or hide) a SNP at some position, we're going to systematically over- (or under-) estimate concordant SNPs across isolates.  The discordance of called SNPs between the L- and H-clades and within the H-clade suggests that this is not a major problem, but it is worth noting as a possibility.
+  \end{itemize}
+  \item Discordant nucleotides at ``concordant'' SNP positions.  A ``shared'' SNP at a given position might be, say, G/C in one isolate vs T/C in another, reflecting an unexpected tri-allelic position in the population or a technical sequencing error.  It is inappropriate to count such a ``shared'' SNP position as evidence against the null hypothesis, since it isn't clear that it is truely shared.  Instead, I will identify such inconsistent positions, based on the ``stringency [[2]]'' criteria established above, and treat each as non-concordant.  I.e., a position will be considered to be a ``5-way concordant SNP'' if and only if it was called as a SNP by SAMTOOLS (independently) in all 5 L-clade isolates, \emph{and} shows the same dominant non-reference nucleotide in all 5, according to criteria [[2]] above.  As it turns out, this correction has a very minor effect on the resulting p-value:
+
+<<>>=
+# 'unfil.' => Ignoring "consistency";  'fil.' => Filtering for "consistency":
+fil.fiveway.count   <- sum((snp.tables[[4]]$snp * i4.snps)[union.snps == 1] & consistent[[2]])
+fil.fiveway.percent <- fil.fiveway.count / gyre.count * 100
+fil.p.value <- pbinom(floor(fil.fiveway.count/gyre.count*24)-1, 24, 1/16, lower.tail = FALSE)
+# append new stats to previous table for easy comparison
+consistency.comparison <- 
+  rbind(consistency.comparison, 
+        data.frame(
+          fiveway.count   = fil.fiveway.count,
+          fiveway.percent = fil.fiveway.percent,
+          p.value         = fil.p.value
+        )
+  )
+rownames(consistency.comparison) <- c('unfiltered', 'consistency.filtered')
+consistency.comparison
+@
+
+  In particular, it removes \Sexpr{round(unfil.fiveway.percent-fil.fiveway.percent,1)}\% of five-way consistent positions (only \Sexpr{unfil.fiveway.count - fil.fiveway.count} of \Sexpr{unfil.fiveway.count} positions), and still shows a highly significant p-value.
+
+  \item ``$P(E[X]) \neq E[P(X)]$''.  I'm expressing this poorly, but finding the p-value based on the \emph{expected} number of concordant positions is somewhat non-standard.  A more typical set-up would use the \emph{actual} value of some statistic, then calculate the probability of observing a value that extreme (or more extreme) under the null model.  The fundamental problem is that we have thousands of SNPs, but I don't see an easy way to use more than 24 of them at a time, because potential genetic linkage seemingly destroys statistical independence, which is key to most simple analyses.  
+% (An exception, albeit with a weak p-value, is subsection~\ref{subsec:chebyshev}.)  
+A somewhat more formal, but still non-standard, approach is the following.  Suppose we randomly sample one SNP per chromosome and count the number $X$ of them that are 5-way concordant.  What I outlined above calculated the p-value based on $E[X]$, the expected value of $X$, i.e., $P(E[X])$.  Alternatively, we can calculate $E[P(X)]$, the expected p-value.  (They are not the same.)  In effect, this averages the p-values that would be seen over many different randomly-sampled sets of 24 SNPs.  This is not difficult to calculate.  First, the probability that we would observe $0 \leq i \leq 24$ concordant positions in a sample of 24, given that \Sexpr{format(fil.fiveway.percent,digits=4)}\% of positions are concordant follows this binomial distribution:
+
+<<>>=
+x.equals.i.distribution <- dbinom(0:24, 24, fil.fiveway.percent/100)
+print(x.equals.i.distribution, digits=3)
+@
+
+Second, the p-value corresponding to $0 \leq i \leq 24$ observed concordant positions also follows a different binomial distribution:
+
+<<>>=
+p.val.of.x.equals.i <- c(1, pbinom(0:23, 24, 1/16, lower.tail = F))
+print(p.val.of.x.equals.i, digits=3)
+@
+
+Finally, the expected (or ``average'') p-value is just the weighted average of the latter values, weighted by the former:
+
+<<>>=
+e.of.p.of.x <- sum(x.equals.i.distribution * p.val.of.x.equals.i)
+e.of.p.of.x
+@
+
+This is still highly significant, but weaker than the $P(E[X])$ analysis, basically because $X<E[X]$ has a fair probability of occurring, and the corresponding p-value $P(X)$ rises rapidly as $X$ declines.
+
+Another way to look at the numbers:
+
+<<>>=
+pvdf <- data.frame(x.density=x.equals.i.distribution,
+                   x.cdf=cumsum(x.equals.i.distribution),
+                   pval.of.x=p.val.of.x.equals.i)
+print(pvdf, digits=4)
+@
+
+E.g., row 9 in that table says that the concordance rate (\Sexpr{round(fil.fiveway.percent)}\%) is so high that a sample of 24 SNPs will almost always have 9 or more five-way concordant positions (probability of fewer is only \Sexpr{format(pvdf[9,2],digits=4,scientific=-4)}), while under the null model, seeing 9 or more is very unlikely (probability at most \Sexpr{format(pvdf[9,3],digits=4,scientific=-4)}).  
+***AM I OFF-BY-ONE INTERPRETING ROW 9 HERE??***  
+% **DOES STRINGENCY[[2]] DO WHAT I SAID??**  -- yes; wlr 6/21/2017.
+
+\end{enumerate}
+
+\subsection{Notes}
+
+In earlier drafts, an analog of the above analysis was based on the concordance of \emph{refined} SNPs.  This now seems to me to be questionable, since the ``refined'' SNP calling makes SNPs called across L-clade non-independent. OTOH, the above analysis seems valid: SAMTOOLS was run on each isolate independently, and likewise ``criterion [[2]]'' is evaluated independently in each strain, and is being used here solely to remove SNP predictions, not to add them.  ``Systematic errors'' as outlined above remain a potential problem, but again discordance with/within H-clade suggests that this is of limited concern.
+
+For completeness, I did a similar analysis including a sample of H-clade comparisons: Gyre vs Italy, NY vs Italy, NY vs Italy+Wales, and of Italy vs Wales.  As expected, none of these show a statistically significant p-value, although the $\approx40\%$ concordance in the 2-way comparisons, while $<1/2$ as predicted, is a bit higher than I expected based on ``neutral theory implies many rare variants.''  (I did not bother to include ``criterion[[2]] filtering'' in these calculations.)
+
+<<>>=
+# 'gi.twoway' => gyre vs italy 2-way concordance;
+# 'ni.twoway' => new york vs italy 2-way concordance; 
+# not bothering with criterion[[2]] filtering
+gi.twoway.count   <- sum(snp.tables[[4]]$snp * snp.tables[[6]]$snp)
+gi.twoway.percent <- gi.twoway.count / gyre.count * 100
+gi.p.value <- pbinom(floor(gi.twoway.count/gyre.count*24)-1, 24, 1/2, lower.tail = FALSE)
+ny.count <- sum(snp.tables[[7]]$snp)
+ni.twoway.count   <- sum(snp.tables[[7]]$snp * snp.tables[[6]]$snp)
+ni.twoway.percent <- ni.twoway.count / ny.count * 100
+ni.p.value <- pbinom(floor(ni.twoway.count/ny.count*24)-1, 24, 1/2, lower.tail = FALSE)
+niw.threeway.count   <- sum(snp.tables[[7]]$snp * snp.tables[[6]]$snp * snp.tables[[3]]$snp)
+niw.threeway.percent <- niw.threeway.count / ny.count * 100
+niw.p.value <- pbinom(floor(niw.threeway.count/ny.count*24)-1, 24, 1/4, lower.tail = FALSE)
+it.count <- sum(snp.tables[[6]]$snp)
+iw.twoway.count   <- sum(snp.tables[[6]]$snp * snp.tables[[3]]$snp)
+iw.twoway.percent <- iw.twoway.count / it.count * 100
+iw.p.value <- pbinom(floor(iw.twoway.count/it.count*24)-1, 24, 1/2, lower.tail = FALSE)
+consistency.comparison <- 
+  rbind(consistency.comparison, 
+        data.frame(
+          fiveway.count   = c(gi.twoway.count,   ni.twoway.count,   niw.threeway.count,   iw.twoway.count),
+          fiveway.percent = c(gi.twoway.percent, ni.twoway.percent, niw.threeway.percent, iw.twoway.percent),
+          p.value         = c(gi.p.value,        ni.p.value,        niw.p.value,          iw.p.value)
+        )
+  )
+colnames(consistency.comparison)[1:2] <- c('552232way.count', '552232way.percent') # old col names misleading
+rownames(consistency.comparison)[3:6] <- c('gyre.vs.italy', 'new.york.vs.italy',   # new rows
+                                           'ny.vs.it.plus.wales', 'it.vs.wales')
+consistency.comparison
+@
+
+% Oh, crap, the following is bogus.  1st, what I called std dev is actually variance, so the math is  
+% wrong, but much more seriously, the formula used for variance is only valid for *independent*  
+% indicator variables, which these certainly aren't.
+% \subsection{Chebyshev}
+% \label{subsec:chebyshev}
+% < < echo=F > > =
+% ttt <- (fil.fiveway.count-gyre.count/16)/(gyre.count/16*15/16)
+% @
+% Let $X_i$ be an indicator variable for concordance of the $i$-th SNP in the template.  They are not independent, but each has $E[X_i] \leq 1/16$, and so their sum $X$ has expected value at most $\Sexpr{gyre.count}/16=\Sexpr{gyre.count/16}$, and standard deviation $\Sexpr{gyre.count}(1/16)(1-1/16) = \Sexpr{gyre.count/16*15/16}$.  Yet we observe \Sexpr{fil.fiveway.count} 5-way concordant SNPs, which is approximately \Sexpr{ttt} standard deviations above the mean.  By Chebyshev's inequality, $P(|X-E[X]|\geq \Sexpr{ttt}\sigma) \leq \frac{1}{\Sexpr{ttt}^2}=\Sexpr{1/ttt^2}$.  This is ``statistically significant'' and, although much weaker than the earlier results, avoids the linkage/independence and ``expected p-value'' issues.
+
+\subsection{P-Value: The Bottom Line}
+So, what to say in the body of the paper?  
+%Chebyshev is the simplest to explain and has the fewest assumptions, but is pretty weak for a genome-wide result.  
+$E[P(X)]$ is highly significant, and conservative, but complex to explain.  $P(E[X])$ is simpler to explain, but may be criticized as misleading if we aren't very careful in that explanation.  I'm slightly leaning towards the last option, but want to sleep on it and draft the key sentence or two before settling.
+
+\section{Sharing}
+The following analysis looks at the sharing patterns among the consistent SNPs.  I assume that shared SNPs reflect
+shared ancestry, and that SNPs accumulate slowly over time.  Then, in outline, the story is consistent with what we have
+seen in other analyses---there seem to be 3 groups: 1013 (Wales) in one, 3367 (Italy) in another, and the other 5 in a
+third, with some hints as to the order of divergence.  A caveat is that in a sexual population, non-shared SNPs do not
+immediately imply non-shared ancestry; they may merely reflect Hardy-Weinberg capturing a homozygous 
+state in one isolate vs the other.  (Or read errors, etc.)  Thus, if we are right that the H-isolates retain sex, 
+then the large number of ``private'' SNPs in H may be at least partially due to HWE.
+
+Analysis is broken into cases based on how many strains share a particular SNP.
+
+\subsection{Code}
+To categorize SNPs by sharing patterns, first convert the 7-way consistent sharing pattern into a 7-bit binary number,
+and tabulate based on that:
+
+%# snp.counts <- NULL ### lapply(non.refs,function(nr){apply(nr > 0, 1, sum)})  ###NO LONGER USED
+<<>>=
+# convert (n x 7) 0-1 matrix to n vector of 0-127
+tobin <- function(x){
+  bin <- integer(nrow(x)) # initialized to 0
+  for(i in 1:7){
+    bin <- bin*2 + as.integer(x[,i]>0)
+  }
+  return(bin)
+}
+
+# get full set of patterns
+snp.pattern.all <- lapply(non.refs,tobin)
+# prune to just the consistent ones
+snp.pattern <- snp.pattern.all
+for(i in 1:3){
+  snp.pattern[[i]][!consistent[[i]]] <- NA
+}
+
+# analogous to built-in ``table'' but simpler.  Count entries in an integer
+# vector sharing values in a (smallish) range.  Result is a 2-column matrix with
+# the shared values in col 1 and count of occurrences of that value in col 2.
+# Out-of-range values cause subscript error.
+mytable <- function(vec, therange=range(vec,na.rm=T)){
+  counts <- matrix(0,nrow=therange[2]-therange[1]+1,ncol=2,dimnames=list(NULL,c('val','count')))
+  counts[1:nrow(counts),1] <- therange[1]:therange[2]
+  for(i in 1:length(vec)){
+    if(!is.na(vec[i])){
+      counts[vec[i]-therange[1]+1,2] <- counts[vec[i]-therange[1]+1,2] + 1
+    }
+  }
+  return(counts)
+}
+
+pattern.counts <- lapply(snp.pattern, function(x){mytable(x,c(0,127))})
+@
+
+To display the results, build a data frame whose i-th row, $0 \leq i \leq 127$ shows one of the 128 possible sharing
+patterns, with counts of the numbers of consistent, shared SNPs with that pattern according to criteria c1-c3.
+
+<<>>=
+tobitvec <- function(x){
+  bitvec <- integer(7)
+  for(i in 7:1){
+    bitvec[i] <- x %% 2
+    x <- x %/% 2
+  }
+  return(bitvec)
+}
+
+flg <- function(x){
+  return(ifelse(x==1,'X',''))
+}
+
+pat.summary <- function(listOfTbls){
+  mydf <- data.frame(pat=0:127,sharedBy=NA,
+                     tp1007='',tp1012='',tp1013='',tp1014='',tp1015='',tp3367='',tp1335='',
+                     count1=NA,count2=NA,count3=NA,count4=NA,stringsAsFactors=F)
+
+  for(i in 1:128){
+    bvec <- tobitvec(i-1)
+    mydf[i,'sharedBy']=sum(bvec)
+    mydf[i,'tp1007']=flg(bvec[1])
+    mydf[i,'tp1012']=flg(bvec[2])
+    mydf[i,'tp1013']=flg(bvec[3])
+    mydf[i,'tp1014']=flg(bvec[4])
+    mydf[i,'tp1015']=flg(bvec[5])
+    mydf[i,'tp3367']=flg(bvec[6])
+    mydf[i,'tp1335']=flg(bvec[7])
+  }
+
+  for(i in 1:length(listOfTbls)){
+    tbl <- listOfTbls[[i]]
+    if(!is.null(tbl)){
+      mydf[,9+i] <- tbl[,2]  ## count1/2/3/4 are columns 10/11/12/13 in mydf
+      #for(j in 1:length(tbl)){
+      #  k <- as.integer(rownames(tbl)[j]);
+      #  mydf[k+1,9+i] <- tbl[j]  ## count1/2/3 are columns 10/11/12
+      #}
+    }
+  }
+
+  mydf$pat <-as.octmode(mydf$pat)  # display bit pattern in octal
+  return(mydf)
+}
+
+pat.summaries <- pat.summary(pattern.counts)
+@
+%%< < > > =
+%%pat.summaries[order(pat.summaries$sharedBy),]
+%%@
+
+\subsection{Sanity Checks}
+Some sanity checking: table sums equal to number of consistent positions?
+
+<<>>=
+all(consistent.count == apply(pat.summaries[,10:13],2,sum))
+@
+
+More sanity checking: visually inspect a pattern with small counts, specifically pattern 12, i.e., consistent SNPs
+shared by only strains 1014 and 1015 (2nd and 3 rows from bottom, binary code $12=2^3+2^2$).  There are only 10 such
+positions on Chr1.  Chr1 2524239 has pattern 12 under criteria c1 and c2 but not c3; Chr1 1088766 has in c2 only.  Both
+look good.  Neither position is a \emph{called} SNP except in 1015.  However, all but 1 nonreference read agree with the
+called SNP (the exception being one read in Wales).  Both 1014 and 1015 have at least 2 non-reference reads, comprising
+at least 5\% of coverage, and in both strains, those reads are on the same non-reference base, satisfying criterion c2.
+The other strains have higher coverage and/or lower non-reference counts, so they do not satisfy c2.  Position 2524239
+also satisfies c1, but not c3, since 2 reads out of 35 is below the 10\% threshold.  (It is pattern 4 inder c3, i.e., a
+SNP private to 1015.)  Position 1088766 is also pattern 4 under c3 (2 reads out of 56 in 1335 is below both thresholds),
+and it is not consistent under c1, since the single A read in 1013 is discordant with the other non-reference reads.
+
+<<>>=
+unlist(lapply(snp.pattern,function(x){sum(x==12,na.rm=T)}))
+
+sp1 <- snp.pattern[[1]]==12
+sp2 <- snp.pattern[[2]]==12
+sp3 <- snp.pattern[[3]]==12
+sp4 <- snp.pattern[[4]]==12
+c(sum(sp1,na.rm=T), sum(sp2,na.rm=T), sum(sp3,na.rm=T), sum(sp4,na.rm=T))
+
+r1 <- rownames(non.refs[[1]])[which(sp1)]
+r2 <- rownames(non.refs[[2]])[which(sp2)]
+r3 <- rownames(non.refs[[3]])[which(sp3)]
+r4 <- rownames(non.refs[[4]])[which(sp4)]
+
+r2
+
+c1 <- as.integer(unlist(lapply(strsplit(r1[1:min(20,length(r1))],':',fixed=TRUE),function(x){x[2]})))
+c2 <- as.integer(unlist(lapply(strsplit(r2[1:min(20,length(r2))],':',fixed=TRUE),function(x){x[2]})))
+c3 <- as.integer(unlist(lapply(strsplit(r3[1:min(20,length(r3))],':',fixed=TRUE),function(x){x[2]})))
+c4 <- as.integer(unlist(lapply(strsplit(r4[1:min(20,length(r4))],':',fixed=TRUE),function(x){x[2]})))
+
+c1
+c2
+c3
+c4
+seecounts(c2,snp.tables=snp.tables)
+@
+
+Position 1088766, however, in a good example of the situation that motivated this analysis---one strain has a G/C SNP
+and 5 of the other 6 strains have nonreference reads consistent with that SNP.  Although, excluding 1015, the
+nonreference read counts are not high enough to justify a SNP call in any strain considered in isolation, the fact that
+they \emph{consistently} agree with the 1015 SNP suggests that they are real.  One alternative hypothesis is that there
+is some sequence-dependent bias at this locus that favors misreading a G as a C.  On the other hand, one could equally
+well posit a shared SNP, and a locus-dependant bias that \emph{supresses} C reads, explaining the unbalanced readout
+that we observe.  However, it is hard to reconcile either view with the significant strain-specific patterns that we see
+in the shared SNPs (as seen below).  I think a more likely explanation is that (a) there are some number of relatively
+rare SNPs present in each of the sampled populations, (b) some of these SNPs happened to be present in one or two cells
+of the roughly 5-10 cells that we believe constituted the founding population of the culture grown for sequencing, and
+(c) stochastic effects during culture growth and during sequencing may have further perturbed the apparent frequency of
+each variant, but the bottom line is that the above-threshold presence of consistent non-reference reads is evidence for
+shared SNPs at the population level (and the proportions of such reads represent estimates of the population-level
+frequencies of the variants, albeit a noisy estimate at any specific position).
+
+{\footnotesize
+An aside: I was curious to see whether there is any consistent pattern to positions that are called consistent SNPs in all but Italy, so I repeated the above, basically.  My summary is that coverage in Italy tends to be below average in these positions, but otherwise they don't stand out.  For the record:
+
+<<size='scriptsize'>>=
+abit <- snp.pattern[[2]]==125
+abit[is.na(abit)]<-F
+sum(abit)
+rabit <- rownames(non.refs[[2]])[which(abit)]
+rabits <- rabit[1:20]
+cabit <- as.integer(unlist(lapply(strsplit(rabits,':',fixed=TRUE),function(x){x[2]})))
+cabit
+seecounts(cabit,snp.tables=snp.tables)
+@
+}
+
+More sanity: there are 83 sites on Chr1 shared by zero strains in the tightest condition.  (I.e., SAMTOOLS called it a
+SNP, but the read counts/proportions fall below our 3rd threshold).  Are they due to low coverage?  Seemingly yes:
+
+<<>>=
+zp3 <- snp.pattern[[3]] == 0
+zr3 <- rownames(non.refs[[3]])[which(zp3)]
+zc3 <- as.integer(unlist(lapply(strsplit(zr3[1:min(100,length(zr3))],':',fixed=TRUE),function(x){x[2]})))
+zc3
+seecounts(zc3[1:5], snp.tables=snp.tables)
+@
+
+
+\subsection{Main Analysis}
+Turning to the main analysis, there is a large increase in the number of consistent positions between the loose and
+medium stringency levels; medium and tight are similar in most respects.  The likely interpretation is that the loose
+criterion is including many ``SNPs'' induced by read errors, and that either of the tighter criteria are successfully
+filtering them out.  In the interest of simplicity, the narrative below will focus on the shared SNPs at the medium
+stringency level (the ``count2'' column in the data frame), although the numbers for all three (sometimes all 4) are
+displayed.  Also note that the prose and some comments in the code were based on the Chr1 analysis, and so may
+occasionally be off-target for the whole-genome data.
+
+<<>>=
+# Show a subset of pat.summaries, optionally with totals of count_i in last row, and optionally 
+# aggregating low-count rows as ``Other''
+#
+#   sharedBy=c(2,4) selects SNPs shared by 2 or 4 strains,
+#   subset=as.octmode('35') select those with sharing pattern a subset (optionally proper) of this
+#   split=as.octmode('14') additionally restricts to patterns stradling split/subset minus split
+#   c2.thresh=42 suppresses printout of rows with count2 < 42
+#   restrict.to=c(0,42,127) restrict to these 3 rows
+showgroup <- function(p.summ=pat.summaries, sharedBy=0:7, subset=127, split=NULL, proper.subset=F, 
+                      total=T, c2.thresh=0, fourteenth=F, restrict.to=NULL){
+  # pick just those bit patterns that are subsets of 'subset'
+  pick <- bitwAnd(0:127,bitwNot(subset))==0
+  if(proper.subset){
+    pick[subset+1] <- F
+  }
+  if(!is.null(split)){ # AND that stradle left/right subtrees
+    cosplit <- bitwAnd(subset,bitwNot(split))
+    pick <- pick & bitwAnd(0:127,split)!=0 & bitwAnd(0:127,cosplit)!=0
+  }
+  # and have desired shareBy counts
+  pick <- pick & (p.summ$sharedBy %in% sharedBy)
+  # and are among the set of interest
+  if(!is.null(restrict.to)){
+    pick <- pick & (0:127 %in% restrict.to)
+  }
+  # find rows with low counts
+  pick.low <- pick & (p.summ$count2 < c2.thresh)
+  # now show them
+  show <- p.summ[pick & ! pick.low,]
+  # rename columns just to narrow the printouts
+  colnames(show) <- c('Pat','ShrBy','1007', '1012', '1013', '1014', '1015', '3367', '1335', 
+                      'count1', 'count2', 'count3','count4')
+  show[,1] <- format(show[,1])  # convert octal col to char so can override in last row(2)
+  nlow <- sum(pick.low)
+  if(nlow > 0){
+    n <- nrow(show)+1
+    lows <- apply(p.summ[pick.low,10:13],2,sum)
+    show[n,10:13] <- lows
+    show[n,1:9] <- ''
+    row.names(show)[n] <- 'Other'
+    if(fourteenth){
+      # do this: add 14th col just to hold this comment:
+      show <- cbind(show,' '='', stringsAsFactors=F)
+      show[n,14] <- paste('(', nlow, 'rows w/ c2 <', c2.thresh, ')')
+    } else {
+      ## or this (looks a bit funky, but fits across page without line-wrap): 
+      show[n,1:8] <-c('(', nlow, 'rows', 'w/', 'c2', '<', c2.thresh, ')')
+    }
+  }
+  if(total){
+    n <- nrow(show)+1
+    tots <- apply(show[,10:13],2,sum)
+    show[n,10:13] <- tots
+    show[n,1:9] <- ''
+    row.names(show)[n] <- 'Total'
+    if(ncol(show)==14){show[n,14]<-''}
+  }
+  return(show)
+}
+@
+
+First, are there any SNPs that are not ``consistent SNPs?''  Yes, a few in c3.  As noted above, they seem to be mainly
+low-coverage positions.
+
+<<>>=
+showgroup(pat.summaries,0,total=F)  # chr1 totals: 0 0 83
+@
+
+Next, look at completely shared SNPs, those found in all 7 strains.
+
+<<>>=
+showgroup(pat.summaries,7,total=F) # Chr1 count1 = 8593, count2 = 7054, count3 = 4790 c4=1641
+@
+
+I.e., of the
+  \Sexpr{consistent.count[2]}
+consistent positions,
+  \Sexpr{pat.summaries[pat.summaries$pat==127,'count2']}
+or
+  \Sexpr{round(pat.summaries[pat.summaries$pat==127,'count2']/consistent.count[2]*100,1)}\%
+are shared by all 7 strains.
+
+Next look at singletons, aka private SNPs---SNPs that are called in one strain and no other strain has a significant
+number of non-ref reads at that position. Presumably these are variants that arose in a given population after it
+separated from the others.
+
+<<>>=
+showgroup(pat.summaries,1)  # chr1 totals: 9669  18865  19670  23574
+@
+
+The import of shared/private SNPs changes between sexual and asexual populations.  Presumably asexuals 
+slowly gain and rarely lose private SNPs; shared ones predate separation of the lineages.  In sexual 
+lineages, however, SNPs may be rather freely ``gained'' or ``lost,'' merely by recombination (converting 
+between homo- and heterozygous in the sample we sequenced). Thus, the low private counts for the 5 
+L-isolates compared to the large count of het positions overall suggest that (a) they are asexual, 
+and (b) none of them has been isolated from the others for very long (if at all).  Conversely, the 
+high counts for Italy and Wales suggest that (a) if asexual, they have been separated from each other 
+and from the rest for a long time, but (b) if sexual, there is little surprise: we have $\approx$160K 
+SNPs shared between the two (90K just in those two (below), plus 70K shared by all 7), and $\approx$90K 
+additional positions that are het in one but not the other.  These are close to, but not exactly equal 
+to, the 1:2:1 ratios we would naively expect from two samples of a single HWE population.  The most 
+parsimonious explanation seems to be that the H-clade is sexual, but perhaps some het positions private 
+to each population separates them.
+
+Aside: counts of ``consistent'' SNPs minus these singletons yeilds count of shared SNPs:
+
+<<>>=
+singlets <- apply(pat.summaries[pat.summaries$sharedBy==1,10:13],2,sum)
+rbind(consistent=consistent.count,singlets=singlets,shared=consistent.count-singlets)
+@
+
+The slightly higher count of shared positions in the medium case further supports this choice for subsequent analysis.
+
+Next look at consistent SNPs shared between just a pair of isolates.
+
+<<>>=
+showgroup(pat.summaries,2) # chr 1 counts: 7641   9549   9472  6924
+@
+
+I.e., of the \Sexpr{sum(pat.summaries[pat.summaries$sharedBy==2,11])} paired SNPs, \Sexpr{pat.summaries$count2[19]} or
+\Sexpr{round(pat.summaries$count2[19]/sum(pat.summaries[pat.summaries$sharedBy==2,11])*100,1)}\% are found between Italy
+and Wales, with comparatively few shared between any other pairs (only).
+%% \emph{not} including one of the European isolates.
+
+SNPs shared among exactly 3 isolates are relatively rare.  (The 5 trios containing both Italy and Wales predominate in
+the loose set, probably because they share many pairs that become triples with the addition of a few read errors.)
+
+<<>>=
+showgroup(pat.summaries,3) # chr 1 counts: 1438    294    671  1034
+@
+
+Four-way sharing is more common, but dominated by the coastal (i.e., non-Gyre) L-clade isolates.  This is likely a
+reflection of the strong 5-way sharing among the L-clade, from which the Gyre commonly drops out due to the lower
+coverage/higher error rate in that sequencing run.
+
+<<>>=
+showgroup(pat.summaries,4) # chr 1 counts: 564   1346   2552  3479
+@
+
+Five-way sharing is much more common, and is strongly dominated by the 5 L-clade isolates.
+
+<<>>=
+showgroup(pat.summaries,5) # chr 1 counts: 3969   5047   4624  6125
+@
+
+Six-way sharing is also common, with the sets \emph{ex}cluding Gyre, Italy, or Wales having the most mutually-shared SNPs.
+
+<<>>=
+showgroup(pat.summaries,6) # chr 1 counts:  4166   4741   5312  4722
+@
+
+\section{Trees}
+So, overall, the picture looks like a long shared history
+  (\Sexpr{pat.summaries[pat.summaries$pat==127,'count2']} 7-way shared positions),
+followed by a split of the 5 L-isolates from the 2 H-isolates, then a long shared history in the 5
+  (\Sexpr{pat.summaries$count2[1+strtoi('0155')]} quintuples),
+in parallel with a long shared history in H-
+  (\Sexpr{pat.summaries$count2[1+strtoi('0022')]} pairs),
+then separate histories in Italy and Wales
+  ($>$\Sexpr{min(pat.summaries$count2[1+strtoi('0020')],pat.summaries$count2[1+strtoi('0002')])} 
+  ``private'' SNPs in each, although again if they are sexual, many of these just reflect HWE),
+and very limited differentiation among the 5 L-isolates.  
+
+Branch lengths of course depend on filtering criteria used (and, of course, full vs Chr1 differ by 
+about a factor of 10), but the tree \emph{topology} appears to be fairly stable.  Various versions 
+are drawn below, exactly to explore how robust this story is.  I think we should go with ``medium 
+stringency'' SNP filtering (based on un-qfiltered reads).
+
+NOTE: Much of this analysis make less sense for q-filtered read data, since (a) the point of the SNP 
+filtering was to try to correct for noise in the raw reads, which may (or may not; haven't looked 
+closely, yet) be largely fixed by qfiltering
+(e.g., ``loose'' or no SNP filtering may be more appropriate, post-q-filtering, esp. if we had 
+re-run SAMTools to call SNPs based on the q-filtered reads), and 
+(b) tree topology \emph{does} appear to change, in that Gyre's coverage has been so sharply reduced 
+by qfiltering that it clearly stands aside from the others (and that's confirmed by bootstrap), but 
+this also seems to be clearly a technical rather than a biological artifact.  SO, code below will 
+run on q-filtered data, but \emph{is not tuned to it}.  Likewise, most comments in the prose below were 
+made to describe the un-q-filtered data, and \emph{are misleading and in some cases flatly wrong} for 
+qfiltered data, but it doesn't seem worthwhile to bother with a rewrite...
+
+Trees are coded in newick format, which doesn't seem to tolerate line-breaks; print with line-wrap:.
+
+<<>>=
+# wrap a long char string across multiple lines in printout
+cat.hardwrap <- function(str,width=80){
+  while(nchar(str)>width){
+    cat(substr(str,1,width),'\n')
+    str <- substr(str,width+1,nchar(str))
+  }
+  cat(str,'\n')
+}
+@
+
+
+Trees are built as follows.   Code for drawing, especially, is specific to the topology of the medium tree, and placement of some of the figure elements have been hand-optimized for this case; drawings for the other variants will not be as pretty.
+
+<<size='scriptsize'>>=
+# set up for tree figs
+
+# the newick parser in ape seems to be confused by commas and parens in
+# tip names, and blanks are not allowed, so replace by *, <, >, _, resp.
+newick.name <- function(name){
+  name <- gsub(' ', '_', name, fixed=TRUE)
+  name <- gsub(',', '*', name, fixed=TRUE)
+  name <- gsub('(', '<', name, fixed=TRUE)
+  name <- gsub(')', '>', name, fixed=TRUE)
+  return(name)
+}
+# undo above changes
+newick.name.undo <- function(name){
+ #name <- gsub('_', ' ', name, fixed=TRUE) # unnecessary; ape plot routine handles this one
+  name <- gsub('*', ',', name, fixed=TRUE)
+  name <- gsub('<', '(', name, fixed=TRUE)
+  name <- gsub('>', ')', name, fixed=TRUE)
+  return(name)
+}
+
+# make a newick string from tree;  see it below
+# 'pre' is prefixed to ccmpid; 'nb' optionally included; 
+# 'alt' can be used instead of pre/ccmp/nb/where for less formal labeling 
+# 'newstyle'==T => new node label: [nb_]where[(pre-less-id)]
+# 'newstyle'==F => old node label: [nb_][pre id]where
+newickize <- function(tree,pre='CCMP',nb=TRUE,alt=F,newstyle=TRUE){
+  if(is.null(tree$where)){
+    # not a leaf; paste together newick from subtrees
+    sub1 <- newickize(tree$sub1,pre=pre,nb=nb,alt=alt,newstyle=newstyle)
+    sub2 <- newickize(tree$sub2,pre=pre,nb=nb,alt=alt,newstyle=newstyle)
+    new <- paste( '(', sub1, ',', sub2, ')', sep='')
+    if(!is.null(tree$length)){
+      # internal node, add length
+      return(paste(new, ':', tree$length, sep=''))
+    } else {
+      # top level; escape blanks and add trailing ';'
+      return(paste(gsub(' ', '_', new), ';', sep=''))
+    }
+  } else {
+    # a leaf; build label and branch length
+    if(alt){
+      # label is just alt; if alt omitted, default to where
+      new <- newick.name(ifelse( is.null(tree$alt), tree$where, tree$alt ))
+    } else {
+      if(newstyle){
+        # new node label = [nb_]where[(pre-less-id)]
+        new <- ifelse( nb && !is.null(tree$nb), paste(tree$nb, '_', sep =''), '' )
+        new <- newick.name(paste(new, tree$where, sep=''))
+        new <- ifelse( is.null(tree$id), new, paste(new, '_(', tree$id, ')', sep='') )
+        new <- newick.name(new)
+      } else {
+        # old style node label = [nb_][pre id]where
+        new <- ifelse( nb && !is.null(tree$nb), paste(tree$nb, '_', sep =''), '' )
+        new <- ifelse( is.null(tree$id), new, paste(new, pre, tree$id, '_', sep='') )
+        new <- newick.name(paste(new, tree$where, sep=''))
+      }
+    }
+    #add length to either
+    new <- paste(new, ':', tree$length, sep='') 
+  }
+  return(new)
+}
+
+# Make a tree as nested lists, **based on the chr1, count2 topology**, but using any of the counts. 
+#   Internal nodes have subtrees sub1/2 and length
+#   Root has sub1/2, but no length
+#   Leaves have where, length, optionally, id, alt, nb.  (Omit id for 'outgroup'. Use 'alt' for less formal
+#     labeling in cartoon version; it defaults to 'where'. Use 'nb' to add abcde annotations for legend.)
+# The single parameter v is any of the 4 count vectors contained in pat.summaries (most conveniently
+# indexed in octal).  E.g., make.tree(pat.summaries[,'count2']) reproduces the count2 tree.
+# (This was previously built by hand-pasting the edge lengths; tree.by.hand is retained in appendix 
+# for comparison, & its counts are in comments below).
+#
+make.tree <- function(v){
+  pat.count <- function(pat, pat.counts=v){return(pat.counts[1+strtoi(pat,8)])}
+  thetree <- 
+    list(
+      sub1 = list(
+        sub1 = list(
+          sub1 = list(id=3367, length=pat.count('002'), where='Venice, Italy', alt='Venice'), #8813
+          sub2 = list(id=1013, length=pat.count('020'), where='Wales, UK'),                   #9652
+          length=pat.count('022')),                                                           #9365
+        sub2 =  list(
+          sub1 = list(
+            sub1 = list(  
+              sub1 = list(id=1007, length=pat.count('100'), nb='e', where='Virginia, USA'),    #30
+              sub2 = list(id=1012, length=pat.count('040'), nb='d', where='Perth, W. Australia', alt='Perth'), #61
+              length=pat.count('140')),                                                        #19
+            sub2 = list(
+              sub1 = list(id=1015, length=pat.count('004'),nb='c', where='Washington, USA', alt='Puget Sound'), #207
+              sub2 = list(id=1335, length=pat.count('001'), nb='b', where='New York, USA',   alt='NY'), #41
+              length=pat.count('005')),                                                        #18
+            length=pat.count('145')),                                                          #1005
+          sub2 = list(id=1014, length=pat.count('010'), nb='a', where='N. Pacific Gyre'),      #61
+          length=pat.count('155')),                                                            #3912
+        length=pat.count('177')),                                                              #7054
+      sub2 = list(length=0, where='outgroup')
+    )
+  return(thetree)
+}
+@
+
+Code to plot a tree given newick description.  Again, code is somewhat general, but has some 
+specializations tied to the medium-stringency, full-genome, un-qfiltered data.
+
+<<size='scriptsize'>>=
+# run following 2 lines after an R upgrade
+# update.packages()
+# install.packages("ape")
+library(ape)
+show.tree <- function(newick.str=newick.medium, 
+                      col.edge  ='darkblue', lwd.edge =2,
+                      col.elabel='darkblue',                cex.elabel=0.8, font.elabel=3, 
+                      col.arrow ='red',      lwd.arrow=1.5, cex.arrow =0.9, font.arrow =4,
+                      col.clade ='black',    lwd.clade=1,   cex.clade =1.0, font.clade =3,
+                      col.legbox='beige',                   cex.legend=0.8,
+                      col.tip   ='darkblue',                                font.tip   =4,
+                      plusx=FALSE, pltdebug=FALSE, total.snps=consistent.count[2], 
+                      straight.arrow=FALSE){
+
+  ####
+  #
+  # ADJUST NEWICK & GET LENGTHS, COORDINATES
+  #
+  newick.str.noout <- sub('outgroup','_',newick.str) # Hide outgroup ('_' prints as blank)
+  the.tree <- read.tree(text=newick.str.noout)
+  
+  ## nasty hack: ape's newick parser seems to be confused by commas, () in tip labels, so
+  ## newickize replaced them by '*<>'; before plotting, I want to convert them back, and hope 
+  ## this doesn't break anything else...  And if a revised version of ape changes the internal
+  ## representation of a tree, this may need to be redone.
+  the.tree$tip.label <- newick.name.undo(the.tree$tip.label)
+
+  # extract branch lengths as char string of comma-separated numbers via pattern matching hack:
+  # lengths always preceded by colon
+  lengths.ch <- strsplit(paste(newick.str,':'),'[^0-9][^:]*:')[[1]]
+  
+  # then convert to ints, dropping empty string at front
+  lengths.int <- scan(what=integer(),quiet=T,sep=',',text=lengths.ch[-1]) 
+  
+  # then to data frame with named rows; a..g are terminal branches; others are internal.  
+  # a..e match legend in plot; f/g = wales/italy.  lengths appear in postfix order of 
+  # newick tree, and ape draws the 1st of them at the bottom of the plot.
+  lmed <- data.frame(lengths=lengths.int, 
+                     row.names=c('g','f','fg','e','d','de','c','b','bc','bcde','a','abcde','all','out'))
+  
+  # extract counts needed for legend:
+ #leg.counts <- c(      61, 41,207, 61, 30, 1005,   18, 19) #by hand, medium chr1
+  leg.counts <- lmed[c('a','b','c','d','e','bcde','bc','de'),1]
+  discord <- total.snps - sum(lmed$lengths)
+
+  #tree.labels <- list( ## x,y,text; coords are all picked by eye
+  #   3000, 3.62, paste(lmed['all'  ,1], 'shared by 7', sep='\n'), # 7054
+  #   8900, 5.75, paste(lmed['abcde',1], 'by 5'       , sep='\n'), # 3912
+  #  12000, 1.50, paste(lmed['fg'   ,1], 'shared by 2', sep='\n'), # 9365
+  #  21000, 2.00, paste(lmed['f'    ,1], 'only\nin Wales'),        # 9652 
+  #  21000, 1.00, paste(lmed['g'    ,1], 'only\nin Italy'),        # 8813 
+  #  11500, 4.50, '*')
+  # automating x-placement, below; retain above for comparison...
+  tip <- integer(7)  # x coords of tree tips
+  tip[1] <-sum(lmed[c('all','fg','g'),1])
+  tip[2] <-sum(lmed[c('all','fg','f'),1])
+  tip[3] <-sum(lmed[c('all','abcde','bcde','de','e'),1])
+  tip[4] <-sum(lmed[c('all','abcde','bcde','de','d'),1])
+  tip[5] <-sum(lmed[c('all','abcde','bcde','bc','c'),1])
+  tip[6] <-sum(lmed[c('all','abcde','bcde','bc','b'),1])
+  tip[7] <-sum(lmed[c('all','abcde','a'),1])
+  
+  inode <- integer(5) # x coords of (some) internal nodes
+  inode[1] <- 0                                    # root
+  inode[2] <- lmed['all',1]                        # lca of all
+  inode[3] <- sum(lmed[c('all','fg'),1])           # lca H-clade
+  inode[4] <- sum(lmed[c('all','abcde'),1])        # lca L-clade
+  inode[5] <- sum(lmed[c('all','abcde','bcde'),1]) # lca L-clade, nonGyre
+  tree.labels <- list( ## x,y,text; y coords partially picked by eye
+    sum(inode[c(1,2)])/2, 3.62, paste(lmed['all'  ,1], 'shared by 7', sep='\n'), # 7054
+    sum(inode[c(2,4)])/2, 5.75, paste(lmed['abcde',1], 'by 5'       , sep='\n'), # 3912
+    sum(inode[c(2,3)])/2, 1.50, paste(lmed['fg'   ,1], 'shared by 2', sep='\n'), # 9365
+    (inode[3]+tip[2])/2,  2.00, paste(lmed['f'    ,1], 'only\nin 1013'),         # 9652 
+    (inode[3]+tip[1])/2,  1.00, paste(lmed['g'    ,1], 'only\nin 3367'),         # 8813 
+    sum(inode[c(4,5)])/2, 4.35, '* ')
+
+  
+  tree.labels <- list( ## x,y,text; y coords partially picked by eye
+    sum(inode[c(1,2)])/2, 3.62, paste(lmed['all'  ,1], 'in 7', sep='\n'), # 7054
+    sum(inode[c(2,4)])/2, 5.75, paste(lmed['abcde',1], 'in 5', sep='\n'), # 3912
+    sum(inode[c(2,3)])/2, 1.50, paste(lmed['fg'   ,1], 'in 2', sep='\n'), # 9365
+    (inode[3]+tip[2])/2,  2.00, paste(lmed['f'    ,1], 'only\nin 1013'),  # 9652 
+    (inode[3]+tip[1])/2,  1.00, paste(lmed['g'    ,1], 'only\nin 3367'),  # 8813 
+    sum(inode[c(4,5)])/2, 4.35, '* ')
+  
+  ####
+  #
+  # BOGUS PLOT
+  #
+  # a messy bit: need string widths to set xlim; but strwidth needs x-scale so must plot first. 
+  # M plot completely invisible, overlay 2nd plot via par(new=F...) .
+  #
+  # PROVISIONALLY set x.lim here at about 30% wider than tree; fine tune it for the real plot 
+  # based on strwidth(tip labels) below.
+  #
+  provisional.tree.x.lim <- 1.3 * max(tip) # <== PROVISIONAL plot width
+  plot(0,0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(0,provisional.tree.x.lim), ylim=c(0,7))
+      
+  tiplabel.x <- integer(7)
+  for(i in 1:7){
+    # see warning above about internals of the.tree; labels have '_', printed as ' '.
+    tiplabel.x[i] <- tip[i]+strwidth(gsub('_',' ',the.tree$tip.label[i],fixed=T), font=font.tip)
+  }
+
+  
+  # visually show tip coords & max x to debug placement issues
+  plt.debug <- function(tree.x.lim, tip, tiplabel.x, spx=NULL, spy=NULL){
+    if(pltdebug){ # F to hide/T to show debug
+      cat('Tip labels:', paste(the.tree$tip.label,sep='',collapse='/'), '\n')
+      axis(2) # useful only for placing labels
+      for(i in 1:7){
+        points(c(tip[i],tiplabel.x[i]),c(i,i)) # debug: do I have right tip coordinates?
+      }
+      lines(rep(tree.x.lim,2),c(0,7)) # where is right edge?
+      if(!is.null(spx)){
+        points(spx,spy) # show spline control points, for tweaking
+      }
+    }
+  }
+  
+  plt.debug(provisional.tree.x.lim, tip, tiplabel.x)
+  
+  label.end.H <- max(tiplabel.x[1:2])
+  label.end.L <- max(tiplabel.x[3:7])
+  clade.dx <- strwidth('x') # space between clade marker line and its label
+  xdel <- 3*clade.dx        # space between labeled clade tips and marker line
+  
+  tree.x.lim <- 1.03*(max(tiplabel.x)+xdel)  # <== FINAL plot width
+  tree.y.lim <- 7
+  if(pltdebug){cat('Plot width hacking:', provisional.tree.x.lim, tree.x.lim, tree.x.lim/1.03/max(tip), clade.dx)}
+
+  par(new=T)  # I.e., NOT starting a new plot
+  
+  ####
+  #
+  # REAL PLOT
+  #
+  plot(the.tree, 
+       x.lim = c(0, tree.x.lim),
+       y.lim = c(0, tree.y.lim), 
+       font=font.tip, label.offset=100,             # bold-italic, nudged slightly right
+       tip.color=col.tip, edge.color=col.edge, 
+       edge.width=lwd.edge,
+       edge.lty=c(1,1,1,1, 1 ,1,1,1,1,1,1,1,1,0)    # 5th is bottleneck edge; 14th is outgroup
+      )
+  lines(00+c(0,0),c(3.5,6),col='white',lwd=6)       # Hide vertical line to outgroup
+  axis(1, pos=0.25, at=seq(0,25,by=5)*10^round(log10(max(tip)/25)))
+ 
+  if(pltdebug){text(tip[1]+100, 1.0, 'Venice, Italy (3367)', adj=0, font=font.tip)}
+  
+  ####
+  #
+  # BOTTLENECK ANNOTATION
+  #
+  # spline/elipse control points (spy/y) & tweaks thereto (dx/y)
+  dx <- 0.01 * tree.x.lim
+  dy <- .04
+  spx <- c(7400, 7400, 9900, 10500) # by eye, chr1, for comparison
+  spx <- c(inode[2]+dx,inode[2]+dx,inode[4]-3*dx,inode[4]-dx)
+  spy <- c( 3.8,  3.9,  5.6-dy,   5.6-dy)
+  
+  plt.debug(tree.x.lim, tip, tiplabel.x, spx, spy)
+
+  if(T){
+    #elipse version, defined by rect thru 2 middle pts of spx/y
+    spf<-function(x){
+      ifelse(x <= spx[2], spy[1],
+             ifelse(x >= spx[3], spy[4],
+                    spy[2]+(spy[3]-spy[2])*sqrt(pmax(0,1-((x-spx[3])/(spx[3]-spx[2]))^2))))
+      }
+  } else {
+    # spline version
+    spf <- splinefun(spx,spy,method='hyman')
+  } 
+  serx <- seq(spx[1],spx[length(spx)],length.out=50)
+  sery <- spf(serx)
+  tailx <- spx[1]
+  taily <- spy[1]
+  headx <- spx[4]
+  heady <- spy[4]
+  textx <- (headx+tailx)/2+(headx-tailx)*(-.01)
+  texty <- (heady+taily)/2+(heady-taily)*(-.10)
+  bottle.txt <- "inbreeding\nLoH / LoS"
+  if(!straight.arrow){
+    arrows(headx,heady,headx+tree.x.lim*1e-3,heady, length=.1,col=col.arrow,lwd=lwd.arrow)
+    lines(rev(serx), rev(sery), lty=c(5,1),col=col.arrow, lwd=lwd.arrow)
+    textangle <- 66
+    textadj <- c(0,0)
+  } else {
+    # Tweak positioning slightly; visualize a rectangle from 7-node to base of L-clade;
+    # center text, rotated, on diagonal towards L-clade; ditto the straight arrow.
+    llx <- inode[2] # the aforementioned rectangle
+    urx <- inode[4]
+    lly <- 3.62
+    ury <- 5.75
+    # rect(llx,lly,urx,ury) # show rect for debug
+    textx <- (llx+urx)/2    # center text
+    texty <- (lly+ury)/2
+    textangle <- atan(grconvertY(ury-lly,to='dev')/grconvertX(urx-llx,to='dev'))*360/(2*pi)
+    textadj <- c(0.50, 0.43) #tweak position; ".5" = center in x , ".43" raises, THEN rotate.
+    alpha <- .78 # fraction along diag at which arrow begins
+    beta  <- .95 # ... and ends
+    arrows((1-alpha)*llx + alpha*urx, 
+           (1-alpha)*lly + alpha*ury,
+           (1-beta)*llx  + beta*urx,
+           (1-beta)*lly  + beta*ury, length=.1,col=col.arrow,lwd=lwd.arrow,angle=25)
+  }
+  if(T){
+    text(textx, texty, bottle.txt, srt=textangle, font=font.arrow, cex=cex.arrow, 
+         col=col.arrow, adj=textadj)
+  } else {
+    # experiment at wrapping text along curved path; unpretty, but retain for now, maybe revisit
+    bottlec <- strsplit(bottle,split=NULL)[[1]]
+    for(i in 1:length(bottlec)){
+      text(xser[i],yser[i],bottlec[i], srt=65, font=4, cex=.7, col=col.arrow)
+    }
+  }
+  
+  ####
+  #
+  # CLADE ANNOTATION
+  #
+  clade.L.x <- label.end.L + xdel
+  clade.H.x <- label.end.H + xdel
+  dy <-.33
+  lines(rep(clade.L.x,2),c(3-dy,7+dy),lwd=lwd.clade,col=col.clade)
+  lines(rep(clade.H.x,2),c(1-dy,2+dy),lwd=lwd.clade,col=col.clade)
+  text(clade.L.x+clade.dx,5.0,'L-clade',srt=90,font=font.clade,cex=cex.clade,col=col.clade)
+  text(clade.H.x+clade.dx,1.5,'H-clade',srt=90,font=font.clade,cex=cex.clade,col=col.clade)
+  
+  ####
+  #
+  # LEGEND
+  #
+  # parameter plusx controls whether we try to annotate b/c (+) and d/e (x) sharing in tree; I think
+  # it looks cluttered, rather than adding clarity, so I vote no, but code is here, in case.  "Logic,"
+  # if any, for my symbol choice is that + overlaid on x looks like the * at the next level; this  
+  # analogy is more visible if we use pch 3/4/8 rather than Courier or Helvetica chars, but probably 
+  # should use same in both tree & legend, which will take a modicum of additional work.
+  legend.text <- c('a: only in 1014  ',
+                   'b: only in 1335  ',
+                   'c: only in 1015  ',
+                   'd: only in 1012  ',
+                   'e: only in 1007  ',
+                   '*: shared by bcde',
+                   paste(ifelse(plusx,'+:','  '),'shared by b/c '),
+                   paste(ifelse(plusx,'x:','  '),'shared by d/e ')
+  )
+  
+  legend.text <- c('a: only in 1014 ',
+                   'b: only in 1335 ',
+                   'c: only in 1015 ',
+                   'd: only in 1012 ',
+                   'e: only in 1007 ',
+                   '*: in bcde      ',
+                   paste(ifelse(plusx,'+:','  '),'in bc        '),
+                   paste(ifelse(plusx,'x:','  '),'in de        '),
+                   'Discordant SNPs '
+  )
+  legend.text <- paste(legend.text,format(c(leg.counts,discord),width=4),sep=' - ')
+  legend.text <- paste(legend.text,' ') # add a little more right margin in box
+  opar <- par(family='mono',cex=cex.legend)
+  legend('topright', legend=legend.text, cex=cex.legend, inset=c(0.05,0), bg=col.legbox, box.col=col.legbox)
+  par(opar)
+  if(plusx){
+    points(tree.labels[[16]],tree.labels[[17]]+.14,pch=8,col=col.elabel)
+    points(tree.labels[[16]]+200,tree.labels[[17]]+1,pch=3,col=col.elabel)
+    points(tree.labels[[16]]+200,tree.labels[[17]]-1,pch=4,col=col.elabel)
+  }
+
+  ####
+  #
+  # EDGE LENGTHS
+  #
+  for(i in seq(1,length(tree.labels)-ifelse(plusx,5,2),by=3)){
+    if(F){ # T for \n in edge labels; F to remove (except "by 5")
+      text(tree.labels[[i]], tree.labels[[i+1]], tree.labels[[i+2]])
+    } else {
+      # points(tree.labels[[i]], tree.labels[[i+1]], pch=3,col='green') # for debugging
+      text(tree.labels[[i]], tree.labels[[i+1]], sub('\n([^z])',' \\1', tree.labels[[i+2]]),
+           pos=3, offset=.4, font=font.elabel, col=col.elabel,cex=cex.elabel)
+    }
+  }
+}
+if(FALSE){#for debug convenience
+  pdf(paperfig.path, width=8,height=5,onefile=TRUE,family='Helvetica',fonts='Courier',pointsize=10)
+  show.tree(newick.medium, total.snps=consistent.count[2], pltdebug=F,straight.arrow=T)
+  dev.off()
+}
+@
+<<>>=
+caption <- function(stringency,which.tables=which.snp.tables(string.val=F)){
+  caption.where <- '(UNKNOWN genome subset).'
+  if(which.tables[1]=='Chr1') {caption.where <- 'on Chr1.'}
+  if(which.tables[1]=='full') {caption.where <- 'genome-wide.'}
+  if(which.tables[1]=='trunc'){caption.where <- 'all Chrs.'}
+  cap.stringency <- c(
+    'loose SNP filters.',
+    'medium SNP filters.',
+    'strict SNP filters.',
+    'unfiltered SNPs.')
+  cap <- paste('Tree based on', which.tables[2], 'reads and', cap.stringency[stringency], 
+               ' ``Lengths\'\' are numbers of shared/private SNPs', caption.where) 
+  return(cap)
+}
+@
+
+
+Trees based on all four SNP filtering criteria are shown below.  Their topologies are exactly the
+same, although the branch lengths are different.  In all four, the length of the branch labeled ``*'' is probably
+inflated by lower coverage and higher error rate in 1014, which may mask further legitimate sharing between it and the
+other L-isolates.  The branch lengths among the other 4 are too short for their topology to be convincing without a
+more rigorous analysis (e.g., a bootstrap test), but detail there is irrelevant to the story.
+
+My sense is that the ``medium'' version is the best for the paper, made here and shown in 
+Fig~\ref{fig:tree-paper}.  In theory, this should look exactly like Fig~\ref{fig:tree-medium}, but 
+something is apparently different between Knitr and direct-to-pdf.  (Increasing fig.width in Knitr's 
+chunk headers from 8 (as in the pdf call below) to 9 helps somewhat, but probably still best to make 
+the paper fig directly rather than via Knitr.)
+
+<<size='scriptsize'>>=
+###
+#
+# MAKE PROTOTYPE PDF FOR PAPER, *AND* SAVE DATA NEEDED TO BUILD IT
+#
+w.s.t. <- which.snp.tables()
+if(w.s.t. == 'trunc-unfiltered'){
+  rda.Description <- 'This .rda contains data to generate Fig 3; see shared.snps.rnw for details.'
+  save(rda.Description, w.s.t., pat.summaries, consistent.count, file='Fig3-data.rda')
+  paperfig.path <- paste('figs-mine/paperfig-medium-tree-', w.s.t., '--Fig3proto.pdf', sep='')
+} else {
+  paperfig.path <- paste('figs-mine/paperfig-medium-tree-', w.s.t., '.pdf', sep='')
+}
+pdf(paperfig.path, width=8,height=5,onefile=TRUE,family='Helvetica',fonts='Courier',pointsize=10)
+newick.medium <- newickize(make.tree(pat.summaries[,'count2']))
+show.tree(newick.medium, total.snps=consistent.count[2], pltdebug=F,straight.arrow=T)
+dev.off()
+@
+
+\begin{figure}
+  \hspace*{-1in}%
+  \includegraphics{\Sexpr{paperfig.path}}
+  \caption{Proposed fig. for paper: \Sexpr{caption(2)}}
+  \label{fig:tree-paper}
+\end{figure}
+
+<<size='scriptsize'>>=
+# fig.paths for knitr chunks below;  .h for "hand-made" trees; plain for automatic chr1/full versions
+myfigpath   <- paste(getwd(), '/figs-knitr/newick-', which.snp.tables(), '-', sep='')
+myfigpath.h <- paste(getwd(), '/figs-knitr/newick-', sep='')
+@
+
+Figure~\ref{fig:tree-loose}, i.e., criteria [[1]]:
+
+<<tree-loose,size='scriptsize',fig.width=9,fig.height=5,fig.align='center',fig.path=myfigpath,fig.cap=caption(1),fig.show='hold'>>=
+newick.loose <- newickize(make.tree(pat.summaries[,'count1']))
+show.tree(newick.loose, total.snps=consistent.count[1])
+@
+
+Figure~\ref{fig:tree-medium}, i.e. [[2]]:
+
+<<tree-medium,size='scriptsize',fig.width=9,fig.height=5,fig.align='center',fig.path=myfigpath,fig.cap=caption(2),fig.show='hold'>>=
+# newick.medium <- newickize(tree.by.hand)
+# simple.newick.medium <- newickize(tree.by.hand,alt=TRUE)
+newick.medium <- newickize(make.tree(pat.summaries[,'count2']))
+simple.newick.medium <- newickize(make.tree(pat.summaries[,'count2']),alt=TRUE)
+show.tree(newick.medium, total.snps=consistent.count[2])
+@
+
+Figure~\ref{fig:tree-strict}, i.e. [[3]]:
+
+<<tree-strict,size='scriptsize',fig.width=9,fig.height=5,fig.align='center',fig.path=myfigpath,fig.cap=caption(3),fig.show='hold'>>=
+newick.strict <- newickize(make.tree(pat.summaries[,'count3']))
+show.tree(newick.strict, total.snps=consistent.count[3])
+@
+
+Figure~\ref{fig:tree-unfiltered}, i.e. [[4]]:
+
+<<tree-unfiltered,size='scriptsize',fig.width=9,fig.height=5,fig.align='center',fig.path=myfigpath,fig.cap=caption(4),fig.show='hold'>>=
+newick.unfiltered <- newickize(make.tree(pat.summaries[,'count4']))
+show.tree(newick.unfiltered, total.snps=consistent.count[4])
+@
+
+Some other versions of the trees are included in the appendix.
+
+Counts for all tree edges in the medium tree: 
+
+<<size='scriptsize'>>=
+#pat.summaries[c(128,110,102,6,97,19,9,2,5,33,65,17,3),]
+tree.edges <- c(128,110,102,6,97,19,9,2,5,33,65,17,3)-1
+non.edges <- setdiff(0:127, tree.edges) 
+sg.edges <- showgroup(restrict.to=tree.edges) ; sg.edges
+@
+
+Counts for the top 10 discordant patterns, i.e., SNPs whose sharing pattern does not match any of the bifurcations in the tree:
+
+<<size='scriptsize'>>=
+tenth <- sort(showgroup(restrict.to=non.edges)[-(length(non.edges)+1),'count2'],decreasing=T)[10]
+sg.non.edges <- showgroup(restrict.to=non.edges, c2.thresh = tenth) ; sg.non.edges
+@
+
+And percent of discordant SNPs:
+
+<<size='scriptsize'>>=
+nsge <- nrow(sg.edges)
+discordv <- consistent.count - sg.edges[nsge,c('count1','count2','count3','count4')] ; discordv
+discordv.pct <- round(discordv/consistent.count*100,1) ; discordv.pct
+@
+
+In short, the sharing pattern observed at \Sexpr{discordv$count2} or \Sexpr{discordv.pct$count2}\% of the 
+\Sexpr{consistent.count[2]} medium-stringency consistent SNPs positions observed across all 7 
+isolates are discordant with the medium tree.  (The strict tree has slightly more.)  
+
+A majority of the discordant SNPs fall into one of three patterns: 6-way sharing excluding Gyre 
+(likely a technical artifact since the low coverage in Gyre reduces our power to detect SNPs there), 
+or 6-way sharing excluding one of the two H-isolates (likely a reflection of sexuality in the 
+H-clade---SNP positions in a population in Hardy-Weinberg equilibrium are fairly likely to be 
+homozygous for the reference allele in a given individual).
+
+<<size='scriptsize'>>=
+third.biggest <- sort(showgroup(pat.summaries,6)[-8,'count2'],decreasing=T)[3]
+big.three <- showgroup(pat.summaries,6,c2.thresh = third.biggest); big.three
+big.three.frac <- sum(big.three[1:3,'count2'])/discordv$count2; big.three.frac
+@
+
+\noindent I.e., \Sexpr{round(big.three.frac*100,1)}\% of discordant SNPs fall into one of these three 
+categories.
+
+Out of curiousity: what is the ratio of full genome to Chr 1 branch lengths.  Except for the shortest 
+few, generally $\approx$10x, as expected given the length of Chr 1:
+
+<<size='scriptsize'>>=
+# (vectors derived by editing Newick strings, and in that order)
+print(
+  c(Italy=86155, Wales=95697, IW=89598, Virg=330,     Aust=632,      VA=1296, 
+    Puget=2113,  NY=658,      PNY=480,  four=10059,   Gyre=568,      five=39517, all=69526) / 
+  c(Italy=8813,  Wales=9652,  IW=9365,  Virg=30,      Aust=61,       VA=19, 
+    Puget=207,   NY=41,       PNY=18,   four=1005,    Gyre=61,       five=3912,  all= 7054),
+  digits=3)
+round(genome.length.constants()$genome.length.trunc / genome.length.constants()$chr1.length, digits=4)
+@
+
+\section{Semi-Automated Tree-Building}
+Slightly formalizing the process above: Look for the bifurcation of the 7 strains that maximizes the 
+number of shared SNPs \emph{within} each side of the partition while minimizing the number and 
+fraction of SNPs that are shared by subsets that include at least one strain on each side of the 
+partition.  The 2/5 split is the winner, with 6418 SNPs in confict with that partition (16\% of the 
+39842 SNPs not shared by all 7; Chr1 data).  The runner-up places the Gyre in a group by
+itself (7079 = 18\% in conflict).
+
+<<>>=
+treepart <- function(p.summ=pat.summaries, root=127, verbose=T, stringency='count2'){
+  root.shared <- p.summ[root+1,stringency]
+  df<-NULL
+  for(i in 1:floor(root/2)){
+    if(bitwAnd(i,root)==i && i < root-i){
+      l1 <- showgroup(p.summ,subset=i,split=NULL,proper.subset=F,total=T)
+      l  <- l1[nrow(l1),stringency]
+      r1 <- showgroup(p.summ,subset=root-i,split=NULL,proper.subset=F,total=T)
+      r  <- r1[nrow(r1),stringency]
+      c1 <- showgroup(p.summ,subset=root,split=i,proper.subset=T,total=T)
+      c  <- c1[nrow(c1),stringency]
+      df <- rbind(df, data.frame(pat=i,left=l,right=r,both=l+r,cross=c,all=l+r+c,ratio=c/(l+r+c),
+                                 best='',stringsAsFactors=F))
+    }
+  }
+  df$pat<-as.octmode(df$pat)
+  maxl <- which.max(df$left)
+  maxr <- which.max(df$right)
+  maxb <- which.max(df$both)
+  minc <- which.min(df$cross)
+  minr <- which.min(df$ratio)
+  df$best[c(maxl,maxr,maxb,minc,minr)] <- '<'
+  df$best[maxl] <- paste(df$best[maxl], 'L') # max Left
+  df$best[maxr] <- paste(df$best[maxr], 'R') # max Right
+  df$best[maxb] <- paste(df$best[maxb], 'B') # max Both (L+R)
+  df$best[minc] <- paste(df$best[minc], 'C') # min Cross
+  df$best[minr] <- paste(df$best[minr], 'O') # min ratiO (Cross/(Left+Right+Cross)
+  if(verbose){
+    same <- all(maxl==c(maxr,maxb,minc,minr))
+    cat('root:',       format(as.octmode(root),width=3),
+        '; shared:',   root.shared,
+        '.  max l',    format(as.octmode(df$pat[maxl]),width=3),
+        ', max r',     format(as.octmode(df$pat[maxr]),width=3),
+        ', max both',  format(as.octmode(df$pat[maxb]),width=3),
+        ', min cross', format(as.octmode(df$pat[minc]),width=3),
+        ', min ratio', format(as.octmode(df$pat[minr]),width=3),
+        '. \nAll the same?:',same,
+        '\n')
+    cat('\n')
+  }
+  return(df)
+}
+@
+
+<<>>=
+treepart()
+@
+
+Comparing the 5/2 split to the second-place NPG/rest split (below), the former has fewer pattern instances in conflict
+with the split (6418 vs 7079), as well as somewhat more random distribution of the conflicting patterns (92 vs 62 rows),
+whereas the 1/6 split has the majority of its conflicts (3912 of 7079, or 55\%) concentrated in one pattern---the 5 NE
+strains.  Collectively, these seem to favor the 5/2 split as the correct ``history.''
+
+<<>>=
+showgroup(pat.summaries,split=strtoi('022'), subset=127, proper.subset=T, c2.thresh=100)
+showgroup(pat.summaries,split=strtoi('010'), subset=127, proper.subset=T, c2.thresh=100)
+@
+
+Below is the full summary of shared SNPs that do \emph{not} directly correspond to tree splits, e.g. deep coalescence, independent coincident mutations, false positives/false negatives in the shared SNP calls, loss of SNPs in hemizygous regions, etc.  (Additionally, SAMTools' SNP calls exclude positions it judges to be homozygous, and I think it operates without regard to the reference sequence, so homozygous nonreference positions, while rare except in IT/Wales, often are not called SNPs by SAMTools, but are relevant for this analysis.  Provided the position is called a SNP in some other isolate, the consistency filtering we've done above should recover it, but this is still worth keeping in mind when examining the data.) 
+
+First, here are SNPs that ``coalesce'' on the branch from the LCA of bcde, i.e., shared among some nonempty, proper subset of bcde other than bc or de.  There are 8 such patterns: any of the 4 choose 3 trios plus any of the 4 pairs having exactly one of bc. 
+
+<<>>=
+sg4 <- showgroup(pat.summaries, subset=strtoi('0145'), split=5, proper.subset = F)
+sg4
+sg4n <- nrow(sg4)
+sg4pct <- round(sg4$count2[sg4n-1]/sg4$count2[sg4n]*100,1)
+sg4pct
+@
+
+\noindent
+So, of the \Sexpr{sg4$count2[sg4n]} SNPs found only in bcde, \Sexpr{sg4pct}\% have a sharing pattern consistent with the given tree structure.
+
+Similarly, we analyze patterns relative to the root of the L-clade (14 patterns---any nonempty proper subset of bcde together with a):
+
+<<>>=
+sg5 <- showgroup(pat.summaries,subset=strtoi('0155'), split=8, proper.subset = F)
+sg5
+sg5n <- nrow(sg5)
+sg5pct <- round(sg5$count2[sg5n-1]/sg5$count2[sg5n]*100,1)
+@
+
+I.e., of the \Sexpr{sg5$count2[sg5n]} SNPs found only in abcde, \Sexpr{sg5pct}\% have a sharing pattern consistent with the given tree structure.
+
+Finally, how many SNPs have patterns inconsistent with the 5-2 split, i.e., include at least one strain on each side of the 5-2 split, but not shared by all 7?
+
+<<>>=
+sg7 <- showgroup(pat.summaries, subset=127, split=strtoi('022'), proper.subset=F)
+sg7
+sg7n <- nrow(sg7)
+sg7pct <- round(sg7$count2[sg7n-1]/sg7$count2[sg7n]*100,1)
+sg7pct
+@
+
+A more compact version of that table, showing only the larger counts:
+
+<<>>=
+thresh <- signif(.02 * sg7$count2[sg7n],1)
+thresh
+showgroup(pat.summaries, subset=127, split=strtoi('022'), proper.subset=F, c2.thresh = thresh)
+@
+
+So, of the \Sexpr{sg7$count2[sg7n]} SNPs found both in the L- and  H-clades, \Sexpr{sg7pct}\% have a sharing pattern consistent with the given tree structure, i.e., are found in all 7 isolates.  Among the others, three patterns dominate---(i) the 6-way pattern excluding the Gyre is the largest, plausibly explained by 7-way sharing from which the Gyre drops out due to low coverage/high error rate, (ii) the 6-way excluding Italy, and (iii) ditto for Wales.  Origin of the later two cases is unclear, but may partly reflect Hardy-Weinberg---some positions that are \emph{population-level} SNPs in those isolates will be homozygous-reference in the CCMP founder cell for IT or Wales.  If I take the 7-way shared SNP count (69526) as a surrogate approximating the number of population-level SNPs in either IT or Wales that are shared with the L-clade, then I might expect, based on HWE, roughly half that number to to be lost (become homozygous) in IT, and a similar number in Wales. However, the observed counts of these positions are lower by $\approx$20K than I might have guessed from HWE, perhaps suggesting that IT and Wales are distinct populations, each with a pool of many thousand private polymorphisms.
+
+In aggregate:
+
+<<>>=
+untreelike <- 
+  sg7$count2[sg7n]-sg7$count2[sg7n-1] + 
+  sg5$count2[sg5n]-sg5$count2[sg5n-1] + 
+  sg4$count2[sg4n]-sg4$count2[sg4n-1] 
+untreelike
+consistent.count[2]
+unpct <- round(untreelike/consistent.count[2]*100,1)
+unpct
+@
+
+I.e., \Sexpr{untreelike} or \Sexpr{unpct}\% of the \Sexpr{consistent.count[2]} consistent SNPs identified (by criterion 2) across all 7 isolates are discordant with the assumed tree.
+
+Overall, based on this data, I take the following to be obvious: (a) separation of the the H-isolates from the L-isolates (and from each other??), and (b) near-identity of the L-isolates.  Due to the small counts, the exact topology among the L-isolates (esp. bcde) is uncertain, but \emph{any} topology there is consistent with the asexual/clonal/global-expansion hypothesis, so there is little point in examining this subtree more carefuly. Again, we believe the (apparent) slight separation of the Gyre from the other L-isolates is largely driven by technical artifacts (lower coverage/higher error rates) in the sequencing rather than by biological effects.  However, the discord between Gyre SNPs and others is the major substantive ambiguity in the offered tree.  Nevertheless, in the next section we show by a bootstrap analysis that the offered placement of Gyre with respect to the other 4 L-isolates is strongly supported by the data.
+
+\subsection{Bootstrap}
+How robust is the inferred tree?  Italy/Wales seem clearly related to each other but separate from the other 5.
+Likewise, the 4 coastal L-isolates seem to be closely related, with little data to separate them (and perhaps little sense in
+trying).  So, the key question here is whether the top level bifurcation is 2/5 or NPG/6.  Here, we do a simple
+bootstrap test (on c2 numbers only) to see whether the 2/5 split is consistently the most parsimonious.
+
+<<>>=
+n2 <- sum(pattern.counts[[2]][,2]); n2
+@
+
+Conceptually, we sample, with replacement, n2=\Sexpr{format(n2,scientific=F)} SNP positions from among the
+\Sexpr{format(n2,scientific=F)} positions declared consisent SNPs according to criterion c2, and recalculate the
+statistics examined above to see whether the 2/5 split again minimizes conflicting sharing patterns.  This
+resampling/calculation is repeated nboot times (set near front of file). Since all that matters is the sharing pattern, this
+procedure is expedited by actually sampling \Sexpr{format(n2,scientific=F)} independent integers in the range 0:127 with
+probabilities proportional to the patttern counts given in column 2 of pattern.counts[[2]].  The sample is then
+tabulated in a 128 row table analogous to pattern.summaries, for analysis by showgroups/treepart, as above.
+
+<<>>=
+boot.sample <- sample(0:127,n2,replace=T,prob=pattern.counts[[2]][,2])
+str(boot.sample)
+boot.count <- mytable(boot.sample,c(0,127))
+boot.count[c(1:4,125:128),] # show a few rows
+boot.counts <- list(NULL,boot.count,NULL) # dummy list with just c2 summaries
+cor(pattern.counts[[2]][,2],boot.counts[[2]][,2]) # just curious - how correlated are they?
+boot.summaries <- pat.summary(boot.counts)
+showgroup(boot.summaries,c2.thresh=400) #show a few rows
+@
+
+Tree partition analysis (and how to pluck out only the best rows based on 3 smallest cross counts and ``best'' criteria):
+
+<<size='scriptsize'>>=
+tp <- treepart(boot.summaries,root=127) ; tp
+@
+<<>>=
+otp <- order(tp[,'cross'])[1:3]    # 3 smallest 'cross' counts
+btp <- which(tp[,'best'] != '')    # 'best' by Left/Right/Both/Cross/ratiO
+toptp <- unique(c(otp,btp,18,8))   # above, plus 5/2, 6/1 splits
+print(tp[toptp,])                  # show the winners
+@
+
+Now repeat the above nboot times, and summarize results:
+
+<<cache=TRUE>>=
+nboot <- params$nboot #  default from params set in section 2
+nboot <- ((nboot+2) %/% 4) * 4 + 1  # summary is cleaner if n mod 4 == 1, so int median/quartiles
+cat('***\n*** Doing', nboot, 'bootstrap replicates.\n***\n')
+bcor <- numeric(nboot)
+b52cross <- integer(nboot)
+b61cross <- integer(nboot)
+brev <- logical(nboot)
+for(i in 1:nboot){
+  boot.sample <- sample(0:127,n2,replace=T,prob=pattern.counts[[2]][,2])
+  boot.count <- mytable(boot.sample,c(0,127))
+  boot.counts <- list(NULL,boot.count,NULL) # dummy list with just c2 summaries
+  boot.summaries <- pat.summary(boot.counts)
+  tp <- treepart(boot.summaries,root=127, verbose=F)
+  bcor[i] <- cor(pattern.counts[[2]][,2],boot.counts[[2]][,2]) # just curious - how correlated are they?
+  b52cross[i] <- tp[18,'cross']
+  b61cross[i] <- tp[ 8,'cross']
+  brev[i] <- (b52cross[i] > b61cross[i])
+  if(brev[i]){
+    # show the unexpected ones; probably breaks w/ cache
+    otp <- order(tp[,'cross'])[1:3]
+    btp <- which(tp[,'best'] != '')
+    toptp <- unique(c(otp,btp,18,8))
+    print(tp[toptp,])
+  }
+}
+# summarize:
+corsummary <- t(as.matrix(c(summary(bcor),sd=sd(bcor))))
+row.names(corsummary) <- 'bcor'
+bdelta <- b61cross-b52cross
+brevp <- 100*brev   # make it percent reversed instead of logical
+thesummary <- rbind(summary(b52cross),summary(b61cross),summary(c(bdelta)),summary(brevp))
+row.names(thesummary) <- c('b52cross', 'b61cross', 'b61-b52', '% rev')
+thesummary <- cbind(thesummary, sd=c(sd(b52cross),sd(b61cross),sd(bdelta),sd(brevp)))
+@
+
+SUMMARY: In \Sexpr{nboot} bootstrap replicates, we saw \Sexpr{sum(brev)} samples with the 6/1 split having fewer
+conflicts than the 5/2 split, and the minimum separation between them was $\approx$
+\Sexpr{format(min(bdelta)/sd(bdelta),digits=2)} sigma, hence highly statistically significant.
+
+<<>>=
+# 'opt' hacking is trying to force knitr to show more digits of bcor in summary, as Rstudio does, but
+# it still fails...  Bottom line is the correlation seems to be  > .999 in all samples, rounds to 1.0,
+# as seen in this run of 1001 samples cut/paste from Rstudio:
+#          Min.        1st Qu.     Median      Mean        3rd Qu. Max.   sd             
+# bcor     "   0.9998" "   0.9999" "   0.9999" "   0.9999" "   1"  "   1" "   0.00003462"
+# > max(bcor)
+# [1] 0.9999915
+o.opts <- options(digits=7,width=127) 
+format(rbind(corsummary,thesummary),scientific=F,digits=4,drop0trailing=T)
+options(o.opts)
+@
+
+Based on this, it is reasonable to claim that we are confident that the tree topology is as shown in the earlier
+figures, with the exception of the exact order of the splits with the 4 NE coastal isolates.
+
+\iffalse %% part of v1 analysis, not updated.
+  Looking at pairwise counts of shared SNPs (without regard to how many other strains share the SNP), we have:
+  < <  > > =
+  list(lapply(consistent,sum))  #  36040 46896 47174
+  pairwise <- matrix(0,nrow=7,ncol=7)
+  rownames(pairwise) <- names(snp.tables)
+  colnames(pairwise) <- names(snp.tables)
+  for(i in 1:6){
+	for(j in (i+1):7){
+		pairwise[i,j] <- sum(non.refs[consistent,i]>0 & non.refs[consistent,j]>0)
+	}
+  }
+  print(pairwise)
+  pw <- pairwise+t(pairwise)
+  p  <- c(1,2,5,7,4,3,6)
+  print(pw[p,p])
+  @
+\fi
+
+\section{Notes}
+
+This section is a random brain dump of limitations of the current analysis, ideas for improvements, etc.  In the main,
+these may not be worth doing, unless we see significant holes or get pushed by reviewers, etc, but I wanted to catalog
+before we forget them.
+
+\noindent {\bf Noise:} Various sources of ``noise'' in the data:
+\begin{enumerate}
+  \item Read errors, low read depth  --- perhaps fixed by medium/strict thresholding
+  \item Deep coalescence
+  \item Skew because 1335 is the reference.  (Julie notes we could partially fix this by remapping based on discovered
+    SNPs, tho that wouldn't fix gross misassembly in 1335, e.g. collapsed or misordered tandem duplicates, or segments
+    missing in 1335 that are present in one or more other strains, etc.; much harder to fix those, let's just hope they
+    are rare...)
+  \item Varying error rates and sequencing depth among the 7.  E.g., plausibly the 1000 SNPs shared by 4 but not by Gyre
+    are a result of lower read depth (we missed a SNP that is actually present) and/or higher error rates (causing a
+    position to appear inconsistent in gyre) in the gyre data.  I can't think of a way to correct for this effect.  It
+    might be possible, perhaps by simulation, to estimate the size of the effect and see whether it could explain
+    $\approx$1000 SNPs.
+  \item Varying numbers of founder cells in the sequencing cultures.  (Again, I made some attempts at modeling this, but
+    nothing very satisfactory yet.)
+  \item Tri-allelic positions where stochastic fluctuation in sequence sampling promotes the rare allele to prominence.
+    (Julie replies: ``isn't this the same as more than one founder cell? If they are diploid there should only ever be
+    two alleles, unless there were random and very rare, thus unlikely, trisomy events?''  I agree, but it is a concrete
+    example of an effect of multiple founders that might be important.  Not sure this is the most important such
+    effect...)
+  \item Gaps/indels - alignments are likely to be of lower quality in the vicinity of an indel, so, maybe lower
+    coverage/more SNPs.  We ignored them.  Does this add any systematic bias?  e.g. if one strain had more indels than
+    another, would this confound other analyses?  unclear.  Julie suggested a paper titled ``Barking up the wrong
+    tree-length: yada yada yada gap penalties''; maybe relevant?
+\end{enumerate}
+
+\noindent {\bf Other Items/Potential To Dos:}
+\begin{enumerate}
+  % DONE: \item try filtering out singleton reads
+  \item any spacial structure to various sub-classes?
+  % DONE: q-filtering made it obvious that .8 => 1.0; \item any association of .8 group to various subclasses?
+  \item after top level split, should I reanalyze halves of partition in isolation?  said another way, I think the
+    tree-building is sensible, but not sure it's optimal.
+  \item if we believe no sex, then I think gain of SNP should be more common than loss of SNP, since the later can only
+    happen by (a) mutation reverting to reference, (b) second mutation matching nonreference, (c) homologous repair
+    (look for blocks of LOH), or (d) false negative e.g. from low read depth.  Does tree-building appropriately weight
+    the gain vs loss cases?  (Does it even care?)
+  \item should we weight coding and/or nonsynonomous SNPs more heavily?  Julie says ``you do not want to weight the
+    coding or nonsynonomous/coding SNPs because for time you want the more clock-like neutral mutations.''  I.e., I got
+    this backwards.  Maybe should redo tree based on noncoding SNPs only.
+  \item We could also do an actual parsimony analysis based on 2-state model (homozygous-ref vs not), but I'm not 
+    quite sure how to handle this in a mixed sex/nosex case.
+  \item Might be interesting to look at sharing just within (shared?) deserts.  Given tree model above and expectation
+    that bottleneck followed split of H- from L-clades, I would expect little or no sharing of L-clade desert SNPs
+    with H-clade; sharing between It/Wales might suggest ``desert'' is actually a region under strong purifying selection
+    (e.g. a gene); sharing/non-sharing within L-clade deserts might suggest more about evo history of the 5.
+\end{enumerate}
+
+
+\section{Appendix: Old Trees, etc.}
+Tangents, old stuff of historical interest at best, etc..
+
+\subsection{HWE Sharing}
+Tangent: As a function of nonref allele freq, assuming HWE, what is probability that nonref allele will be seen in $k$ strains, $0 \leq k \leq 4$ (Fig~\ref{fig:share-plot}).
+
+<<>>=
+myfigpath.h <- paste(getwd(), '/figs-knitr/', sep='')
+@
+
+<<share-plot,fig.width=8,fig.height=5,fig.align='center',fig.path=myfigpath.h,fig.cap='Sharing Probability', fig.show='hold'>>=
+p <- (0:20)/20
+q <- 1-p
+r <- 2*p*q+p^2
+plot(  p, 1*q^0*r^4, type='b',pch='4', ylab="share prob")
+points(p, 4*q^2*r^3, type='b',pch='3')
+points(p, 6*q^4*r^2, type='b',pch='2')
+points(p, 4*q^6*r^1, type='b',pch='1')
+points(p, 1*q^8*r^0, type='b',pch='0')
+@
+
+\subsection{Old Tree Stuff}
+
+All based on un-q-filtered reads.
+
+The first pass at the tree analysis was the Chr1 tree, \emph{loose criteria} (c1); it is rendered via \\{\small\tt http://iubio.bio.indiana.edu/treeapp/treeprint-form.html} as Fig~\ref{fig:tree-v1}, and in newick format is:
+
+%\noindent {\footnotesize\begin{verbatim}
+%(((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Australia:29):9,
+%(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8593);
+%\end{verbatim}}
+<<>>=
+newick.chr1.loose <- '(((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Australia:29):9,(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8593,outgroup:0);'
+cat.hardwrap(newick.chr1.loose)
+@
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=.5]{00old/shared-snp-tree-annotated-v1.pdf}
+    \caption{Inferred Tree, based on Chr1, un-q-filtered reads, loose criteria.  (Note: to visually resolve the edges among the
+      5, their lengths were scaled by 5x -- 10x in this figure, but not in the newick description
+      shown in the text.)}
+    \label{fig:tree-v1}
+  \end{center}
+\end{figure}
+
+Chr 1 tree based on \emph{medium criteria} (c2) has exactly the same topology is, although the 
+branch lengths are different.  As noted earlier, the length of the branch labeled ``*'' is probably
+inflated by lower coverage and higher error rate in 1014, which may mask further legitimate sharing 
+between it and the other L-isloates.  The branch lengths among the other 4 are too short for its 
+topology to be convincing without a more rigorous analysis (e.g., a bootstrap test).
+
+Chr1 tree, medium criteria, in newick format:
+
+<<>>=
+newick.chr1.med <- '(((tp3367_Italy:8813,tp1013_Wales:9652):9365,(((e_tp1007_Virginia:30,d_tp1012_Australia:61):19,(c_tp1015_Puget_Sound:207,b_tp1335_NY:41):18):1005,a_tp1014_Gyre:61):3912):7054,outgroup:0);'
+cat.hardwrap(newick.chr1.med)
+@
+
+NOTE: In early code, tree was not being recalculated; it was defined by constants in the following 
+code chunk, hand-copied from the analysis above.  
+
+<<size='scriptsize'>>=
+# tree parameters as nested lists 
+#   Internal nodes have subtrees sub1/2 and length
+#   Root has sub1/2, but no length
+#   Leaves have where, length, optionally, id, alt, nb.  (Omit id for 'outgroup'. Use 'alt' for less formal
+#     labeling in cartoon version; it defaults to 'where'. Use 'nb' to add abcde annotations for legend.)
+# This hand-made version is now subsumed by make.tree; retained for comparison
+tree.by.hand <- 
+  list(
+    sub1 = list(
+      sub1 = list(
+        sub1 = list(id=3367, length=8813, where='Venice, Italy', alt='Venice'),
+        sub2 = list(id=1013, length=9652, where='Wales, UK'),
+        length=9365),
+      sub2 =  list(
+        sub1 = list(
+          sub1 = list(  
+            sub1 = list(id=1007, length=30, nb='e', where='Virginia, USA'),
+            sub2 = list(id=1012, length=61, nb='d', where='Perth, W. Australia', alt='Perth'),
+            length=19),
+          sub2 = list(
+            sub1 = list(id=1015, length=207,nb='c', where='Washington, USA', alt='Puget Sound'),
+            sub2 = list(id=1335, length=41, nb='b', where='New York, USA',   alt='NY'),
+            length=18),
+          length=1005),
+        sub2 = list(id=1014, length=61, nb='a', where='N. Pacific Gyre'),
+        length=3912),
+      length=7054),
+    sub2 = list(length=0, where='outgroup')
+  )
+
+# historical, format example, and debug help:
+oldwick.medium <- '(((CCMP3367_Italy:8813,CCMP1013_Wales:9652):9365,(((e_CCMP1007_Virginia:30,d_CCMP1012_Australia:61):19,(c_CCMP1015_Puget_Sound:207,b_CCMP1335_NY:41):18):1005,a_CCMP1014_NPG:61):3912):7054,outgroup:0);'
+# with simpler labeling for cartoon
+simple.oldwick.medium <- '(((Italy:8813,Wales:9652):9365,(((Virginia:30,Australia:61):19,(Puget:207,NY:41):18):1005,Gyre:61):3912):7054,outgroup:0);'
+cat.hardwrap(oldwick.medium)
+cat.hardwrap(simple.oldwick.medium)
+@
+
+Two other versions of the tree, for possible use in figs in the main paper.
+
+Figure~\ref{fig:tree-medium-unlabeled}:  [** as of 10/4/2015, this fig and next have stray stars on virginia, wales labels; probably due to hacking with commas in newick; not worth fixing unless we resurrect these trees for some purpose, but if so, see use of newick.name.undo in show.tree as probable fix. **]
+
+<<tree-medium-unlabeled,size='scriptsize',fig.width=8,fig.height=5,fig.align='center',fig.path=myfigpath,fig.cap=paste(caption(2),'(no edge labels, nolegend)'),out.width='3.5in',fig.show='hold'>>=
+tree.scale <- ifelse(which.snp.tables(string.val=F)[1]=='Chr1', 1, 10)
+tree.x.lim <- 3e4 * tree.scale
+the.simple.tree <- read.tree(text=simple.newick.medium)
+plot(the.simple.tree, x.lim = tree.x.lim)
+axis(1)
+@
+
+Figure~\ref{fig:tree-medium-unlabeled-shortscale}:
+
+<<tree-medium-unlabeled-shortscale,size='scriptsize',fig.width=8,fig.height=5,fig.align='center',fig.path=myfigpath,fig.cap=paste(caption(2),'(no edge labels, no legend, short scale bar)'),out.width='3.5in',fig.show='hold'>>=
+plot(the.simple.tree, x.lim = tree.x.lim)
+axis(1,(0:4)*7000*tree.scale,(0:4)*7000*tree.scale)
+@
+
+At some much earlier point, Tony ran the whole-genome version of the then-current code above, and manually entered tree branch lengths/legend for the resuting tree, shown in Fig~\ref{fig:fullgenome-tree-medium}.  Code above can now automatically generate such a tree, but retain the following for comparison.  The basic story seems clear---same topology and branch lengths scaled by about 10x, which is completely reasonable given that Chr1 is about 10\% of the genome.  Note that this tree is not being recalculated; it is defined by constants in the following code chunk.
+
+<<size='scriptsize'>>=
+fullgenome.newick.medium <- '(((3367_Italy:86155,1013_Wales:95697):89598,(((e_1007_VA:330,d_1012_Australia:632):1296,(c_1015_WA:2113,b_1335_NY:658):480):10059,a_1014_NPG:568):39517):69526,outgroup:0);'
+cat.hardwrap(fullgenome.newick.medium)
+legend.text <- c('a: only in 1014  ',
+                 'b: only in 1335  ',
+                 'c: only in 1015  ',
+                 'd: only in 1012  ',
+                 'e: only in 1007  ',
+                 '*: shared by bcde',
+                 '   shared by b/c ',
+                 '   shared by d/e '
+)
+fullgenome.tree.x.lim <- 300000
+fullgenome.counts <- c( 568, 658, 2113, 632, 330, 10059, 480, 1296 )
+fullgenome.legend.text <- paste(legend.text,format(fullgenome.counts,width=5),sep=' - ')
+fullgenome.tree.labels <- list( ## x,y,text
+     41000,3.63,'69526\nshared by 7',
+     90000,5.75,'39517\nby 5 (**)',
+    115000,1.5, '89598\nshared by 2',
+    210000,2.0, '95697 only\nin Wales',
+    210000,1.0, '86155 only\nin Italy',
+    113500,4.6, '*')
+@
+
+Figure~\ref{fig:fullgenome-tree-medium}:
+
+<<fullgenome-tree-medium,size='scriptsize',fig.width=8,fig.height=7,fig.align='center',fig.path=myfigpath.h,fig.cap=paste(caption(2,c('full','unqfiltered')), '(By-hand legacy version)'), fig.show='hold'>>=
+library(ape)
+the.fullgenome.tree <- read.tree(text=fullgenome.newick.medium)
+plot(the.fullgenome.tree, x.lim = fullgenome.tree.x.lim)
+axis(1) # ; axis(2) useful only for placing labels
+opar <- par(family='mono',cex=.8)
+legend('topright', legend=fullgenome.legend.text)
+par(opar)
+for(i in seq(1,length(fullgenome.tree.labels)-2,by=3)){
+  text(fullgenome.tree.labels[[i]], fullgenome.tree.labels[[i+1]], fullgenome.tree.labels[[i+2]])
+}
+@
+
+\FloatBarrier
+
+% remember to do this to enable Id keyword substution: svn propset svn:keywords Id shared-snps.rnw 
+\mbox{}\vfill\footnotesize\flushright SVN, ID I miss you.\ $ $Id: shared-snps.rnw  2017-07-21 or later. ruzzo $ $
+\end{document}

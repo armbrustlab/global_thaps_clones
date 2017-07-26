@@ -1,0 +1,1086 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+\begin{document}
+\title{Exonic vs non-exonic SNPs and Desert ``Bursts''}
+\maketitle
+
+\tableofcontents
+
+\section{Intro}
+Our initial evidence for a ``burst'' of desert-creation looked at SNP rates (SNPs per Kb) in deserts  
+vs nondeserts, showing a strongly bimodal rate distribution, with non-desert rates about 4x higher 
+that desert rates (except for some very short ones, where of course variance is much higher), 
+and very similar rates in most deserts (within ~1 sigma of each other, except for a couple of 
+very large deserts, which have much lower rates).  On reflection, it seemed possible that a 
+bias in deserts in the representation of coding sequence (presumably under purifying selection) vs 
+noncoding SNPs (presumably ``neutral'') may distort/partially explain these these stats.
+
+Tony reports the exonic fractions on Chr1 are 
+  ``Chromosomal Proportion: 0.63, Desert Proportion: 0.61,''
+which mitigates this concern, but still leaves a possibility that deserts are dominated by 
+especially well-conserved genes.  See ``Background'' (section~\ref{sec:background}) and ``Chance'' 
+(section~\ref{sec:sim}) below for more stats and discussion.
+
+Hence, we modified \texttt{snp.rates} in \texttt{wlr.R} to calculate SNP rates for the non-exonic
+fractions of deserts and intervening nondeserts.  Results below, along with some general statistics 
+about exonic vs non-exonic vs deserts.
+
+The initial conclusion was that Chr 1 deserts in 1335 all have very similar noncoding SNP rates, 
+too, again excluding the few largest deserts.
+
+HOWEVER, a later re-examination poked a hole in this simple interpretation.  In particular, the
+Chr1 plot for Italy looks almost like plot for NY: desert SNP rates well below non-desert rates 
+and similar to each other, which is not what we'd expect for the many short deserts in H-clade.
+On reflection, this now makes some sense to me.  Most deserts are a few Kb long, with 5--10 SNPs.  
+They can't have many more SNPs without ceasing to be called deserts.  A bit more later, esp. last 4 
+sections.
+
+ALSO, this file is the convenient context in which to create Fig 2B.
+
+\section{Preliminaries}
+Load utility R code; do setup:
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('nc-snps')     # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr('figs-knitr/')
+generic.setup('figs-mine/')
+@
+
+Subsequent analysis is partially directed at Chr1, partially at all chromosomes; load both.
+
+<<loadsnptables>>=
+snp.tables.chr1 <- load.snp.tables(use.chr1.tables=TRUE,  data.name = 'full.tables.01.26.14')
+snp.tables.full <- load.snp.tables(use.chr1.tables=FALSE, data.name = 'full.tables.01.26.14')
+cat('This analysis focuses on', which.snp.tables(snp.tables.chr1), '\n')
+@
+
+Also load (and convert) the desert tables:
+
+<<loaddestables>>=
+# from svn+ssh://ceg1.ocean.washington.edu/var/svn/7_strains/trunk/code/snpNB/data
+load('../../../data/des.rda') # defines "des"
+des.df <- des.to.df(des)      # convert to data.frame
+@
+
+\section{Correlation with CNVnator}
+
+Some of the ``deserts'' are doubtless the result of hemi- or full-deletions in some strains in 
+culture.  So, load CNVnator calls to correlate.
+
+<<loadcnvtables>>=
+cnv.chronly <- load.cnv.tables('../../../data/cnv.txt', chrs.only=TRUE)
+
+str(cnv.chronly)
+cnv.chronly[c(1:4,nrow(cnv.chronly)+c(-1,0)),]                     ## first/last few rows
+@
+
+Plan: see how much of ``desert'' real estate is actually hemizygous or fully deleted in each strain.  
+Step 1: build a list of 7 x 32M Bool vectors showing CNVnator deletion predictions 
+(cov.thresh.lo $\le$ cov\_ratio $\le$ cov.thresh.hi).
+
+NB: If I ever redo this, it might be good to look at unususally HIGH coverage regions, too; SNPs private to one copy of a duplicated region (esp triplicate or more) may not rise to sufficient read coverage to earn a SNP call, so these may look like deserts, too.  I suspect there aren't too many of these, so not worrying about it now, but perhaps worth doing.  --- wlr 6/17
+
+<<cnvdels>>=
+get.cnv.dels <- function(cov.thresh.lo = 0.0,
+                         cov.thresh.hi = 0.8,
+                         cnv,
+                         snp.tables = NULL,
+                         DEBUG = FALSE
+){
+  # build list of 7 Bool vectors of genome length, with i-th == T iff 
+  #  * i-th pos is 'NA' in genome seq (if snp.tables are provided), or 
+  #  * in CNVnator call for coverage in half-open [cov.thresh.lo, hi), and
+  #  * not marked 'filtered' by CNVnator
+  cnv.deletions <- vector(mode='list',7)                # make list of bool vectors
+  if(is.null(snp.tables)){
+    # if no tables, assume full
+    t.len <- genome.length.constants()$genome.length.trunc
+  } else {
+    t.len <- nrow(snp.tables[[1]])
+  }
+  for(st in 1:7){
+    if(is.null(snp.tables)){
+      cnv.deletions[[st]] <- logical(t.len)                        # all F
+    } else  {
+      cnv.deletions[[st]] <- is.na(snp.tables[[st]]$Pos[1:t.len])  # NA positions in genome
+    }
+  }
+  strain.names <- c(paste('tp10',c('07',12:15),sep=''),'IT','tp1335')
+  names(cnv.deletions) <- strain.names
+  for(i in 1:nrow(cnv)){
+    if(!cnv$filtered[i] && 
+       cnv$cov_ratio[i] >= cov.thresh.lo && 
+       cnv$cov_ratio[i] <  cov.thresh.hi) 
+    {
+      if(DEBUG){
+        print(cnv[i,])
+        print(as.character(cnv$strain[i]))
+      }
+      # following ASSUMES no CNVnator call crosses a chromosome bdry, & that 
+      # t.len ends at chr end (typically chr1 or chr24)
+      if(cnv$iEnd[i] <= t.len){
+        cnv.deletions[[as.character(cnv$strain[i])]][cnv$iStart[i]:cnv$iEnd[i]] <- TRUE
+      }
+    }
+  }
+  return(cnv.deletions)
+}
+
+# sanity check:
+cnv.dels.38 <- get.cnv.dels(0.3, 0.8, cnv.chronly, snp.tables = NULL)
+unlist(lapply(cnv.dels.38,sum)) # does it match low.length.38 in tic ?
+# 1672500 1781500 1399400 1313700 988400 336500 1453000 <== low.length.38 from tic (circa page 8)
+rm(cnv.dels.38)
+
+# the ones we want for the current analysis:
+cnv.dels.08.chr1 <- get.cnv.dels(0.0, 0.8, cnv.chronly, snp.tables.chr1)
+cnv.dels.08.full <- get.cnv.dels(0.0, 0.8, cnv.chronly, snp.tables.full)
+rbind(
+  chr1=unlist(lapply(cnv.dels.08.chr1, sum)),
+  full=unlist(lapply(cnv.dels.08.full, sum))
+)
+@
+
+\section{Background}
+\label{sec:background}
+
+Some general stats on SNPs vs exons vs deserts, mostly looking at Chr1 only.  Main point of the 
+code in this chunk is to calculate some summary statistics, make some plots of them, and to print 
+the summary ``data.frame'' given at the end.  Variable names and data.frame column headings are a
+bit terse, but hopefully the comments in the next $\approx50$ lines and near the end are enough 
+detail.
+
+<<>>=
+des.dens.calc <- function(chr1.only=TRUE,        # just do chr 1?
+                          oldschool=chr1.only,   # if T, use Tony's des tables, else my des.df
+                          des.df=des.to.df(des), # convert Tony's des tables to data.frame
+                          cnv.deletions = NULL,  # if present, see how much is deleted
+                          snp.tables=snp.tables.chr1,
+                          DEBUG=FALSE){
+  # snp/des summary stats
+  if(oldschool && ! chr1.only){
+    cat('*** Unlikely to work; no code for old des tables beyond chr 1. ***\n')
+  }
+  if(!oldschool && chr1.only){
+    # hack: truncate local copy of des.df tables to just chr1
+    for(st in 1:7){
+      # cat(nrow(des.df[[st]]))
+      des.df[[st]] <- des.df[[st]][des.df[[st]]$Chr=='Chr1',] 
+      # cat('==>', nrow(des.df[[st]]), '\n')
+    }
+  }
+  
+  data.len  <- nrow(snp.tables[[1]])           # total length
+  data.exon <- sum(snp.tables[[1]][,'exon'])   # total positions in exons
+
+  st.name      <- character(7) # strain name/location
+  snp.tot      <- integer(7)   # per strain total snps
+  snp.c        <- integer(7)   # per strain total snps in coding (exonic, really)
+  snp.nc       <- integer(7)   # per strain total snps in noncoding
+  snp.d        <- integer(7)   # per strain total snps in deserts 
+  snp.nd       <- integer(7)   # per strain total snps in nondeserts 
+  des.len      <- integer(7)   # per strain total positions in deserts
+  des.len.uncnv<- integer(7)   # per strain total positions in deserts NOT deleted (per CNVnator)
+                               # (not bothering to calc this one in oldschool)
+  des.frac     <- numeric(7)   # per strain fraction in deserts
+  exon.d       <- integer(7)   # per strain total of exonic positions in deserts
+  exon.nd      <- integer(7)   # per strain total of exonic positions in nondeserts
+  exon.frac.d  <- numeric(7)   # per strain, fraction of desert positions that are exonic
+  exon.frac.nd <- numeric(7)   # per strain, fraction of nondesert positions that are exonic
+  snp.d5       <- integer(7)   # per strain total snps in deserts >5k
+  des5.len     <- integer(7)   # per strain total positions in deserts >5k
+  exon.d5      <- integer(7)   # per strain total of exonic positions in deserts >5k
+  des.df.new   <- vector('list',7) # per strain desert info
+  desert.data  <- vector('list',7) # per strain desert summary to plot
+
+  for(st in 1:7){
+    if(DEBUG){cat('st=',st,'\n')}
+    # calculate various summaries
+    st.name[st] <- sub('CCMP', '', st.loc(st)) # strain name/loc, trimmed of 'CCMP'
+    snp.tot[st] <- sum(snp.tables[[st]][,'snp'])
+    snp.c[st]   <- sum(snp.tables[[st]][,'snp']==1 & snp.tables[[st]][,'exon'])
+    snp.nc[st]  <- snp.tot[st] - snp.c[st]
+    
+    if(oldschool){
+      n.deserts <- nrow(des[[st]][[1]])
+    } else {
+      n.deserts <- nrow(des.df[[st]])
+    }
+    if(DEBUG){cat('n.deserts=',n.deserts, '\n')}
+    
+    des.lengths <- integer(n.deserts)
+    des.uncnv   <- integer(n.deserts)
+    
+    if(oldschool){
+      des.lengths <- des[[st]][[1]][,'Length'] + 1
+      des.uncnv <- NA # inconvenient to calc with old tables
+    } else {
+      des.lengths <- des.df[[st]]$Length
+      if(is.null(cnv.deletions)){
+        des.uncnv <- NA
+      } else {
+        for(i in 1:n.deserts){
+          des.uncnv[i] <- des.lengths[i] - 
+            sum(cnv.deletions[[st]][des.df[[st]]$iStart[i]:des.df[[st]]$iEnd[i]])
+        }
+      }
+      des.df.new[[st]] <- data.frame(des.df[[st]], Length.uncnv=des.uncnv) ## save it
+      if(DEBUG){print(str(des.df.new[[st]]))}
+    }
+  
+    ex  <- integer(length = n.deserts)
+    snp <- integer(length = n.deserts)
+    # count exonic- and snp-positions per desert
+    for (i in 1:n.deserts){
+      if(oldschool){
+        ex[i]  <- sum(snp.tables[[st]][des[[st]][[1]][i,1]:(des[[st]][[1]][i,2]-1), 'exon'])
+        snp[i] <- sum(snp.tables[[st]][des[[st]][[1]][i,1]:(des[[st]][[1]][i,2]-1), 'snp'])
+      } else {
+        if(DEBUG){cat('des.irg=',des.df.new[[st]]$iStart[i],des.df.new[[st]]$iEnd[i],'\n')}
+        des.irange <- des.df.new[[st]]$iStart[i]:des.df.new[[st]]$iEnd[i]
+        ex[i]  <- sum(snp.tables[[st]][des.irange, 'exon'])
+        snp[i] <- sum(snp.tables[[st]][des.irange, 'snp'])
+      }
+    }
+    exon.d[st] <- sum(ex)
+    
+    if(oldschool){
+      exon.d5[st]<- sum(ex[(des[[st]][[1]][,3]+1)>5000])
+    } else {
+      exon.d5[st]<- sum(ex[des.df.new[[st]]$Length>5000])
+    }
+    
+    exon.nd[st]<- data.exon-exon.d[st]
+    snp.d[st]  <- sum(snp)
+    
+    if(oldschool){
+      snp.d5[st] <- sum(snp[(des[[st]][[1]][,3]+1)>5000])
+    } else {
+      snp.d5[st] <- sum(snp[des.df.new[[st]]$Length>5000])
+    }
+    
+    snp.nd[st] <- snp.tot[st]-snp.d[st]
+    
+    if(oldschool){
+      des.len[st]       <- sum(des[[st]][[1]][,3]+1)
+      des.len.uncnv[st] <- NA
+      des5.len[st]      <- sum(des[[st]][[1]][(des[[st]][[1]][,3]+1)>5000,3]+1)
+    } else {
+      des.len[st]       <- sum(des.df.new[[st]]$Length)
+      des.len.uncnv[st] <- sum(des.df.new[[st]]$Length.uncnv)
+      des5.len[st]      <- sum(des.df.new[[st]]$Length[des.df.new[[st]]$Length>5000])
+    }
+    
+    des.frac[st]     <- des.len[st]/data.len
+    exon.frac.d[st]  <- exon.d[st]/des.len[st]
+    exon.frac.nd[st] <- exon.nd[st]/(data.len-des.len[st]) 
+    
+    if(oldschool){
+      desert.data[[st]] <- data.frame(dlen = log2(des[[st]][[1]][,3]+1), 
+                                      snprate = 1000*snp/(des[[st]][[1]][,3]+1), 
+                                      exfrac = ex/(des[[st]][[1]][,3]+1))
+    } else {
+      desert.data[[st]] <- data.frame(dlen = log2(des.df.new[[st]]$Length), 
+                                      snprate = 1000*snp/des.df.new[[st]]$Length, 
+                                      exfrac = ex/des.df.new[[st]]$Length)
+    }
+  }
+
+  des.dens.summary.df <- data.frame(
+    'all_exon_%'     = 100 * data.exon/data.len,                       # % exonic positions (all data) 
+    'd_exon_%'       = 100 * exon.frac.d,                              #   ditto, in deserts
+    'nd_exon_%'      = 100 * exon.frac.nd,                             #   ditto, not in deserts
+    'des_%'          = 100 * des.frac,                                 # % desert positions (all data)
+    'tot_snps'       = snp.tot,                                        # total number of SNPs (all data)
+    'nonex_snps/Kb'  = 1000 * (snp.nc)/(data.len-data.exon),           # SNPS per kilobase, non-exons
+    'exon_snps/Kb'   = 1000 * snp.c/data.exon,                         #   ditto, exons
+    'ne:e_snp_ratio' = (snp.nc)/(data.len-data.exon)/(snp.c/data.exon),# ratio of those rates
+    'nd_snps/Kb'     = 1000*snp.nd/(data.len-des.len),                 # SNPS per kilobase, non-desert
+    'd_snps/Kb'      = 1000*snp.d/des.len,                             #   ditto, deserts
+    'nd:d_snp_ratio' = snp.nd / (data.len-des.len) / snp.d * des.len,  # ratio of those rates
+    'd5_exon_%'      = 100 * exon.d5 / des5.len,                       # % exonic in big deserts (> 5k)
+    'd5_snp/Kb'      = 1000 * snp.d5 / des5.len,                       # SNPS/Kb, in big deserts (> 5k)
+    des.len,                                                           # Tot desert length
+    des.len.uncnv,                                                     #   ditto, minus CNVnator dels
+    check.names=F
+  )
+  rownames(des.dens.summary.df) <- st.name
+  print(des.dens.summary.df,digits=3)
+  
+  # return summary stats as a large blob;  all vars defined at the top of the function,  + summary
+  return(list(data.len=data.len,
+              data.exon=data.exon,
+              st.name=st.name,
+              snp.tot=snp.tot,
+              snp.c=snp.c,
+              snp.nc=snp.nc,
+              snp.d=snp.d,
+              snp.nd=snp.nd,
+              des.len=des.len,
+              des.len.uncnv=des.len.uncnv,
+              des.frac=des.frac,
+              exon.d=exon.d,
+              exon.nd=exon.nd,
+              exon.frac.d=exon.frac.d,
+              exon.frac.nd=exon.frac.nd,
+              snp.d5=snp.d5,
+              des5.len=des5.len,
+              exon.d5=exon.d5,
+              des.df.new=des.df.new,
+              desert.data=desert.data,
+              des.dens.summary.df=des.dens.summary.df
+  ))
+}
+@
+
+<<>>=
+des.dens.plot <- function(ddb, DEBUG=FALSE){
+  # desert snp density plots.  Param 'ddb' is the 'desert density blob' returned by des.dens.calc.
+  
+  # plot layout
+  opar <- par(oma=c(0,0,0,.8),mar=c(4.1,4.1,2,2),tck=-.02); on.exit(par(opar))
+  rows <- 3
+  cols <- ceiling(7/rows)
+  layout(matrix(c(1:7,8,8),nrow=3,ncol=3,byrow=T)) # more general than mfrow - doublewide 8th panel
+  
+  # Two alternate plot styles.  exon fraction overlays on SNP rate plot, using right y axis; 
+  #   alt=F scales their 0/1 from ymin to ymax; 
+  #   alt=T uses only top part of y range, to minimize overplotting
+  # exfrac.xform function does this scaling.  Currently I prefer alt=T.  Might be even better to
+  # do two entirely separate, abutting subpanels, but that's fun for another day.
+  alt <- TRUE
+  ymin <- 0
+  ymax <- 6
+  if(alt){
+    exfrac.xform <- function(x,ymn=ymin,ymx=ymax){return(2*x + ymx-2)}
+    # par(oma=c(0,0,0,1.8)) # extra margin for axis label?
+  } else {
+    exfrac.xform <- function(x,ymn=ymin,ymx=ymax){return(ymn+(ymx-ymn)*x)}
+  } 
+  for(st in 1:7){
+    if(DEBUG){cat('dd.plot: st=', st, '\n')}
+    row <- st %/% cols      # which row/column of plot grid are we building
+    col <- (st-1) %%  cols
+    ylab <- ifelse(col==0,'SNPs/Kb','')  # label y axis only in 1st column of plots
+    xlab <- 'log2(desert length)'
+    xmin <- 10
+    if(FALSE){
+      # stretch axis a bit in Italy/Wales?
+      xmax <- ifelse(st==3||st==6,16,18.5)
+    } else {
+      # no, common axis 
+      xmax <- log2(3.3e5)
+    }
+    
+    # Check that we don't clip. 
+    # (Exon frac doesn't need to be checked; always in [0..1], & scaled appropriately.)
+    xrange <- range(ddb$desert.data[[st]]$dlen)
+    yrange <- range(ddb$desert.data[[st]]$snprate)
+    
+    if(xrange[1] < xmin || xmax < xrange[2] || yrange[1] < ymin || ymax < yrange[2]){
+      cat('Some points in', st.loc(st), 'clipped;  xrange is', xrange, ', yrange is', yrange, '\n')
+    }
+    
+    # main: per-desert snp rate vs desert length
+
+    if(DEBUG){cat('dd.plot: main plot\n')}
+    plot(snprate ~ dlen, data = ddb$desert.data[[st]], yaxt='n',
+         xlab=xlab, ylab=ylab, main='', pch='.', xlim=c(xmin,xmax), ylim=c(ymin,ymax))
+    
+    # left y axis: first, axis & tics, then tick labels, to fine-tune positions
+    lticksat <- 0:4
+    axis(side=2,at=lticksat,labels=NA)
+    axis(side=2,at=lticksat,labels=(0:4),lwd=0,line=-.4)
+    # title
+    mtext(st.loc(st),cex=.6)
+    # global snp rate
+    text(xmax, ymax-.1, 
+         paste('Overall SNPs/Kb', format(1000*ddb$snp.tot[st]/ddb$data.len,digits=3)), 
+         cex=.6, pos=2)
+    
+    # overlay per-desert exon fraction vs desert length
+    if(DEBUG){cat('dd.plot: exfrac plot\n')}
+    points(exfrac.xform(exfrac) ~ dlen, data = ddb$desert.data[[st]], pch='+', col='blue')
+    # Right y axis: first, axis & tics, then tick labels, to fine-tune positions
+    rticksat <- seq(exfrac.xform(0),exfrac.xform(1),length.out=5)
+    rlabels <- (0:4)/4
+    if(alt){rlabels[c(2,4)] <- ''} # sparser labels in more condensed 'alt'
+    axis(side=4,at=rticksat,labels=NA,col.axis='blue',col='blue')
+    axis(side=4,at=rticksat,labels=rlabels,col.axis='blue',col='blue',lwd=0,line=-.4)
+    if(col==cols-1 || row==rows-1){
+      # axis label only in last column plots
+      mtext('Exonic Fraction',side=4,col='blue',line=1.7,cex=.7,adj=ifelse(alt,1,NA))
+    }
+    # global exon fraction
+    if(DEBUG){cat('dd.plot: abline\n')}
+    abline(h=exfrac.xform(ddb$data.exon/ddb$data.len), col='blue',lty=2,lwd=.5)
+    
+    # look at loess smooth of both data sets
+    pi <- order(ddb$desert.data[[st]]$dlen)
+    snp.lo <- loess(snprate ~ dlen, data=ddb$desert.data[[st]])
+    lines(ddb$desert.data[[st]]$dlen[pi], snp.lo$fitted[pi], col='red')
+    ex.lo <- loess(exfrac.xform(exfrac) ~ dlen, data=ddb$desert.data[[st]])
+    lines(ddb$desert.data[[st]]$dlen[pi], ex.lo$fitted[pi], col='green')
+    
+    # replot snp rates as '.' to ameliorate overplotting?
+    # points(log2(ddb$desert.data[[st]]$dlen),ddb$desert.data[[st]]$snprate,pch='.')
+    
+    # v line at len=5k
+    abline(v=log2(5000),lwd=0.5,lty=2,col='yellow')
+  }
+  
+  # make legend
+  if(DEBUG){cat('dd.plot: legend\n')}
+  plot(0,0,type='n',bty='n',axes=F,xlab=NA,ylab=NA)
+  
+  if(ddb$data.len == genome.length.constants()$chr1.length){
+    scope <- 'Chr1'
+  } else {
+    scope <- 'full'
+  }
+  
+  legend('center',cex=1.2,title=paste('SNP rates/Exonic fractions per desert,', scope),
+         legend=c('SNPs per Kb  (left axis) vs desert length',
+                  'Exonic fraction (right axis) vs desert length ',
+                  'Exonic fraction (right axis), overall',
+                  'Loess smooth of SNP rate (left axis)',
+                  'Loess smooth of exonic fraction (right axis) ',
+                  'Length 5k'),
+         bty='o',
+         lwd=c(NA,NA,1,1,1,1),lty=c(0,0,2,1,1,2),
+         pch=      c(   '.',    '+',     NA,    NA,      NA,       NA),
+         col=     c('black', 'blue', 'blue', 'red', 'green', 'yellow'),
+         text.col=c('black', 'blue', 'blue', 'red', 'green', 'yellow'))
+}
+@
+
+<<calcchr1>>=
+ddb.chr1 <- des.dens.calc(chr1.only = TRUE, oldschool = FALSE, cnv.deletions=cnv.dels.08.chr1)
+@
+
+<<snp-ex-vs-deslen,fig.width=8.5,fig.height=11,fig.cap='SNP rates and Exonic fractions per desert',fig.show='hold'>>=
+des.dens.plot(ddb.chr1)
+@
+
+I.e., $\approx$30\% of Chr1 is desert in L-clade, which is about double the fraction in H-clade, and exons are not enriched in
+deserts (in fact, they are marginally under represented).  SNPs are 1.29-1.51 times more common in non-exonic regions
+than in exons.  (It is no surprise that purifying selection is stronger in exons, of course.)  SNPs are 3.91-8.44 times
+more common in non-deserts compared to deserts.  (Again, unsurprising given how we defined deserts.)
+
+Turning to Fig.~\ref{fig:snp-ex-vs-deslen}, we see that in-desert SNP rates tend to decline with increasing desert
+length.  I don't have an explanation for this; ideas welcome.
+
+Exonic fraction versus desert length is quite variable for shorter deserts, but shows some tendency to stabilize near
+the global mean as length increases.  This presumably is a ``regression to the mean'' effect since longer deserts
+average over more data.  (The largest desert in Italy/Wales is the obvious exception.)  The other trend that I think is
+interesting is that most of the plots seem to show average exon content \emph{above} the global average for the shortest
+deserts ($< 8$Kb, say).  There's not a lot of data and it's noisy, so this is debatable, but to me, at the scale of
+gene-sized regions, this suggests some conflation of low SNP rates due to purifying selection vs low SNP rates due to
+recent LoH; see additional discussion in sections~\ref{sec:small-deserts},\ref{sec:sim}
+
+Out of curiousity, Fig~\ref{fig:snp-ex-deslen-pairs} is a pairs plot of \texttt{desert.data} for 1335.  
+SNP rate vs exon fraction is the new info.  I find it mildly surprising that there is not an obvious 
+correlation between them, but there does not appear to be (correlation is 
+\Sexpr{cor(ddb.chr1$desert.data[[7]]$snprate, ddb.chr1$desert.data[[7]]$exfrac)}).
+
+
+<<snp-ex-deslen-pairs,fig.width=8.5,fig.height=8.5,fig.cap='Pairs plot: 1335 SNP rates, Exonic fractions, log2(desert length), Chr1',fig.show='hold'>>=
+dd1ny <- ddb.chr1$desert.data[[1]]
+colnames(dd1ny)[1] <- 'log2(desert.length)'
+pairs(dd1ny)
+@
+
+Redo all for full genome
+
+<<snp-ex-vs-deslen-full,fig.width=8.5,fig.height=11,fig.cap='SNP rates and Exonic fractions per desert',fig.show='hold'>>=
+if(!is.null(snp.tables.full)){
+  ddb.full <- des.dens.calc(chr1.only = FALSE, cnv.deletions = cnv.dels.08.full, 
+                            snp.tables = snp.tables.full)
+  des.dens.plot(ddb.full)
+}
+@
+
+<<snp-ex-deslen-pairs-full,fig.width=8.5,fig.height=8.5,fig.cap='Pairs plot: 1335 SNP rates, Exonic fractions, log2(desert length), All Chrs',fig.show='hold'>>=
+ddfullny <- ddb.full$desert.data[[1]]
+colnames(ddfullny)[1] <- 'log2(desert.length)'
+pairs(ddfullny, pch='.')
+@
+\section{SNP Rate Plots, Coding \& Noncoding}
+
+Key script is \texttt{snp.rates}, which depends on \texttt{shared.snp.calls} (both in \texttt{wlr.R}).
+
+\noindent Parameters to snp.rate are:
+
+{\footnotesize\begin{verbatim}
+#  * snp.tables [default full.tables.01.26.14] - where to get SNP and other data; may be a subset
+#    of the full data, but should include at least all of Chr1.
+#
+#  * nc [default FALSE] - If T, only count SNP rates within NonCoding DNA, or more accurately,
+#    non-exonic DNA, as defined by the $exon flag in snp.tables
+#
+#  * length.thresh [default 5000] - only take deserts this long (see next).  
+#
+#  * length.thresh.eff [default F] - if T, length.thresh is based on ``effective desert length,''
+#    i.e., number of desert positions that are not NA in genome, not in CNVnator deletion calls
+#    if cnv.dels parameter supplied, and not exonic nc==T, else based on total length.
+#
+#  * cnv.dels [defualt NULL] - if supplied, table of CNVnator calls for effective length calc.
+#
+#  * merge.thresh - if non-null, an int specifying that the plot should include an overlay
+#    reflecting merger of deserts within this distance of each other (absolute, not effective 
+#    distance)
+#
+#  * strain [default 7] - which snps/deserts to use
+#
+#  * xCoordsReal [default F] - in plot, should markers be plotted at real chromosomal coords (T),
+#    or at desert index (F)?
+#
+#  * xlab, ylab, main, legend,... [NULL] - plot axis labels, legend and title; if NULL, they are
+#    calculated below; non-NULL values override the default calculation
+#
+#  * ... extra params assumed to be graphic params to main plot, e.g. cex.lab
+\end{verbatim}}
+
+% The following essentially reproduces Fig 3(a) from Tony's 7/15/2014 draft:
+
+<<>>=
+sz <- 'scriptsize' ; fw <- 6.5 ; fh <- 5 ; fa <- 'center' # knitr params: size, fig.{width,height,align}
+print(getOption('width'))
+@
+\iffalse
+< < fourway-coding-5k-2k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates.o(length.thresh=5000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=F,ncmin=F,snp.tables=snp.tables.chr1)
+@
+< < fourway-coding-5k-2k,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates(length.thresh=5000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=F,ncmin=F,snp.tables=snp.tables.chr1)
+@
+
+This one shows the effect of shifting to noncoding SNPs:
+
+< < fourway-nc-5k-2k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates.o(length.thresh=5000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=T,ncmin=F,snp.tables=snp.tables.chr1)
+@
+
+
+< < fourway-nc-5k-2k,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates(length.thresh=5000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=T,ncmin=F,snp.tables=snp.tables.chr1)
+@
+
+I.e., it's basically the same, but a bit noisier since the SNPcounts are smaller.
+
+This one restricts to deserts with 5k noncoding:
+
+< < fourway-nc-5knc-2k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates.o(length.thresh=5000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+< < fourway-nc-5knc-2k,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates(length.thresh=5000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+I.e., noise in the deserts is lowered, but there are fewer of them.  The following reduces the length threshold to pull
+in a few more deserts:
+
+< < fourway-nc-3knc-2k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates.o(length.thresh=3000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+< < fourway-nc-3knc-2k,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates(length.thresh=3000,merge.thresh=2000,snpCalls=c(1,2,5,7),nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+\fi
+
+Some old code, hidden above, looked at 4-way shared SNPs, but it got complex and same story is visible in single strains.  E.g., looking at 1335, Chr 1, deserts longer than 3k, all snps, we have a clear separation of snp rate between deserts and non-deserts, and desert rates are quite uniform (excluding the few largest).  That suggested a ``burst'' of desert creation, e.g. via inbreeding.  (Variability in rates was somewhat reduced by looking at only non-exonic positions; that code is broken at the moment, but the pics are clear enough without it.)
+
+<<ny-coding-3k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa>>=
+snp.rates(length.thresh=3000, strain=7, nc=F, length.thresh.eff=F,
+          snp.tables=snp.tables.chr1, des.tables=des, cnv.dels=cnv.dels.08.chr1)
+@
+
+Unfortunately, Italy looked about the same:
+
+<<it-coding-3k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa>>=
+snp.rates(length.thresh=3000, strain=6, nc=F, length.thresh.eff=F,
+          snp.tables=snp.tables.chr1, des.tables=des, cnv.dels=cnv.dels.08.chr1)
+@
+
+The reason, I think, for uniform desert rates is an artifact of desert selection: most deserts are a few K long, with 5-10 SNPs; with such a short length, the number of SNPs can't vary a lot, especially can't get a lot larger without ceasing to be a desert.
+
+Now, go genome-wide and look at largest deserts.
+
+\iffalse
+< < ny-nc-3knc-2k-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates.o(length.thresh=3000,merge.thresh=2000,snpCalls=7,nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+< < ny-nc-3knc-2k,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates(length.thresh=3000,merge.thresh=2000,snpCalls=7,nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+I.e., still looking pretty good.  Finally, try it with no merging, just to reduce clutter:
+
+< < ny-nc-3knc-nomerge-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+xx<-snp.rates.o(length.thresh=3000,merge.thresh=NULL,snpCalls=7,nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+< < ny-nc-3knc-nomerge,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+xx<-snp.rates(length.thresh=3000,merge.thresh=NULL,snpCalls=7,nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+< < it-nc-3knc-nomerge-o,size=sz,fig.width=fw,fig.height=fh,fig.align=fa > > =
+snp.rates.o(length.thresh=3000,merge.thresh=NULL,snpCalls=6,nc=T,ncmin=T,snp.tables=snp.tables.chr1)
+@
+
+And once more, with some tweaks for the paper fig:
+
+< < > > =
+pdf('figs/ncsnps4paper.pdf',width=fw, height=fh)
+xx<-snp.rates(length.thresh=3000,merge.thresh=NULL,snpCalls=7,nc=T,ncmin=T,
+              snp.tables=snp.tables.chr1, 
+              main='', 
+              xlab='', #xlab='Chr1 Deserts, > 3K Non-exonic bp', 
+              ylab='', #ylab='Non-exonic SNPS/bp', 
+              cex.lab=1.3,
+              cex.axis=1.2,
+              mar=c(0,0,0,0),
+              oma=c(5,150,0,0))
+mtext('Chr1 Deserts, > 3K Non-exonic bp',side=1,line=2.8,cex=1.3)
+mtext('Non-exonic SNPS/bp',side=2,line=2.8,cex=1.3)
+dev.off()
+@
+
+\includegraphics{figs/ncsnps4paper.pdf}
+
+Ditto, Italy:
+
+< < > > =
+pdf('figs/ncsnps4paperit.pdf',width=fw, height=fh)
+xx<-snp.rates(length.thresh=3000,merge.thresh=NULL,snpCalls=6,nc=T,ncmin=T,
+              snp.tables=snp.tables.chr1, 
+              main='', 
+              xlab='', #xlab='Chr1 Deserts, > 3K Non-exonic bp', 
+              ylab='', #ylab='Non-exonic SNPS/bp', 
+              cex.lab=1.3,
+              cex.axis=1.2,
+              mar=c(0,0,0,0),
+              oma=c(5,150,0,0))
+mtext('Chr1 Deserts, > 3K Non-exonic bp',side=1,line=2.8,cex=1.3)
+mtext('Non-exonic SNPS/bp',side=2,line=2.8,cex=1.3)
+dev.off()
+@
+
+\includegraphics{figs/ncsnps4paperit.pdf}
+
+And an alternate idea: scale it to real chr 1 coords, to match panel a
+< < > > =
+pdf('figs/ncsnps4paperalt.pdf',width=fw, height=fh)
+xx<-snp.rates(length.thresh=3000,merge.thresh=NULL,snpCalls=NULL,nc=T,ncmin=T,
+              snp.tables=snp.tables.chr1, 
+              xCoordsReal=TRUE,
+              main='', 
+              xlab='', #xlab='Chr1 Deserts, > 3K Non-exonic bp', 
+              ylab='', #ylab='Non-exonic SNPS/bp', 
+              cex.lab=1.3,
+              cex.axis=1.2,
+              mar=c(0,0,0,0),
+              oma=c(5,150,0,0))
+mtext('Chr1 Deserts, > 3K Non-exonic bp',side=1,line=2.8,cex=1.3)
+mtext('Non-exonic SNPS/bp',side=2,line=2.8,cex=1.3)
+dev.off()
+@
+
+\includegraphics{figs/ncsnps4paperalt.pdf}
+
+\fi
+
+\section{Big Deserts \& Fig 2B for paper}
+
+A quick look at the $n=30$ deserts in each strain with largest effective size (``Len.eff'' in the tables generated below, which equals raw desert ``Length'' minus any overlap with ``NA'' regions in the reference sequence and/or hemi- or full-deletions called by CNVnator).  [The effective length correction usually has little effect, but for a few deserts it removes $>$50 K positions from consideration.  I am a little surprised it doesn't do more, since there are $\approx$225 K ``NA'' positions and around 1 M hemi-deletions (depending on TiC).   Either these tend create smaller deserts, or they aren't being called deserts.] 
+
+<<>>=
+if(!is.null(snp.tables.full)){
+  des.df.new <- ddb.full$des.df.new # desert tables as data frames
+  des.df.sorted <- vector('list',7) # sorted by length
+  for(st in 1:7){
+    permute <- order(des.df.new[[st]]$Length.uncnv,decreasing=T)
+    des.df.sorted[[st]] <- des.df.new[[st]][permute,c(1:3,5,6,4,7)]
+    names(des.df.sorted[[st]])[7] <- 'Len.eff' # shorten name
+  }
+  
+  keep.cols <- c(2,4,6,7)
+  n <- 30
+  
+  # n largest
+  bign <- NULL
+  for(st in c(1,2,4,5,7,3,6)){
+    perm <- order(des.df.sorted[[st]]$iStart[1:n])
+    one.strain.topn <- data.frame(Chr=as.character(des.df.sorted[[st]]$Chr[1:n][perm]),
+                                  des.df.sorted[[st]][1:n, keep.cols][perm,],
+                                  stringsAsFactors = FALSE)
+    mins <- apply(one.strain.topn[1:n,c('Length','Len.eff')],2,min)
+    maxs <- apply(one.strain.topn[1:n,c('Length','Len.eff')],2,max)
+    one.strain.topn <- 
+      rbind(one.strain.topn, 
+            data.frame(Chr=c('Min:','Max:'), 
+                       Start=rep(NA,2), 
+                       iStart=rep(NA,2),
+                       Length=c(mins[1],maxs[1]),
+                       Len.eff=c(mins[2],maxs[2])))
+    
+    if(is.null(bign)){
+      bign <- one.strain.topn
+    } else {
+      bign <- cbind(bign, one.strain.topn) 
+    }
+  }
+  rownames(bign) <- NULL
+  cat('Largest 30 deserts per strain; ordered', substr(st.locs(1:7,loc=F), 5,8)[c(1,2,4,5,7,3,6)], '\n')
+  print(bign)
+  write.csv(bign,'bign.csv')
+  # lost due to CNV/NA:
+  cbind( d1007=bign[,4]-bign[,5], 
+         d1012=bign[,9]-bign[,10],
+         d1014=bign[,14]-bign[,15],
+         d1015=bign[,19]-bign[,20],
+         d1335=bign[,24]-bign[,25],
+         d1013=bign[,29]-bign[,30],
+         d3367=bign[,34]-bign[,35]
+  )
+}
+  # Some generic desert stats
+  dsum.df <- rbind(
+    summary(des.df[[1]]$Length),
+    summary(des.df[[2]]$Length),
+    summary(des.df[[3]]$Length),
+    summary(des.df[[4]]$Length),
+    summary(des.df[[5]]$Length),
+    summary(des.df[[6]]$Length),
+    summary(des.df[[7]]$Length)
+  )
+  row.names(dsum.df) <- names(des.df)
+  dsum.df <- cbind(N=unlist(lapply(des.df,nrow)),dsum.df)
+  print(dsum.df)
+@
+
+Part of the point of this was to look at sharing.  ``Bign'' table above was exported to Excel and hand-manipulated to align/color strongly overlapping deserts; see Fig~\ref{fig:excel}.  Bottom line is much sharing in L-clade, as expected, and some in/with H-clade.  The latter is perhaps worth more investigation.
+
+% fig params all empirical relative to default excel "save as pdf".  trim subtracts from margins, 
+% order=left,bottom,right,top, ann in pts; graphics params applied in l-to-r order (trim, then clip, 
+% then scale, then rot).  inclgraphics uses *first* dot to define suffix, hence -xlsx.pdf, not .xlsx.pdf
+\begin{figure}
+  \begin{center}
+    \vspace*{-30pt}%
+    \fbox{\includegraphics[trim=25 71 47 71,clip,scale=0.95,angle=90]{bign-xlsx.pdf}}
+  \end{center}
+  \caption{30 largest deserts}
+  \label{fig:excel}
+\end{figure}
+
+Proposed fig for paper:  This does NOT bother to separate non-exonic SNPs.  I think the desert sizes, consistent exonic fraction, small ratio of non-exonic to exonic snp rates ($<1.5$x), and large ratio of nondesert to big-desert snp rates ($\approx 9$x) makes that refinement unnecessary, but we could do it; picture won't change much.
+
+<<>>=
+  des.vs.non <- function(fig.file.path, strain=7, length.thresh=50000, 
+                         length.thresh.eff=T, nc=F, yclip=NULL,
+                         xlab=NULL, ylab=NULL, ylab.sub=NULL, main=NULL, legend=NULL, panel=NULL,
+                         des.col='dodgerblue2',
+                         cnv.dels=cnv.dels.08.full, des.tables=des, snp.tables=snp.tables.full){
+    pdf(fig.file.path,width=6.5, height=2.1) # was 3.1
+    # par seemingly must be set via par, after pdf() call.
+    opar <- par(no.readonly=TRUE,oma=c(0,0,0,0),mar=c(3,3,1,1),tcl=-0.2) 
+    on.exit(par(opar))
+    xx <- snp.rates(strain=strain, length.thresh=length.thresh, 
+                    length.thresh.eff=length.thresh.eff, nc=nc, yclip=yclip,
+                    xlab=xlab, ylab=ylab, ylab.sub=ylab.sub, main=main, legend=legend, 
+                    des.col=des.col,
+                    cnv.dels=cnv.dels, des.tables=des.tables, snp.tables=snp.tables)
+    if(!is.null(panel)){
+      text(0.62,0.0092,panel,cex=1.1) # for 2B, coords empirically set to roughly match rel pos in panel 2A
+    }
+    dev.off()
+    return(xx)
+  }
+@
+
+{\footnotesize Hmmm...; I tried ``dodgerblue2'' to match fig 2A, but it looks a fair bit paler in this context, so back to ``blue''}
+%source(''../../../R/wlr.R')
+
+%old way:
+<<>>=
+if(exists('snp.tables.full')){
+  xx <- des.vs.non('figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf', strain=7, length.thresh=50000, 
+                   length.thresh.eff=T, nc=F, yclip=0.01, 
+                   xlab='Desert Index', ylab='SNP Density',
+                   ylab.sub=list(text='(SNPS / bp)', line=1.1, cex=.75),
+                   main='', legend='', panel='B',  des.col='blue3',
+                   cnv.dels=cnv.dels.08.full, des.tables=des, snp.tables=snp.tables.full)
+  print(xx)
+}
+@
+%new way:
+<<>>=
+if(exists('snp.tables.full')){
+  snp.rates.blob <- snp.rates.calc(strain=7, length.thresh=50000, length.thresh.eff=T, nc=F, 
+                                   merge.thresh=NULL, snp.tables=snp.tables.full, des.tables=des,  
+                                   cnv.dels=cnv.dels.08.full)
+  Description <- 'This .rda contains snp.rates.blob and cnv.dels.08.full; see nc-snps.rnw.'
+  save(Description, snp.rates.blob, cnv.dels.08.full, file='Fig2B-data.rda')
+}
+@
+<<>>=
+if(exists('snp.tables.full')){
+  xx <- snp.rates.plot(snp.rates.blob, des.col='blue3', undes.col='black', yclip=0.01, legend='',
+                       xlab='Desert Index', ylab='SNP Density', main='',
+                       ylab.sub=list(text='(SNPS / bp)', line=1.1, cex=.75))
+  # panel='B':
+  text(0.62,0.0092,'B',cex=1.1) # for 2B, coords empirically set to roughly match rel pos in panel 2A
+  print(xx)
+}
+@
+
+Show fig juxtaposed with Fig2a for comparison as Fig~\ref{fig:2a2b}.  (Surrounding boxes just to make marginal space obvious; change fbox to mbox to remove.)
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics{../paperfigs/Fig2A-desert-distribution-figs-mine/Fig2A-desert-distribution-figq.pdf}}\\
+    \fbox{\includegraphics{figs-mine/bigdes-snpdens-ny--Fig2Bproto.pdf}}
+  \end{center}
+  \caption{Proposed caption: Attributes of SNP deserts for {\it T. pseudonana\/} isolates. A) SNP distributions across the 3 Mb of Chromosome 1 for the seven {\it T. pseudonana\/} isolates. Regions in blue have significantly low SNP density (``SNP deserts'') based on a negative binomial model (Methods). Pink(???) region is a gap of known size in the reference sequence. The large region centered near 1.5Mb is a 320Kb SNP desert present in all L-isolates but neither H-isolate. B) SNP densities (SNP per base-pair---$\mu\pm2\sigma$) in the 29 deserts that span at least 50Kb of the CCMP 1335 genome (blue) and the thirty regions surrounding these deserts (including deserts smaller than 50Kb; black).  }
+  \label{fig:2a2b}
+\end{figure}
+
+For comparison, here's an analogous plot for Italy (except needed to lower thresh to find any deserts; code breaks if none) :
+
+<<>>=
+if(exists('snp.tables.full')){
+  xx <- des.vs.non('figs-mine/bigdes-snpdens-it.pdf', strain=6, 
+                   length.thresh=25000, length.thresh.eff=T, nc=F, yclip=0.01)
+  print(xx)
+}
+@
+
+\includegraphics{figs-mine/bigdes-snpdens-it.pdf}
+
+In the NY plot, inter-desert region \#28 had unusually low SNP rate.  Fig below is that region ($\pm5$K).  Seems to be a SNP-free region of normal coverage with 2--4 interspersed regions of 2x -- 4x coverage, probably assembly errors (collapsed repeats), with ``SNPs'' that are actually copy-to-copy differences.  CNVnator calls 2--4 high-coverage patches there, and we call two shorter deserts in that interval, spanning approximately 36Kb of the 45Kb region.  This doesn't fundamentally challenge our story that the big deserts are much younger than nondeserts.  Here are CNVnator and desert calls in the vicinity:
+
+<<>>=
+cnv.chronly[cnv.chronly$strain=='tp1335' & cnv.chronly$chr=='Chr22' & cnv.chronly$start < 211000,]
+des.df[[7]][des.df[[7]]$Chr=='Chr22' & des.df[[7]]$Start < 211000,]
+@
+
+<<ch22-undes,size=sz,fig.width=fw,fig.height=fh,fig.align=fa>>=
+iBeg <- 29606538
+iEnd <- 29648988 
+seechunk(7,(iBeg+iEnd)/2,(iEnd-iBeg)/2+5000,snp.tables=snp.tables.full,ymax=400)
+@
+
+For comparison, here are all 1335 deserts with $>25$Kb non-exonic.  Advantages: (A) point 28 goes away, (B) $2\sigma$ error bars are slightly more visible so there is (somewhat) better evidence that these have concordant snp rates.  Disadvantages: (A) slightly harder to explain, (B) intervening rates at 8, 12 drop,  (C) fewer points, (D) need to look at H-clade, too, to pick an nc-length threshold that is clearly above theirs; 25k is probably in the ballpark, but I have not checked.
+
+<<>>=
+if(exists('snp.tables.full')){
+  xx <- des.vs.non('figs-mine/bigdes-snpdens-nc-ny.pdf', strain=7, 
+                   length.thresh=25000, length.thresh.eff=T, nc=T)
+  print(xx)
+}
+@
+
+\includegraphics{figs-mine/bigdes-snpdens-nc-ny.pdf}
+
+And comparable data for Italy, based on 10Kb non-exonic (a wild guess at a comparable threshold):
+
+<<>>=
+if(exists('snp.tables.full')){
+  xx <- des.vs.non('figs-mine/bigdes-snpdens-nc-it.pdf', strain=6,
+                   length.thresh=10000, length.thresh.eff=T, nc=T)
+  print(xx)
+}
+@
+
+\includegraphics{figs-mine/bigdes-snpdens-nc-it.pdf}
+
+
+\section{Small Deserts}
+\label{sec:small-deserts}
+
+A few disorganized thoughts on why I think the uniformity of the snp rate in the small deserts is potentially artifactual.  Avg snp rates, and avg distance to 5th snp are: 
+
+<<>>=
+bppersnp <- genome.length.constants()$genome.length.trunc/ddb.full$snp.tot
+names(bppersnp) <- names(snp.tables.chr1)
+rbind(bppersnp, fifth=5*bppersnp)
+@
+\noindent And so deserts aren't called until the 5th snp is about: 
+<<>>=
+des.threshold <- qnbinom(1e-4,5,1/bppersnp,lower.tail=F); des.threshold
+@
+\noindent base pairs away, which is about comparable to both the expected distance to the 5th and to the median desert lengths:
+<<>>=
+print(rbind(des.threshold, 
+            des.median=dsum.df[,'Median'],
+            des.thresh.over.expect=des.threshold/(5*bppersnp),
+            des.median.over.des.thresh=dsum.df[,'Median']/des.threshold),
+      digits=3
+)
+@
+
+\noindent i.e., the threshold of desertness is about 3.5 times the expected distance to the 5th snp, and the median desert length is only about twice the threshold.  The later means that we can't pack very many snps into a short desert, and likewise it is hard to arrange for there to be very few, meaning the snp rate for short deserts can't vary too much.  Example: in 1335, with threshold $\approx 3500$, having zero snps in a span of $L+3500$, followed by a cluster of 5 creates a desert of length $L$, say for $L\approx7000$;  seemingly a more likely configuration is to have 5--10 snps sprinkled over a similar distance, but packing more in will greatly shorten or destroy the desert, unless they are all packed at the ends. 
+
+Sprinkling SNPs at random, of course we would expect to see some patches where fewer snps land than expected, AND genomes tend to be more heterogeneous than simple random models predict, so occasional patches with low snp rates aren't entirely unexpected.
+
+We might be able to formalize this somehow, but probably not a priority.
+
+\section{What's a Desert?}
+\label{sec:desert-definition}
+
+In Wales, des.threshold is 2175, which is close to the min length of a desert, and shorter ones are at chromosome ends (e.g. 1105 below), while others look longer than they should be, e.g. 10 below:
+
+<<>>=
+des.threshold
+des.df[[3]][des.df[[3]]$Length <= 2175,]
+seedesert(3,1105, 100) # desert /- 100 bp
+des.df[[3]][10,]
+seedesert(3,10, 300)   # desert +/-300 bp
+seecounts(222626+c(-2,-1,0),3,snp.tables.full)
+seecounts(224906+(-2:2),3,snp.tables.full)
+snp.tables.full[[3]]$snp[224901:225200]
+@
+
+Desert at row 10 starts immediately after the adjacent pair of snps at 222624:222625 (in the cluster of snps in the non-exonic region at left in the plot), and extends up to but not including 224907, the 6th SNP following the start (the first in the cluster of 5 following the exon).  That cluster of 5 spans less than 300 bp, so position 222906, e.g., is definitely NOT sufficiently far from 5th snp to be $10^{-4}$ in neg bin model.  \emph{So}, I presume we have \emph{not} yet correctly described how deserts are defined... Aha, START at a position $<10^{-4}$, then include up to but not including 5th snp.  
+
+\section{Deserts-by-Chance}
+\label{sec:sim}
+
+What would we expect by chance?  Simple theoretical model: let $x_i$ be an indicator variable, 1 if genome pos $i$ has its 5th SNP so far away that prob is $<10^{-4}$, else 0.  Expected number of such positions is genome len times $10^{-4}\approx3200$.  Ignoring merging (which I expect to be rare with random snp placement), the first of every run of such positions starts a desert, and since P(desert length == $x$) declines rapidly with $x$, I would expect most such runs to be short, say ballpark 100 when des.threshold is 2-3K, so the NUMBER of deserts should be small (ballpark 3200/100=32?), and their total LENGTH should be ballpark 3200 plus des.threshold per desert, which should be less than about 100Kb (3.2Kb + 32 x 3000).
+
+\subsection{Simple Simulation}
+It's probably tractable to calculate the parameters above analytically, but the following simple simulation roughly replicates this.  Drop SNPs at random at rate $p$ (approx NY rate) on genome of length $n=32$ Mb, using corresponding des.threshold $L$.  Find all ``gap lengths'' (= distance from start of genome/a snp to (but excluding) 5th subsequent snp). Any snp where $gaps > L$ starts a desert; length of that gap minus $L$ approximates ``sum of $x_i$'' above, and sum of all gaps longer than $L$ approximates total desert length.  Repeat 20 times and output summary stats. 
+
+<<>>=
+des.sim <- function(p=1/200, 
+                    n=genome.length.constants()$genome.length.trunc, 
+                    L=qnbinom(1e-4,5,p,lower.tail=F)){
+  out.df <- NULL
+  for(i in 1:20){
+    faux.snps   <- sample(n,p*n)
+    sorted.faux <- sort(faux.snps)
+    n.faux <- length(sorted.faux)
+    gaps   <- c(sorted.faux[5:n.faux],n+1)-c(0,sorted.faux[1:(n.faux-4)])-1
+    out.df <- rbind(out.df, data.frame(number.of.deserts=sum(gaps > L), 
+                                       des.len.minus.L  =sum(pmax(0, gaps - L)), 
+                                       des.len          =sum(gaps[gaps > L]),
+                                       max.len          =max(gaps)))
+  }
+  out.df <- rbind(out.df, mu=data.frame(number.of.deserts=round(mean(out.df[,1])), 
+                                        des.len.minus.L  =round(mean(out.df[,2])), 
+                                        des.len          =round(mean(out.df[,3])),
+                                        max.len          =round(mean(out.df[,4]))))
+  return(out.df)
+}
+
+des.sim()
+@
+
+Averages are in line with ``ballpark numbers'' above: $<$20 deserts, $<$4Kb total of ``excess desert'' (length in excess of $L$), and $<$100Kb total desert. 
+
+Repeat with Wales param; similar results:
+
+<<>>=
+des.sim(p=1/122.9541)
+@
+
+In short, all way lower than observed in Thaps. \emph{I suspect} that this difference is partially due to the fact that our global snp rate estimates lump together coding and noncoding; even though they differ by only about 1.5x, the cummulative effect of the lower exonic rate over a long exon frequently reaches our statistical significance threshold.  Modeling that would probably generate a number of small deserts.  
+
+\subsection{One-Giant-Exon Simulation}
+\label{sec:giant-exon}
+To test the above suggestion, look at simulation like above, but using the same (genome-wide) $L$ threshold with the lower exonic SNP rate, on a ``genome'' of length equal to the total exonic content.
+
+<<>>=
+nrow(snp.tables.full[[1]])                     # these tables have full genome
+genome.length.constants()$genome.length.full
+genome.length.constants()$genome.length.trunc  # but I only want Chr's (no organelles, BD_)
+exonic <- sum(snp.tables.full[[1]]$exon[1:genome.length.constants()$genome.length.trunc])
+exonic
+@
+<<>>=
+des.sim2 <- function(p = 1/200, n = genome.length.constants()$genome.length.trunc){
+  L <- qnbinom(1e-4,5,p,lower.tail=F)
+  p2 <- p/1.5                                  # p2 is approx exonic SNP rate
+  cat('Ditto, but ~exonic p2 =', p2, 'exonic =', exonic, 'L =', L, ':\n')
+  out2.df <- des.sim(p2,exonic,L)
+  print(out2.df)
+}
+@
+<<>>=
+des.sim2(p=1/200)       # ~ NY SNP rate
+des.sim2(p=1/122.9541)  # ~ Wales SNP rate
+@
+
+This is a significant overestimate of ``false positives'' since the real genome is a mix of exon/non-exon and few exons have length $>L$.  Furthermore, stats given elsewhere showed that deserts are not sharply enriched for exonic content, but overall it does suggest that \textit{small} desert predictions include many false positives from our simple model, but our \textit{big} deserts are extremely unlikely to be false positives; the largest deserts seen in these simulations ($\approx7$Kb) are only about twice as long as the min desert.  But of course the model could be made more realistic.
+
+\subsection{A Permutation Test}
+Here's an alternate tack:  permute SNP positions in exons seperately from permuted SNP positions in non-exons, then look at gaps/desert predictions.
+
+<<>>=
+des.perm <- function( st=7, p=NULL, times=20){
+  nn <- genome.length.constants()$genome.length.trunc
+  sim.ex  <- snp.tables.full[[st]]$exon[1:nn]
+  sim.snp <- snp.tables.full[[st]]$snp [1:nn]
+  if(is.null(p)){
+    p <- sum(sim.snp)/nn
+  }
+  L <- qnbinom(1e-4,5,p,lower.tail=F)
+  sim.nex <- sum(sim.ex)
+  cat('Permuted Desert Test: strain', st, ', p =', p, ', L =', L, '\n')
+  out.df <- NULL
+  gapl <- NULL
+  for (i in 1:times){
+    sim.snp[ sim.ex] <- sample(sim.snp[ sim.ex],    sim.nex, replace=FALSE)
+    sim.snp[!sim.ex] <- sample(sim.snp[!sim.ex], nn-sim.nex, replace=FALSE)
+    sorted.faux <- which(sim.snp==1)
+    
+    n.faux <- length(sorted.faux)
+    gaps   <- c(sorted.faux[5:n.faux],n+1)-c(0,sorted.faux[1:(n.faux-4)])-1
+    out.df <- rbind(out.df, data.frame(number.of.deserts=sum(gaps > L), 
+                                       des.len.minus.L  =sum(pmax(0, gaps - L)), 
+                                       des.len          =sum(gaps[gaps > L]),
+                                       max.len          =max(gaps)))
+    gapl <- c(gapl, gaps[gaps > L])
+  }
+  out.df <- rbind(out.df, mu=data.frame(number.of.deserts=round(mean(out.df[,1])), 
+                                        des.len.minus.L  =round(mean(out.df[,2])), 
+                                        des.len          =round(mean(out.df[,3])),
+                                        max.len          =round(mean(out.df[,4]))))
+  cat('Number of deserts in', times, 'trials:', length(gapl), ', length distribution:\n')
+  print(c(summary(gapl),SD=sd(gapl)))
+  return(list(des.lengths=gapl, twenty=out.df))
+}
+@
+<<>>=
+dp7 <- des.perm(7)
+dp7$twenty
+@
+<<>>=
+dp3 <- des.perm(3)
+dp3$twenty
+opar <- par(mfrow=c(1,2), no.readonly=TRUE)
+hist(dp7$des.lengths)
+hist(dp3$des.lengths)
+par(opar)
+@
+
+So, treating exons/non-exons separately does increase the number and size of deserts a bit, but not nearly as drastically as the giant exon model in \ref{sec:giant-exon}.  This permutation test is probably a bit anti-conservative, since lumping SNP rates into just two classes underestimates the heterogeneity of the genome.  However, based on all of the simulation results, even one desert of 50Kb or longer (let alone the $\approx29$ seen in L-clade) is very improbable---50Kb is roughly 10x longer than the longest desert seen in any of our random trials and more than 100$\sigma$ above the mean seen in the permutations tests.
+
+\textbf{Bottom Line:}
+The big deserts are so large and so strongly depleted of SNPs that they will not arise from our simple null model, even after accounting for differential SNP rates in exons.  Deserts on the scale of genes, however, are likely to reflect purifying selection in at least some cases.
+
+% remember to do this to enable Id keyword substution: svn propset svn:keywords Id nc-snps.rnw 
+\vfill\footnotesize\flushright SVN ID I miss you. $ $Id: nc-snps 2017-07-19 or later.$ $
+\end{document}

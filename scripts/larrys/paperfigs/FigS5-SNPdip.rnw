@@ -1,0 +1,130 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+%% see hack below which.snp.tables to see how this is patched via the .aux file:
+\providecommand{\whichsnptables}{(re-run latex to see which.snp.tables())} 
+
+\begin{document}
+\title{Fig S5: SNPdip Figure For ``Supplement''\\\large\whichsnptables}
+\maketitle
+
+\tableofcontents
+
+\section{Intro}
+\noindent
+This document just generates the ``SNPdip'' figure for the Supplement; it was once ED 3, later ED 4;
+it is currently S5. Much more explanation and analysis of this can be found in SNPdip.rnw (from
+which most of this was lifted).
+%
+\section{Preliminaries}
+%
+Load utility R code; do setup:
+
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+
+% setup.my.knitr includes opts_chunk$set(size='footnotesize'), but needed 1st time.
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('paperfigs')   # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr()
+figdir <- 'FigS5-SNPdip-figs/'
+generic.setup(figdir)            # Create figs dir etc., if needed.
+@
+
+Load the tables.  By default, this will just build/cache/load the Chr1 subset.  Full genome analysis 
+should be possible, but I doubt the extra data will reveal anything new.
+
+<<loadtables>>=
+snp.tables.chr1 <- load.snp.tables(use.chr1.tables=TRUE, data.name='full.tables.01.26.14') # see wlr.R for paths
+@
+
+A \LaTeX{} hack: I want which.snp.tables info in doc title/page headers, but it is unknown until now, 
+so the following writes a command definition \verb|\whichsnptables| into the .aux file, which is 
+read during the \emph{next} \LaTeX{} run, when \verb|\begin{document}| is processed:
+\makeatletter
+\immediate\write\@auxout{\noexpand\gdef\noexpand\whichsnptables{\Sexpr{which.snp.tables(snp.tables.chr1)}}}
+\makeatother
+{\footnotesize
+\begin{verbatim}
+  \makeatletter
+  \immediate\write\@auxout{\noexpand\gdef\noexpand\whichsnptables{\Sexpr{which.snp.tables(snp.tables.chr1)}}}
+  \makeatother
+\end{verbatim}
+}
+
+%
+\section{Average Coverage Drops Around SNPs}
+%
+
+Basic story is that average coverage drops around SNPs.  We presume the reason is that the short
+read mapping software tolerates only a small number of mismatches to the reference genome.  A
+correct read across an alternate allele has, by definition, at least one mismatch, so additional
+read errors and/or low quality positions are more likely to push the read below the mapper's
+alignment threshold, resulting in lower coverage.  \texttt{dip.summary} below calculates the desired
+summary statistics, and \texttt{hilodip} plots them.  [NOTE: this function is slow, taking 10-15 
+minutes per call to process Chr1.  To facilitate debugging of layout, plot formats, derivative
+analyses, etc., all calls should include d.r.e and d.r.name parameters; then flipping T/F below will
+toggle \emph{all} between a short 10k test case and the full Chr 1 analysis.]
+
+<<>>=
+if(T){                  # small example for testing
+  d.r.name <- 'tenktest'   # dip.region.name
+  d.r.e <- 10000           # dip.region.end
+} else {                # all of Chr 1
+  d.r.name <- 'Chr1'
+  d.r.e <- length(snp.tables.chr1[[1]]$Cov)
+}
+@
+<<>>=
+cachet('dip.sum', dip.summary(d.r.name, dip.region.end=d.r.e, snp.tables=snp.tables.chr1))
+@
+
+<<>>=
+for(st in 1:7){
+  pdf(paste(figdir, 'snpdip-chr1-', names(snp.tables.chr1)[st], '.pdf',sep=''), height=5, width=10);
+  showdip(st, dip.sum,c(T,T,F,F,F,T,'both'))
+  dev.off()
+}
+@
+
+The story is quite solid---although there is considerable variability when the number of SNPs is
+small (e.g., Gyre), when averaged over sufficiently many SNP positions, the average coverage is
+reasonably flat for positions more than 25 bases away from a SNP (vertical grey lines), but drops 
+linearly as one approaches the SNP.  These boundaries and the linear drop are also as expected: Most
+sequencing was done with 25bp reads (actually 25 x 2 mate paired reads), so positions more than 25 
+bases from a SNP are unaffected by it, but a read covering a position $d<25$ positions away has a 
+chance of $\approx (25-d)/25$ of \emph{also} covering the SNP, and as explained above, there is a 
+bias against aligning those reads.  As further confirmation of this model, I believe that we 
+included additional sequence data for both Italy and NY---35bp (unpaired) reads---and plots for both 
+show a slightly wider ``vee'' with a slightly shallower slope for the last $\approx$10 positions, 
+reflecting the portion of coverage derived from the longer reads.
+
+\newpage
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-1335.pdf', sep='')}}
+\end{center}
+\caption{{\bf Suggested Caption: Read depth near SNPS.} Plotted is the read depth within $\pm100$ nucleotides of single nucleotide polymorphisms (SNPs) identified by SAMtools, averaged over all 15582 SNPs called on Chromosome 1 of CCMP 1335.  X-axis: distance from SNP (bp).  Y-axis: read depth.  Horizontal blue line: average read depth across Chromosome 1.  Vertical grey lines: $\pm25$bp from SNP.  [[FOLLOWING TEXT IS PROBABLY BETTER IN THE ACCOMPANYING PROSE THAN IN THE CAPTION, BUT SOMEWHERE, SAY SOMETHING LIKE: CCMP1335 was sequenced with a mixture of 25bp mate-paired reads and 36bp single-end reads (TONY: ARE THESE NUMBERS CORRECT?).  The vertical grey lines in the figure mark the range in which the 25bp reads could simultaneously include the indicated position and the central SNP.  The probability that a randomly placed read covering a position $d$ base pairs away from the central SNP will \emph{not} cover the SNP rises linearly with $|d|$, which presumably explains the observed linear increase in coverage over the $\pm$read length interval.]]}
+\end{figure}
+
+Here are the others for comparison; pick whichever.
+
+\noindent%
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-1007.pdf', sep='')}}\\
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-1012.pdf', sep='')}}\\
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-1013.pdf', sep='')}}\\
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-1014.pdf', sep='')}}\\
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-1015.pdf', sep='')}}\\
+\includegraphics[width=\linewidth]{\Sexpr{paste(figdir, 'snpdip-chr1-3367.pdf', sep='')}}\\
+
+
+% remember to do this to enable Id keyword substution: svn propset svn:keywords Id ed3.rnw 
+\vfill\footnotesize\flushright SVN ID I miss you $ $Id: FigS5-SNPdip.rnw 2017-05-29 or later ruzzo $ $
+\end{document}

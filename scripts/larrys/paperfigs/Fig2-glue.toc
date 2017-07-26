@@ -1,0 +1,5 @@
+\contentsline {section}{\numberline {1}Intro}{1}{section.1}
+\contentsline {section}{\numberline {2}Preliminaries}{1}{section.2}
+\contentsline {section}{\numberline {3}Setup for Fig 2A}{1}{section.3}
+\contentsline {section}{\numberline {4}Setup for Fig 2B}{2}{section.4}
+\contentsline {section}{\numberline {5}Create Plot}{2}{section.5}

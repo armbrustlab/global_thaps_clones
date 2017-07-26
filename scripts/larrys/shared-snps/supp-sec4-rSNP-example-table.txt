@@ -1,0 +1,30 @@
+Unnamed table with "refined SNP" example in supp sec 4.  Formed by cut/paste from
+shared-snps-trunc-unfiltered.tex, some slight tweaking to align columns.  rSNP column
+added by hand.
+
+  chr  pos Ref Strain  A   G  C   T SNP rSNP exon indel
+       
+ Chr1 1055   G                                             
+                 1007  0  41  0   2   0    0 TRUE FALSE        
+                 1012  1  63  0   8   0    1 TRUE FALSE        
+                 1013  1  62  0   8   0    1 TRUE FALSE        
+                 1014  1  26  0   8   1    1 TRUE FALSE        
+                 1015  0  44  0  14   0    1 TRUE FALSE        
+                 3367  0  27  0   0   0    0 TRUE FALSE        
+                 1335  0  78  0  40   1    1 TRUE FALSE  
+ Chr1 8670   A                                             
+                 1007 19   0  0   7   0    1 TRUE FALSE        
+                 1012 36   0  0  12   0    1 TRUE FALSE        
+                 1013 44   0  0  12   0    1 TRUE FALSE        
+                 1014 10   0  0   7   0    1 TRUE FALSE        
+                 1015 24   0  0  11   1    1 TRUE FALSE        
+                 3367 18   0  0   0   0    0 TRUE FALSE        
+                 1335 27   0  0   6   0    1 TRUE FALSE
+ Chr1  2013   T                                             
+                 1007  4   0  0  20   0    0 TRUE FALSE        
+                 1012  8   0  0  34   0    0 TRUE FALSE        
+                 1013  9  12  0  16   1    0 TRUE FALSE        
+                 1014  1   0  0  19   0    0 TRUE FALSE        
+                 1015 13   0  0  24   1    0 TRUE FALSE        
+                 3367 10   0  0  36   0    0 TRUE FALSE        
+                 1335 20   0  0  68   1    0 TRUE FALSE   

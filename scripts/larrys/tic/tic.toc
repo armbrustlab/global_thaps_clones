@@ -1,0 +1,8 @@
+\contentsline {section}{\numberline {1}Intro}{1}{section.1}
+\contentsline {section}{\numberline {2}Preliminaries}{1}{section.2}
+\contentsline {section}{\numberline {3}CNVnator Analysis}{2}{section.3}
+\contentsline {section}{\numberline {4}Recreating the Time-In-Culture Plot}{7}{section.4}
+\contentsline {section}{\numberline {5}Time-In-Culture for Above-Average Coverages}{14}{section.5}
+\contentsline {section}{\numberline {6}Shared/Private Hemizygosity}{18}{section.6}
+\contentsline {section}{\numberline {7}Examples}{44}{section.7}
+\contentsline {section}{\numberline {8}Unshared hemi regions}{173}{section.8}

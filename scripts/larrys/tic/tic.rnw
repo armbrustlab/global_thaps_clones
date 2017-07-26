@@ -1,0 +1,967 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+\begin{document}
+\title{Time-In-Culture Analysis}
+\maketitle
+
+\tableofcontents
+
+\section{Intro}
+More stream-of-consciousness analysis, focused (euphemistically speaking) on Time-In-Culture effects, especially hemizygosity.
+
+\section{Preliminaries}
+Load utility R code; do setup:
+
+% setup.my.knitr includes opts_chunk$set(size='footnotesize'), but needed 1st time.
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('tic')         # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr('figs-knitr/')
+my.figs.dir <- 'figs-mine/'
+generic.setup(my.figs.dir)            # Create figs dir etc., if needed.
+# some more params for knitr
+if(exists('opts_knit')){
+  # If knitr is loaded, set some of its options.  
+  # (Skip if not loaded, e.g., when playing in Rstudio.)
+  opts_chunk$set(fig.align='center',fig.show='hold',fig.pos='tp')
+  opts_knit$set(eval.after='fig.cap') ## so fig caption can be built using values from the code 
+  # opts_knit$set(width=1350) # width=85 in setup.my.knitr; do we want to override it?
+}
+@
+
+\iffalse
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+<<size='footnotesize'>>=
+# attempt to calibrate print width in footnotesize (this chunk) and scriptsize, tiny (next 2)
+#        1         2         3         4         5         6         7         8         9         A
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+
+<<size='scriptsize'>>=
+#        1         2         3         4         5         6         7         8         9         A         B
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+
+<<size='tiny'>>=
+#        1         2         3         4         5         6         7         8         9         A         B         C         D         E         F         G
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+\fi
+
+% Also load the desert tables, in case needed:
+
+<<>>=
+# from svn+ssh://ceg1.ocean.washington.edu/var/svn/7_strains/trunk/code/snpNB/data
+# load('../../../data/des.rda')
+@
+
+\section{CNVnator Analysis}
+
+Load Chris' CNVnator output file.  The 4 paths below are 
+(1) Larry's old path within the svn tree; 
+(2) newer one within git tree; 
+(3) the same, but relative to current dir; and 
+(4) local dir. 
+I decided to put a symlink in the local dir with that name, linked to the real file via path3;
+I think this will make it more obvious what to change should we ever reoranize the tree.
+
+<<>>=
+getwd() ## just to be sure it's set correctly
+#cnv.path1 <- '/Users/ruzzo/Documents/s/papers/Thaps/chris/cnv.txt'
+#cnv.path2 <- '/Users/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/data/cnv.txt'
+#cnv.path3 <- '../../../data/cnv.txt'
+cnv.path <- 'cnv.txt'  ## should be a symlink in tic directory to the CNVnator output
+cnv <- read.delim(cnv.path)
+@
+
+Check for/correct oddities:
+
+<<>>=
+str(cnv)
+cnv[c(1:4,2378:2380),]
+cnv$filtered <- cnv$filtered == 'True'     ## convert factor to Bool
+all(cnv$length == (cnv$end-cnv$start+1))   ## start/end/length as expected
+for(i in 1:9){
+  if(any(is.na(cnv[,i]))){
+    cat('NA in column',i,'\n')
+  }
+}
+strain.names <- c(paste('tp10',c('07',12:15),sep=''),'IT','tp1335') # old-school names; IT = 3367
+rbind(sort(strain.names),levels(cnv$strain))
+@
+
+Some simple descriptive statistics.  Cov ratios near 1 are expected, not called, but lots of stuff below 0.8 and above 1.2: 
+
+<<>>=
+hist(cnv$cov_ratio,breaks=0:120/10)
+@
+
+What does "Filtered" column mean?  It correlates to \verb|dup_frac|, but loosely:
+
+<<>>=
+hist(cnv$dup_frac,breaks=0:100/100)
+hist(cnv$dup_frac[!cnv$filtered],breaks=0:100/100,col='blue',add=T)
+legend('topright',legend='blue=non-filtered',bty='n')
+@
+<<>>=
+boxplot(dup_frac ~ filtered, data=cnv,ylab='dup_frac', xlab='filtered')
+@
+<<>>=
+library(compactr)
+opar <- par(mfrow=c(4,2),mar=c(0,0,1,.5),oma=c(3,4,1,0))
+thexlim <- log2(1+range(cnv$cov_ratio))
+for(st in strain.names){
+  eplot(xlim=thexlim, xlab='log2(1+cov_ratio)', ylim=c(0,1), ylab='dup_frac', main=st)
+  points(dup_frac[strain==st] ~ log2(1+cov_ratio[strain==st]), data=cnv, col=ifelse(filtered,'black','blue'))
+  if(st=='IT'){addxaxis()}
+}
+plot(0,0,type='n',axes=F,frame.plot=F,xlab='',ylab='')
+legend('center',legend='blue=non-filtered',bty='n')
+par(opar)
+@
+
+Most ``events'' are shorter than 5-10k, but the few big events cover most of the deleted bases.
+
+<<>>=
+opar <- par(mfrow=c(1,2))
+hist(log2(cnv$length))
+sl <- sort(cnv$length)
+plot(log2(sl),cumsum(sl)/7,xlab='log2(cnv$length)',ylab='cumm hemi bases, avg per strain',pch='.')
+par(opar)
+@
+
+\section{Recreating the Time-In-Culture Plot}
+
+Per Chris' 10/3/2014 email, Michaela made the original TIC graph based on filtered = False, $0.3 < \verb|cov_ratio| < 0.8$, only on chromosomes. (gawk 1-liner broken over 3 for print purposes.)
+{\small
+\begin{verbatim}
+gawk 'NR > 1 && $7 == "CNVnator" && $6 == "False" && $8 >.3 && $8 < .7 && \
+  substr($2,1,3) == "Chr" {x[$1] += $5} END \
+  {for (strain in x) {print strain " " x[strain]}}' cnv.txt
+
+tp1012 1619100
+tp1013 1374400
+tp1014 495100
+tp1015 935600
+tp1007 1595600
+tp1335 1428700
+\end{verbatim}
+}%small
+
+Can we reproduce that? For each strain, count number and total length of non-filtered regions on Chr's with coverage ratio in 10 equal bins from 0.0 to 1.0.
+
+<<>>=
+any(cnv$cov_ratio==1.0) ## FALSE
+any(cnv$cov_ratio==0.9) ## FALSE
+any(cnv$cov_ratio==0.8) ## FALSE
+any(cnv$cov_ratio==0.7) ## FALSE
+any(cnv$cov_ratio==0.3) ## FALSE
+sum(cnv$cov_ratio==0.0) ## 26, but only 1 not filtered, chromosomal:
+cnv[cnv$cov_ratio==0.0 & !cnv$filtered & substr(cnv$chr,1,3)=='Chr',]
+# how many satisfy filtering criteria??
+sum(!cnv$filtered) ## [1] 2020
+sum(substr(as.character(cnv$chr),1,3) == 'Chr')  ## [1] 1956
+sum(cnv$cov_ratio <= 1.0)  ## [1] 796
+sum(!cnv$filtered & substr(as.character(cnv$chr),1,3) == 'Chr' & cnv$cov_ratio <= 1.0) ## [1] 412
+pick <- !cnv$filtered & substr(as.character(cnv$chr),1,3) == 'Chr' & cnv$cov_ratio <= 1.0
+cov.intervals <-paste('(', seq(0.0, 0.9, 0.1), ',', seq(0.1, 1.0, 0.1), ']', sep='')
+low.length <- matrix(0,10,7,dimnames=list(cov.intervals, strain.names))
+low.counts <- matrix(0,10,7,dimnames=list(cov.intervals, strain.names))
+#pack <- logical(nrow(cnv))
+for(i in 1:nrow(cnv)){
+  if(!cnv$filtered[i] && substr(as.character(cnv$chr[i]),1,3) == 'Chr' && cnv$cov_ratio[i] <= 1.0){
+    #pack[i] <- T
+    rat <- ceiling(cnv$cov_ratio[i] * 10)
+    st  <- as.character(cnv$strain[i])
+    low.counts[rat,st] <- low.counts[rat,st] + 1 
+    low.length[rat,st] <- low.length[rat,st] + cnv$length[i]
+  }
+}
+# pick == pack & 412 entries, but one of them has zero ratio, so excluded from counts
+low.counts.37 <- colSums(low.counts[4:7,]) ; low.counts.37
+low.length.37 <- colSums(low.length[4:7,]) ; low.length.37
+# lengths match Chris' email (excluding IT, which he didn't report)
+# tp1007  tp1012  tp1013  tp1014  tp1015      IT  tp1335 
+#1595600 1619100 1374400  495100  935600  269900 1428700 
+low.counts.38 <- colSums(low.counts[4:8,]) ; low.counts.38
+low.length.38 <- colSums(low.length[4:8,]) ; low.length.38
+low.length.all <- colSums(low.length) ; low.length.all
+cbind(low.length, low.counts)
+@
+
+Nothing was called between 0.8 and 1.0, presumably CNVnator parameters.  Total in the range between 0.3 and 0.7 matches the numbers in Chris' email.  Total in all ranges matches, too, except for 1012, which has one region of ratio zero, that wasn't counted above (my first bin is (0.0, 0.1]).  Below we plot total versus date placed in culture.  The 5 lines are totals in the (.3, .4], (.3,.5], ..., (.3,.8] windows, just to see how each bin contributes to the total.  The clear message, as is also obvious from the length table printed above, is that the .5 to .8 range is where most of the action is.  
+
+<<>>=
+dates <- unlist(lapply(1:7,function(st){as.integer(st.loc(st,id=F,loc=F,date=T))}))
+perm <- order(dates)
+plot(0,0,type='n', xlim=range(dates), ylim=c(0,2e6), xlab='Isolation Date', ylab='Hemizygous Bases')
+lines(dates[perm], low.length[4,perm],type='b')
+for(i in 5:8){
+  lines(dates[perm], colSums(low.length[4:i,perm]),type='b')
+}
+ids <- unlist(lapply(1:7,function(st){st.loc(st,id=T,loc=F,date=F)}))
+text(dates, low.length.38, labels=ids,cex=.6,pos=3)
+points(dates,low.length.all,pch='x')  # showing "all" changes little
+@
+
+The graph Michaela made is most similar to the last (highest) of these, but her Y scale is a bit larger, perhaps due to inclusion of ``non-Chr'' and/or ``filtered'' calls.  I like the above graph better, it seems a bit more conservative, while still showing the interesting trend.
+
+For the paper supplement, I'd just show the .3--.8 points, plus a trend line.
+
+<<old-hemizygosity-supp-fig>>=
+plot(dates, low.length.38/1000,type='p', xlim=range(dates)+c(-2,2), ylim=c(0,2e6/1000), 
+     xlab='Isolation Date', ylab='Hemizygous Kilobases')
+text(dates, low.length.38/1000, labels=ids,cex=.6,pos=3)
+abline(lm(low.length.38/1000 ~ dates)$coefficients)
+text(1990,1.5e6/1000, paste('rho =',format(cor(low.length.38 , dates),digits=2)))
+@
+
+Make the same plot for any coverage slice, optionally with fancy legend:
+
+<<>>=
+tic <- function(lo=0.3, hi=0.8,                           # coverage thresholds
+                cnv.tbl=cnv, thedates=dates, theids=ids,  # stuff computed above
+                theylim=NULL,                             # y axis limits
+                fancy=FALSE, legcex=0.7                   # fancy legend
+                ){
+  opar <- par(no.readonly=TRUE); on.exit(par(opar))
+  pick <- !cnv.tbl$filtered & substr(as.character(cnv.tbl$chr),1,3) == 'Chr' & 
+          lo <= cnv.tbl$cov_ratio & cnv.tbl$cov_ratio <= hi
+  lengths <- matrix(NA,7,1,dimnames=list(rep('',7)))
+  for(st in 1:nlevels(cnv.tbl$strain)){
+    st.fact <- levels(cnv.tbl$strain)[st]
+    rownames(lengths)[st] <- st.fact
+    lengths[st] <- sum(cnv.tbl$length[pick & cnv.tbl$strain==st.fact])
+  }
+  lengths <- lengths[c(2:6,1,7),] # reorder
+  if(is.null(theylim)){theylim <- range(lengths)/1000}
+  plot(thedates, lengths/1000, type='p', 
+       xlim=range(thedates)+c(-2,2), 
+       ylim=theylim,
+       xlab='Isolation Date (Year)', 
+       ylab=ifelse(fancy, 'Estimated Hemizygous Deletion (Kilobases)',
+                   paste('Kbases w/ cov_ratio in [', lo, ',', hi, ']',sep='')
+       ),
+       pch=ifelse(fancy,19,1)
+  )
+  if(fancy){
+    theids <- st.locs(1:7,id=F,loc=F,locabbrv=T,date=F)
+  }
+  text(thedates, lengths/1000, cex=legcex, pos=ifelse(fancy, 2, 3), labels=theids)
+  abline(lm(lengths/1000 ~ thedates)$coefficients)
+  legend(ifelse(fancy, 'bottomleft', 'topright'), 
+         legend=paste('rho =', format(cor(lengths/1000 , thedates),digits=2)), 
+         bty='n', cex=legcex)
+  if(fancy){
+    thelocs <- st.locs(1:7,id=F,loc=T,locabbrv=F,date=F)
+    thelocdate <- paste( ' - ' , thelocs, ' (', thedates, ')', sep='')
+    # getting legend to align nicely using non-monospaced font is a bit fussy.
+    # Use "text()" to place strain "loc abbrev" (theids) separately from 
+    # " - full.loc (dates)" (thelocdate) so that I can control x-position.   
+    # Put legend at upper right.  Several arbitrary constants below (lines marked **)
+    # reflect empirical fiddling to make it look nice: top @ 25Kb below max y, 
+    # right edge @ 2009, 1.5x line spacing, rectangle margin
+    widest.locdate <- max(strwidth(thelocdate, cex=legcex)) # widest location/date
+    widest.abbrv   <- max(strwidth(theids, cex=legcex))     # widest loc abbreviation
+    height         <- max(strheight(thelocdate, cex=legcex))# text height
+    yby  <- height * 1.5                                    # ** line spacing
+  # maxy <- max(lengths)/1000 - 25                          # ** top just below highest point
+    maxy <- theylim[2] - height - 25                        # ** top just below y axis limit
+    ys   <- seq(from=maxy, by=-yby, length.out=7)           #    y-coords for each line
+    x2   <- 2009 - widest.locdate                           # ** right edge @ 2009
+    x1   <-   x2 - widest.abbrv
+    rect(x1-1.0, maxy-7.2*yby, 2009+1.0, maxy+1.2*yby)      # ** inflate rectangle slightly
+    text(x1, ys, cex=legcex, adj=0, labels=theids[order(dates)])
+    text(x2, ys, cex=legcex, adj=0, labels=thelocdate[order(dates)])
+  }
+  return(lengths)
+}
+@
+
+<<>>=
+tic() # debug test: duplicate graph above?
+@
+
+<<>>=
+fig.S4.path <- paste(my.figs.dir, 'FigS4-hemizygosity.pdf', sep='')
+pdf(fig.S4.path,height=5,width=6)
+tic(fancy=TRUE,theylim=c(0,2e6/1000)) # fancy version for paper (Supp Fig S4).
+dev.off()
+@
+\includegraphics{\Sexpr{fig.S4.path}}
+
+\section{Time-In-Culture for Above-Average Coverages}
+
+<<>>=
+max(cnv$cov_ratio)
+@
+
+Time-in-culture also correlates with coverage above 1:
+
+<<alldups>>=
+tic(1.2,1000)
+@
+
+And with possible trisomies:
+
+<<trisomy>>=
+tic(1.2,1.75)
+@
+
+But only weakly with duplications:
+
+<<duplication>>=
+tic(1.75,2.5) 
+@
+
+And not with triplications (or higher), as the totals get smaller/noisier, (although there is a distinct trend if Italy were excluded):
+
+<<tripleup>>=
+tic(2.5,1000)
+@
+
+\section{Shared/Private Hemizygosity}
+
+A quick eyeball at shared/private
+<<>>=
+cnvp <- cnv[pick,]
+pi <- order(cnvp$chr,cnvp$start,cnvp$length,cnvp$strain)
+cnvv <- cnvp[pi,]
+cnvv
+@
+
+Load full tables.
+
+<<loadtables>>=
+full.tables.01.26.14 <- load.snp.tables(use.chr1.tables = FALSE, data.name='full.tables.01.26.14')
+names(full.tables.01.26.14) <-  c('1007','1012','1013','1014','1015','3367','1335')
+full <- full.tables.01.26.14
+@
+
+<<>>=
+# return table with chr names, start/end positions and lengths for all 66 chroms, scaffolds etc.
+find.chromosome.boundaries <- function(full=full.tables.01.26.14){
+  starts <- which(full[[1]]$pos==1)
+  ends <- c(starts[-1]-1,nrow(full[[1]]))
+  chromosome.table <- data.frame(chr=full[[1]]$chr[ends], start=starts, end=ends, 
+                                 len=full[[1]]$pos[ends],stringsAsFactors=F, 
+                                 row.names = as.character(full[[1]]$chr[ends]))
+  return(chromosome.table)
+}
+cachet('chromosome.table', find.chromosome.boundaries())
+@
+<<>>=
+# convert global index 1..32M into 'ChrX:offset' format.
+g2chrloc <- function(x, chr.tab=chromosome.table){
+  for(i in 1:nrow(chr.tab)){
+    if(x <= chr.tab$end[i]){
+      break
+    }
+  }
+  return(paste(chr.tab$chr[i], x-chr.tab$start[i]+1, sep=':'))
+}
+#  the reverse; x is numeric or 'digits' or list(chr,pos) or 'chr:pos'
+chrloc2g <- function(x, chr.tab=chromosome.table){
+  if(is.list(x)){
+    return(chrloc2gi(x[[1]], x[[2]], chr.tab=chr.tab))
+  }
+  if(is.numeric(x)){
+    return(x)
+  }
+  if(grepl('^\\d*$', x)){
+    return(as.numeric(x))
+  }
+  if(grepl('^\\w*:\\d*$', x)){
+    split <- strsplit(x, ':')[[1]]
+    return(chrloc2gi(split[1], split[2], chr.tab=chr.tab))
+  }
+  cat('Unrecognized chrloc format', x, '\n')
+  return(NA)
+}
+chrloc2gi <- function(chr, loc, chr.tab=chromosome.table){
+  row <- chr.tab[chr,]
+  return(row$start+as.numeric(loc)-1)
+}
+#tests:
+#chrloc2g('Chr1:1')
+#chrloc2g('Chr2:1')
+#chrloc2g('Chr2:10')
+@
+<<>>=
+chrs <- grep('Chr', as.character(chromosome.table$chr))
+chr.starts  <- paste(as.character(chromosome.table$chr[chrs]), 1, sep=':')
+chr.ends    <- paste(as.character(chromosome.table$chr[chrs]), chromosome.table$len[chrs], sep=':')
+cnvv.starts <- paste(as.character(cnvp$chr), cnvp$start, sep=':')
+cnvv.ends   <- paste(as.character(cnvp$chr), cnvp$end+1, sep=':')
+breakpoints <- sort(unique(c(chr.starts, chr.ends, cnvv.starts, cnvv.ends)))
+bkp.chr   <- sub(':.*', '', breakpoints)
+bkp.start <- as.integer(sub('.*:', '', breakpoints))
+pi2 <- order(bkp.chr, bkp.start)
+hemi.tab <- data.frame(chr=bkp.chr[pi2], start = bkp.start[pi2], end=0, length=0, 
+                       row.names=breakpoints[pi2], 
+                       matrix(nrow=length(pi2), ncol=7, dimnames=list(NULL,strain.names)), 
+                       stringsAsFactors=F)
+hemi.tab$end <- c(hemi.tab$start[-1]-1, 0)   # drop first, add zero at end
+endz <- (hemi.tab$end == 0)                  # above puts zeros at last entry for each chr;
+hemi.tab$end[endz] <- hemi.tab$start[endz]-1 # replace with start-1 (==> length 0 segment)
+hemi.tab$length <- hemi.tab$end - hemi.tab$start + 1
+# NOTE: chr ends are still sometimes funky in the table, since I put in the exact chr end, whereas 
+# CNVnator seems to round up to a multiple of 100, so the real end sometimes preceeds the end of a
+# CNVnator block.
+for(i in 1:nrow(cnvv)){
+  #cat(i,': ')
+  j <- match(paste(cnvv$chr[i],cnvv$start[i], sep=':'), rownames(hemi.tab))
+  if(is.na(j)){cat(i,'not found\n')}
+  while(j <= nrow(hemi.tab) && 
+             hemi.tab$chr[j] == as.character(cnvv$chr[i]) && 
+             hemi.tab$start[j] <= cnvv$end[i]){
+    #cat(j, ',')
+    hemi.tab[j,as.character(cnvv$strain[i])] <- cnvv$cov_ratio[i]
+    j <- j+1
+  }
+  #cat('\n')
+}
+@
+<<>>=
+# variant of 'tobin' from shared-snps:
+# convert (n x 7) NA/float matrix to n vector of 0-127
+tobin <- function(x){
+  bin <- integer(nrow(x)) # initialized to 0 
+  for(i in 1:7){
+    bin <- bin*2 + as.integer(!is.na(x[,i])) 
+  }
+  return(as.octmode(bin))
+}
+@
+<<>>=
+# leverage NA/non-NA in 7 strain columns to define shared-deletion pattern
+hemi.tab$pattern <- tobin(hemi.tab[,strain.names])
+# and count hemi- bases in each group 
+bp.by.pat <- data.frame(pattern=0:127, bp=0)
+bp.by.pat$pattern <- as.octmode(bp.by.pat$pattern)
+for(i in 1:nrow(hemi.tab)){
+  bp.by.pat[1+hemi.tab$pattern[i], 2] <- bp.by.pat[1+hemi.tab$pattern[i], 2] + hemi.tab$length[i]
+}
+sum(bp.by.pat[-1,2]) # exclude undeleted (pattern 000)
+pi3 <- order(bp.by.pat[,2])
+bp.by.pat[pi3,]
+@
+
+Dump table to a file, if it doesn't exist:
+
+<<size='scriptsize'>>=
+options(width=120)
+if(!file.exists('hemitab.txt')){
+  # for some reason, this branch is failing on linux (hemitab.txt is created, 0 length, knitr dies)
+  # but working on laptop. 
+  sink('hemitab.txt', type='output')
+  print(hemi.tab,digits=2)
+  sink()
+} else {
+  print(hemi.tab,digits=2)
+}
+@
+
+A few examples.  There are few hemi regions shared by all 7; one of them is this segment on chr15, which is below 2\% of average coverage in \emph{all seven}, suggesting an assembly error in 1335.  (The in/exclusion of the previous 200bp may just be vagaries of CNVnators binning choices.)  There are some other regions that look similar.
+
+<<size='scriptsize'>>=
+show.hemi <- function(chr.pos,krows){
+  j <- match(chr.pos,rownames(hemi.tab))
+  hemi.tab[j:(j+krows-1),]
+}
+show.hemi('Chr15:246801',5)
+@
+
+I often see (mostly) ``nested'' patterns, like the one below: a large loss in 1335, a shorter but largely overlapping loss in 1014, shorter still in 1013, shorter still in 1015, and a very short one in IT.  Shared ancestry may explain some of the shared deletion, but it seems likely that ``fragile sites'' (e.g., perhaps repetitive DNA) in this region of the genome (or just luck) have allowed independent expansions around the shared deletions in the different cultures.
+
+<<size='scriptsize'>>=
+show.hemi('Chr6:5601',10)
+@
+
+From shared-snps:
+
+<<size='footnotesize'>>=
+tobitvec <- function(x){
+  bitvec <- integer(7)
+  for(i in 7:1){
+    bitvec[i] <- x %% 2
+    x <- x %/% 2
+  }
+  return(bitvec)
+}
+
+flg <- function(x){
+  return(ifelse(x==1,'X',''))
+}
+
+pat.summary <- function(listOfTbls){
+  mydf <- data.frame(pat=0:127,sharedBy=NA,
+                     tp1007='',tp1012='',tp1013='',tp1014='',tp1015='',tp3367='',tp1335='',
+                     count1=NA,count2=NA,count3=NA,stringsAsFactors=F)
+
+  for(i in 1:128){
+    bvec <- tobitvec(i-1)
+    mydf[i,'sharedBy']=sum(bvec)
+    mydf[i,'tp1007']=flg(bvec[1])
+    mydf[i,'tp1012']=flg(bvec[2])
+    mydf[i,'tp1013']=flg(bvec[3])
+    mydf[i,'tp1014']=flg(bvec[4])
+    mydf[i,'tp1015']=flg(bvec[5])
+    mydf[i,'tp3367']=flg(bvec[6])
+    mydf[i,'tp1335']=flg(bvec[7])
+  }
+
+  for(i in 1:length(listOfTbls)){
+    tbl <- listOfTbls[[i]]
+    if(!is.null(tbl)){
+      mydf[,9+i] <- tbl[,2]  ## count1/2/3 are columns 10/11/12 in mydf
+      #for(j in 1:length(tbl)){
+      #  k <- as.integer(rownames(tbl)[j]);
+      #  mydf[k+1,9+i] <- tbl[j]  ## count1/2/3 are columns 10/11/12
+      #}
+    }
+  }
+
+  mydf$pat <-as.octmode(mydf$pat)  # display bit pattern in octal
+  return(mydf)
+}
+
+pat.summaries <- pat.summary(list(NULL,bp.by.pat,NULL))
+@
+
+<<size='footnotesize'>>=
+# Show a subset of pat.summaries, optionally with totals of count_i in last row, and optionally 
+# aggregating low-count rows as ``Other''
+#
+#   sharedBy=c(2,4) selects SNPs shared by 2 or 4 strains,
+#   subset=as.octmode('35') select those with sharing pattern a subset (optionally proper) of this
+#   split=as.octmode('14') additionally restricts to patterns stradling split/subset minus split
+#   c2.thresh=42 suppresses printout of rows with count2 < 42
+showgroup <- function(p.summ=pat.summaries, sharedBy=0:7, subset=127, split=NULL, proper.subset=F, 
+                      total=T, c2.thresh=0, thirteenth=F){
+  # pick just those bit patterns that are subsets of 'subset'
+  pick <- bitwAnd(0:127,bitwNot(subset))==0
+  if(proper.subset){
+    pick[subset+1] <- F
+  }
+  if(!is.null(split)){ # AND that stradle left/right subtrees
+    cosplit <- bitwAnd(subset,bitwNot(split))
+    pick <- pick & bitwAnd(0:127,split)!=0 & bitwAnd(0:127,cosplit)!=0
+  }
+  # and have desired shareBy counts
+  pick <- pick & (p.summ$sharedBy %in% sharedBy)
+  pick.low <- pick & (p.summ$count2 < c2.thresh)
+  show <- p.summ[pick & ! pick.low,]
+  # rename columns just to narrow the printouts
+  colnames(show) <- c('Pat','ShrBy','1007', '1012', '1013', '1014', '1015', '3367', '1335', 
+                      'count1', 'count2', 'count3')
+  show[,1] <- format(show[,1])  # convert octal col to char so can override in last row(2)
+  nlow <- sum(pick.low)
+  if(nlow > 0){
+    n <- nrow(show)+1
+    lows <- apply(p.summ[pick.low,10:12],2,sum)
+    show[n,10:12] <- lows
+    show[n,1:9] <- ''
+    row.names(show)[n] <- 'Other'
+    if(thirteenth){
+      # do this: add 13th col just to hold this comment:
+      show <- cbind(show,' '='', stringsAsFactors=F)
+      show[n,13] <- paste('(', nlow, 'rows w/ c2 <', c2.thresh, ')')
+    } else {
+      ## or this (looks a bit funky, but fits across page without line-wrap): 
+      show[n,1:8] <-c('(', nlow, 'rows', 'w/', 'c2', '<', c2.thresh, ')')
+    }
+  }
+  if(total){
+    n <- nrow(show)+1
+    tots <- apply(show[,10:12],2,sum)
+    show[n,10:12] <- tots
+    show[n,1:9] <- ''
+    row.names(show)[n] <- 'Total'
+    if(ncol(show)==13){show[n,13]<-''}
+  }
+  return(show)
+}
+@
+
+analysis akin to shared-snps:
+
+<<>>=
+showgroup(sharedBy=0)
+showgroup(sharedBy=1)
+showgroup(sharedBy=2, c2.thresh=15000)
+showgroup(sharedBy=3, c2.thresh=15000)
+showgroup(sharedBy=4, c2.thresh=15000)
+showgroup(sharedBy=5, c2.thresh=15000)
+showgroup(sharedBy=6, c2.thresh=15000)
+showgroup(sharedBy=7, c2.thresh=15000)
+@
+
+This data does not seem to follow the snp tree, nor do private deletions show a t-i-c trend.
+
+Another tack:  look at Cov \% vs strain.
+
+<<>>=
+library(compactr)
+
+plt.hemi <- function(bins = 50, logy=F, debug=F){
+  opar <- par(mfrow=c(4,2),mar=c(0,0,1,.5),oma=c(3,4,1,0)); on.exit(par(opar))
+  bin.upper <- (1:bins)/bins
+  bin.range <- c('[0]', paste('(', c(0,bin.upper[-bins]), ', ', bin.upper,']', sep=''))
+  hh <- matrix(0, bins+1,7,dimnames=list(bin.range, strain.names))
+  for(i in 1:nrow(hemi.tab)){
+    for(j in 1:7){
+      if(!is.na(hemi.tab[i,j+4])){
+        hh[1+ceiling(bins*hemi.tab[i,j+4]),j] <- 
+        hh[1+ceiling(bins*hemi.tab[i,j+4]),j]    + hemi.tab$length[i]
+      }
+    }
+  }
+  #print(hh);print(logy)
+  for(i in 1:7){
+    if(floor(i/2)*2 < i){
+      ymx <- max(hh[,unique(c(i,min(7,i+1)))])
+    }
+    eplot(xlim=c(0,1), ylim=c(0,ifelse(logy,log2(ymx),ymx)),main=st.loc(i,date=T))
+    xx <- c(0,1/(2*bins)+seq(from=0, by=1/bins,length.out=bins))
+    yy <- hh[,i]
+    if(logy){
+      yy <- log2(1+yy)
+    }
+    points(xx, yy, type='b')
+    if(i==6){addxaxis()}
+  }
+  if(debug){return(rbind(hh,Tot=colSums(hh)))}
+}
+plt.hemi(bins=51,debug=T)
+@
+
+Observations: T-i-c is roughly reflected in peak heights, with Italy being most extreme. NY mode is $\approx 0.59$,  1007, 1012 and 1015 at $\approx 0.61$, 1013 at $\approx 0.63$, gyre at $\approx 0.71$  (and Italy has no clear peak).  If these are really hemizygous deletions, why are they not at 0.5?  Some regions may simply be at the low end of normal fluctuation in coverage, not deletions at all.  Additionally, discrete bin boundaries used by CNVnator may tend to include extraneous stuff at the ends of each interval.  Both effects should be reduced for longer regions; is there a length trend?
+
+<<>>=
+plt.hemi.frac.by.len <- function(logx=F,sqrtx=T){
+  opar <- par(mfrow=c(4,2),mar=c(0,0,1,.5),oma=c(3,4,1,0)); on.exit(par(opar))
+  xmx <- max(cnvv$length)
+  for(i in 1:7){
+    pick <- as.character(cnvv$strain) == strain.names[i]
+    x <- cnvv$length[pick]
+    xlm <- xmx
+    xlb <- 'cnvv$length'
+    if(logx) { 
+      x <- log2(x) 
+      xlm <- log2(xmx)
+      xlb <- 'log2(cnvv$length)'
+    } else if(sqrtx){
+      x <- sqrt(x) 
+      xlm <- sqrt(xmx)
+      xlb <- 'sqrt(cnvv$length)'
+    }
+    eplot(ylim=c(0,1), xlim=c(0,xlm), xlab=xlb, ylab='cov_ratio',main=st.loc(i,date=T))
+    points(x, cnvv$cov_ratio[pick])
+    abline(h=0.6,lwd=0.5,col='blue')
+    if(i==6){addxaxis()}
+  }
+}
+plt.hemi.frac.by.len()
+@
+
+I'd say, no.  Coverage ratio is variable below 10k, but flat near 0.6 above that.  (A bit higher in Gyre, again either a symptom of increased noise or increased diversity in Gyre.)  Another possibility is that, just as coverage is low across SNPs due to a mapping bias against non-reference positions, there is a counter-trend \emph{towards} accepting erroneous reads that happen to \emph{match} the reference.  I suppose it is possible that this has inflated the ratio to 0.6 (or a bit more in Gyre, if it is noisier).  This one would imply a rather startling rate of erroneous reads:  If the number of ``correct'' reads across a diploid section averages $x$, and some additional fraction $\epsilon x$ of erroneous reads map there too, then 
+  $$ \frac{x/2+\epsilon x}{x+\epsilon x}=0.6,$$ 
+implying $\epsilon=1/4$. 
+
+Another possibility is that stochasticity contributes:  fluctuation around average read count of 0.5 can't fall below zero, but can rise above 1.0, which might tend to inflate the observed average.  Additionally, duplicated or non-hemi regions embedded in/sandwiched between two long hemi regions might, if short, not be properly split by CNVnator, inflating the average.  Another contributor is that a sigificant proportion of hemizygousity will lower the genomic coverage average against which \verb|cov_ratio| is measured.  (This effect should be strongest on the older strains, where deletion appears most widespread, but I don't see an obvious trend in that direction.  Although we didn't look, I wouldn't be surprised to see duplications increasing with age, too, which would partially offset this effect. UPDATE: I did take a quick look; 1.5x and 2x appear to increase with age, and there's a lot around 1.5x but relatively little at 2x or above, e.g. an average of about 0.5 Mb between 1.7x and 2.3x, vs at least twice that in hemizygous regions.) 
+
+Big NY deletions:
+
+<<>>=
+pick <- cnvv$strain == 'tp1335' & cnvv$length > 40000
+sum(pick)
+pi.length <- order(cnvv$length)
+cnvv[pi.length,][pick[pi.length],]
+@
+
+\section{Examples}
+
+Looking at some examples:
+
+<<>>=
+# look up a coord in hemi table
+hemi.row <- function(coord,h.t=hemi.tab){
+  r <- match(coord,rownames(h.t))
+  if(is.na(r)){
+    
+  }
+}
+# rows = range of row indices e.g. 18:24, or pair of row names c('Chr10:104501','Chr10:104501')
+# alt.win is start if first to end of 2nd; print tab for a row earlier to row later
+hemi.chunk <- function(rows,strains=c(7,1:6),margin=1000,ymax=250, h.t=hemi.tab){
+  if(length(strains)>1){
+    opar <- par(ask=T); on.exit(par(opar))
+  }
+  if(is.numeric(rows)){
+    j <- min(rows)
+    k <- max(rows)
+  } else {
+    j <- match(rows[1],rownames(h.t))
+    k <- match(rows[length(rows)],rownames(h.t))
+    cat('Rows',j,':',k,'\n')
+  }
+  print(h.t[max(1,j-1):min(nrow(h.t),k+1),], digits=3)
+  start <- chrloc2g(list(h.t$chr[j], h.t$start[j]))
+  end   <- chrloc2g(list(h.t$chr[k], h.t$end[k]))
+  for(i in strains){
+    #cat('x=',(start+end)/2,'width=',(end-start)/2+margin,'\n')
+    seechunk(i,ceiling((start+end)/2),width=ceiling((end-start)/2)+margin,
+             alt.win=c(start,end),ymax=ymax)
+  }
+}
+@
+
+Start with big NY deletions.  The first is about 45k long.  As expected for a hemizygous region, it is essentially SNP-free in NY (there are 2 or 3 called SNPs, all with very low non-reference read counts).
+An even longer region is deleted in 1007 and 1012, and each has about 5 called SNPs with substantial nonreference counts (possibly at shared positions), plus 2--3 others with low counts.  In other words, all 3 strains appear to be hemizygous here, and to share the same haplotype, give or take a handful of nucleotides.  1014 and 1015 have normal coverage, but few SNPs (4--7)---essentially homozygous for the NY haplotype.  Italy and Wales have normal coverage and many SNPs, although the Italy's SNPs are somewhat patchy.  Italian and Welsh SNPs have a complex sharing pattern, with a majority of Wales below 0.5 nonref frac, and IT the opposite; many of the high nonref frac are shared, but many of all frequencies are private to each strain (see pairs plot below).
+
+<<>>=
+hemi.chunk(c('Chr2:2399101','Chr2:2444601'),margin=5000)
+@
+
+pairs plot of same region:
+
+<<>>=
+nrf.pairs(mask=seg.mask(5440000,5500000))
+@
+
+
+Extending that, we see that, with a few relatively short interruptions (perhaps duplicated regions), the NY deletion essentially runs to the end of Chr2, although not consistently called by CNVnator, and the described pattern above applies to the whole region ($\approx 400$K), \emph{except}, 1014 and 1015 share a region of about 100k that is very SNPy.
+
+<<>>=
+hemi.chunk(338:366,margin=20000)
+@
+
+Pairs plot of same:
+ 
+<<>>=
+nrf.pairs(mask=seg.mask(5440000,5800000))
+@
+
+
+Another big NY chunk.  VA: undel, snpy; AU: maybe del, snpy; Wales: undel, snpy (but maybe low nonref);
+ Gyre: maybe del, few snps; 1015: del, few snps; IT: undel, snpy (but low); NY del, few snps.
+ I.e., NY, 1015 are hemi; gyre is homo-ref, others seem het.
+<<>>=
+hemi.chunk(c('Chr6:174501','Chr6:346501'), margin=10000)
+@
+
+Are IT/Wales low nonref?  not really:
+
+<<>>=
+show.allele.scatter(3,seg.mask(chrloc2g('Chr6:174501'),chrloc2g('Chr6:346501')))
+show.allele.scatter(6,seg.mask(chrloc2g('Chr6:174501'),chrloc2g('Chr6:346501')))
+@
+
+Another NY chunk: 1st 96k of chr23.  VA: undel, snpy, except for about 20k.  AUS: ditto, 1015: ditto.
+1014: del, snpy except same 20k.
+IT/wales: undel, snpy all over.
+NY: 96k del, snp-free, followed by 100K @ 1.5x.
+
+Especially interesting: Approx 10k at left tip in 1007+1012 is hemizygous, but nonref frac near 0.7.
+
+<<>>=
+hemi.chunk(c('Chr23:1','Chr23:96001'),margin=10000)
+@
+
+Great snap of locality in nonref frac in NY: left 96k of chr23 is hemi, snpless; rest is 1.5x, and snp-frac is bi-modal at about 1/3 , 2/3, \emph{except} for a 50k chunk near the middle, which is only 1/3.
+1007,1012, 1015: normal coverage , 50K LOH
+1013/IT: normal coverage, snpy, usual bimodal pattern, heavier on 0.4.
+Gyre has 200K  region at .7 coverage, with the same 50K LOH.  SNP density is lower than 1015, say  (as usual) , but appears unimodal, despite \emph{elevated} coverage on the other 250K.
+
+<<>>=
+hemi.chunk(c('Chr23:1','Chr23:454954'),7,margin=1000)
+hemi.chunk(c('Chr23:1','Chr23:454954'),1:6,margin=1000)
+@
+
+Other possible trisomies?  23 segments longer than 100k:
+
+<<>>=
+trisome <- 1.3 <= cnv$cov_ratio & cnv$cov_ratio <= 1.7
+sum(trisome)  ## [1] 655
+tripi <- order(cnv$length[trisome], decreasing=T)
+cnv[trisome,][tripi[1:25],]
+@
+
+<<>>=
+#hemi.chunk(c('Chr14:1','Chr14:829301'),7,margin=1000)
+hemi.chunk(c('Chr14:1','Chr14:900701'),7,margin=1000)
+@
+
+cluster of indels in left 300k above seems odd; is it?:
+
+<<>>=
+indel.counts <- unlist(lapply(full,function(x){sum(x$indel)})); indel.counts
+sum(full[[7]]$indel[chrloc2g('Chr14:1')+(1:3e5)])
+indel.counts[7]/nrow(full[[7]]) * 3e5
+sum(full[[7]]$indel[chrloc2g('Chr14:1')+(3e5:1e6)])
+indel.counts[7]/nrow(full[[7]]) * 7e5
+@
+
+Answer:  yes, a bit odd, but \emph{lack} if indels in the rest of chr2 is odder.
+
+More 1335 deletions:
+
+<<>>=
+hemi.chunk(19:23,c(5,7))
+@
+<<>>=
+hemi.chunk(11)
+@
+<<>>=
+hemi.chunk('Chr1:2521201',7)
+@
+<<>>=
+hemi.chunk(33)
+@
+
+Below is another case where IT/Wales seem to be SNPy, but consistently below 50\% nonref. Wales deletion; others not.  Gyre also snpy but low nonref frac.
+
+<<>>=
+hemi.chunk(c('Chr11a:65801','Chr11a:240301'),margin=10000)
+@
+
+Below: Italy Wales snp-less across region where NY deleted.
+
+<<>>=
+hemi.chunk(76:77)
+@
+<<>>=
+hemi.chunk(c('Chr11b:1','Chr11b:3301')) # weirndess at 11b teleomere
+@
+<<>>=
+hemi.chunk(c('Chr12:145001','Chr12:148401')) # last 7-800 in NY is higher & snpy, rest ok
+@
+<<>>=
+hemi.chunk(c('Chr12:549001','Chr12:551801')) # snpy all 7
+@
+<<>>=
+# 07,12,14:No; 15: maybe; 13:1st half snpy, 2nd not & exonic, IT yes, no snps, NY yes
+hemi.chunk(c('Chr12:680601','Chr12:684001')) 
+@
+
+Below is surprising:  NY is NOT hemi, and IS SNPy, but IT/Wales both hemi and \emph{match ref} there, on a region of 4K or longer.  I.e., we expect ref to be a mosaic of the 2 haplotypes present, (just majority vote?) but this suggests that ref captures haplotype on a scale of several KB.  Longer Sanger reads (and mate pairs?) in assembly may have created this.
+<<>>=
+hemi.chunk(117:118)# it/wates: yes, snpless; others no
+@
+<<>>=
+hemi.chunk(c('Chr15:250801','Chr15:251001')) # missing x 7; nonzero cov_ratio only due to edge effects
+# ref seq undefuned in this interval:
+full[[1]][24845134+1:10,]
+full[[1]][24845134+1:20+11665,]
+all(is.na(full[[1]]$Ref[(24845134+9):(24845134+6+11665)]))
+@
+
+<<>>=
+hemi.chunk(c('Chr20:1','Chr22:1'),7,margin=1000)
+@
+<<>>=
+chr20x7.filenames <- paste(my.figs.dir,'chr20x7-%02d.pdf',sep='')
+pdf(file=chr20x7.filenames, onefile=FALSE, width=11, height=8.5)
+hemi.chunk(390:430,margin=1000,ymax=150)
+dev.off()
+@
+
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-01.pdf',sep='')}}
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-02.pdf',sep='')}}
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-03.pdf',sep='')}}
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-04.pdf',sep='')}}
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-05.pdf',sep='')}}
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-06.pdf',sep='')}}
+\includegraphics[width=\textwidth]{\Sexpr{paste(my.figs.dir,'chr20x7-07.pdf',sep='')}}
+
+\section{Unshared hemi regions}
+Tony's initial look at this.
+
+<<>>=
+# hemizygosity numbers from tony's email 10/2/2014
+#                  tp1007   tp1012     tp1013  tp1014   tp1015       IT   tp1335 
+hemi.total.bp <- c(4471700, 6318900, 3535400, 6274400, 3637700, 2130100, 4843600)
+
+#                  tp1007  tp1012 tp1013  tp1014  tp1015     IT  tp1335 
+hemi.unique.bp <- c(42800, 822600, 82500, 185100, 53200, 207600, 19800) 
+
+#                     tp1007 tp1012 tp1013 tp1014 tp1015  IT tp1335 
+hemi.unique.events <- c(9,    113,     15,     18,  10,   64, 10) 
+
+hemi.unique.bp/hemi.unique.events
+
+dates <- unlist(lapply(1:7,function(st){as.integer(st.loc(st,id=F,loc=F,date=T))}))
+
+ids <- unlist(lapply(1:7,function(st){st.loc(st,id=T,loc=F,date=F)}))
+@
+<<>>=
+plot(dates,hemi.total.bp)
+text(dates,hemi.total.bp,labels=ids,cex=.6,pos=3)
+@
+<<>>=
+plot(dates,hemi.unique.bp)
+text(dates,hemi.unique.bp,labels=ids,cex=.6,pos=3)
+@
+<<>>=
+plot(dates,hemi.unique.events)
+text(dates,hemi.unique.events,labels=ids,cex=.6,pos=3)
+@
+
+\iffalse
+
+\section{Extra}
+
+Subsequent analysis is all directed at Chr1, and some of the code may break if given bigger tables, so 
+build/cache/load the Chr1 subset.
+
+<<>>=
+#snp.tables.chr1 <- load.snp.tables(use.chr1.tables=TRUE) # see wlr.R for paths
+@
+
+Some useful stats:
+
+<<cache=TRUE>>=
+chr1.length <- nrow(snp.tables.chr1[[1]])
+chr1.exonic.total <- sum(snp.tables.chr1[[1]]$exon)
+chr1.nonexonic.total <- chr1.length - chr1.exonic.total
+chr1.coverage.means   <- lapply(snp.tables.chr1, function(x)(mean(x$Cov)))
+chr1.coverage.sigmas  <- lapply(snp.tables.chr1, function(x)(sd(x$Cov)))
+chr1.coverage.medians <- lapply(snp.tables.chr1, function(x)(median(x$Cov)))
+chr1.coverage.maxs    <- lapply(snp.tables.chr1, function(x)(max(x$Cov)))
+@
+
+\section{SNP calls}
+
+Union/intersection of SAMTOOLS SNP calls:
+
+<<cache=TRUE>>=
+union.snps     <- snp.tables.chr1[[1]]$snp
+intersect.snps <- snp.tables.chr1[[1]]$snp
+for(i in 2:7) {
+  union.snps     <- pmax(union.snps,    snp.tables.chr1[[i]]$snp)
+  intersect.snps <- pmin(intersect.snps,snp.tables.chr1[[i]]$snp)
+}
+nusnps <- sum(union.snps)     ; nusnps # [1] 47499
+nisnps <- sum(intersect.snps) ; nisnps # [1] 1641
+
+u4.snps <- snp.tables.chr1[[1]]$snp
+for(i in c(2,5,7)) {
+  u4.snps     <- pmax(u4.snps, snp.tables.chr1[[i]]$snp)
+}
+nu4snps <- sum(u4.snps)       ; nu4snps # [1] 18564
+@
+
+\fi
+
+\vfill\footnotesize\flushright SVN ID I miss you $ $Id: tic.rnw  2017-06-28 or later ruzzo $ $
+
+\end{document}

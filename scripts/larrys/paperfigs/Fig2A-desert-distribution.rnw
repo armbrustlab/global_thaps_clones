@@ -1,0 +1,379 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+\begin{document}
+\title{Fig 2A for paper: Distribution of Chr 1 Deserts\\\large(Chr1, qfiltered)}
+\maketitle
+
+\tableofcontents
+
+\section{Intro}
+6/1/2017: Simple  script to build fig 2A for the paper, since I can't find Tony's code: distribution of deserts across Chr 1 in all 7 strains.  Some associated investigation of N/NA/gaps in reference sequence.
+
+\section{Preliminaries}
+Load utility R code; do setup:
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+
+% setup.my.knitr includes opts_chunk$set(size='footnotesize'), but needed 1st time.
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('paperfigs') # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr('Fig2A-desert-distribution-figs-knitr/') # knitr's "unnamed-chunk-nnn" figures
+my.figs.dir <- 'Fig2A-desert-distribution-figs-mine/'
+generic.setup(my.figs.dir)
+@
+<<>>=
+# frequently need to add figpath to file name
+fpath <- function(base, suffix='.pdf', dir=my.figs.dir){
+  return(paste(dir, base, suffix, sep=''))
+}
+@
+
+% latex font sizes: \tiny \scriptsize \footnotesize \small \normalsize \large \Large \LARGE \huge \Huge
+\iffalse
+<<>>=
+# attempt to calibrate print width in footnotesize (this chunk) and scriptsize, tiny (next 2)
+#        1         2         3         4         5         6         7         8         9         A
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+
+<<size='scriptsize'>>=
+#        1         2         3         4         5         6         7         8         9         A         B
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+
+<<size='tiny'>>=
+#        1         2         3         4         5         6         7         8         9         A         B         C         D         E         F         G
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+@
+\fi
+
+NOTE: A few code chunks use the knitr cache.  I do NOT check for consistency of cached data with 
+code changes and I do NOT know to what extent/whether knitr does, either.  If in doubt, delete
+directories ``cache'' (knitr's) and ``00common/mycache'' (mine) to force rebuild.  
+%% *TODO* read about knitr cache dependency stuff.
+
+CLEAR CACHE!!!  T/F  will/won't force knitr cache removal (well, actually a rename):
+
+<<>>=
+decache(FALSE)
+@
+
+Only using genome seq, so doesn't matter which table set, but qfiltered set is a bit smaller:
+<<load.tables>>=
+# see wlr.R for paths
+snp.tables.chr1q <- load.snp.tables(use.chr1.tables = TRUE , data.name='full.tables.02.25.15')
+@
+
+<<>>=
+chr1.len <- genome.length.constants()$chr1.length  ## 3042585
+@
+
+\section{Gaps in the Reference Sequence/SNP Tables}
+
+To place the ``pink'' (gap) bar(s) in the fig, we need to know: How long, how many, where are the gaps in Chr 1 reference sequence?  
+
+<<>>=
+# Count 'N's in the ref seq
+ncount <- unlist(lapply(snp.tables.chr1q,function(x) sum(x$Ref=='N',na.rm=T)))
+ncount
+@
+
+<<>>=
+# Repeat for NA positions (several columns in the tables are simultaneously NA)
+nacount <- NULL
+for(i in 1:7){
+  nacount <- rbind(nacount, unlist(lapply(snp.tables.chr1q[[i]],function(x){sum(is.na(x))})))
+}
+row.names(nacount) <- names(snp.tables.chr1q)
+nacount
+@
+
+<<>>=
+# Are the NA counts consistent?
+nasummary <- rbind(max=apply(nacount,1,max),min=apply(nacount[,c(2,3,4,14,15)],1,min))
+nasummary <- rbind(nasummary, equal=(nasummary[1,]==nasummary[2,]))
+nasummary
+# Consistent? (yes):
+all(nasummary[1,]==nasummary[2,])
+@
+
+So, there are 10-20 ``N'' positions in the Chr 1 reference sequence in all 7 isolates and about 11,700 NA positions (with slight variability from strain to strain for each). This variability is seemingly a side effect ofTony's table-build scripts: they leave NA entries where read coverage is zero, which varies a bit, on top of the fixed gap(s) in the reference sequence.  E.g., NA's are sprinkled around, but the only ``N''s are at the edges of the one big gaps.  E.g., note the slightly different placement of the N/NA boundary and the drop in rawCov to zero it corresponding positions here:
+
+<<>>=
+snp.tables.chr1q[[4]][358900:358915,]
+snp.tables.chr1q[[5]][358900:358915,]
+@
+
+A position is NA if and only if it has zero coverage, all 7:
+
+<<>>=
+na.implies.zero <- logical(7)
+nonz.implies.nonna <- logical(7)
+for(i in 1:7){
+  na.implies.zero[i] <- all(snp.tables.chr1q[[i]]$rawCov[is.na(snp.tables.chr1q[[i]]$Ref)]==0)
+  nonz.implies.nonna[i] <- !any(is.na(snp.tables.chr1q[[i]]$Ref[snp.tables.chr1q[[i]]$rawCov>0]))
+}
+all(na.implies.zero)
+all(nonz.implies.nonna)
+@
+
+A closer look.  Here's a representation of positions where one but not all strains show NA; as expected, NA positions show zero coverage; non-NA positions have non-zero coverage, non-NA positions agree on the reference nuc.  
+
+<<>>=
+# places where one but not all have NA:
+onena <- logical(chr1.len)
+for (i in 1:6){
+  for(j in i:7){
+    onena <- onena | xor(is.na(snp.tables.chr1q[[i]]$Ref), is.na(snp.tables.chr1q[[j]]$Ref))
+  }
+}
+nanum1 <- sum(onena); nanum1
+
+# add the few positions that are "N" in all strains (most N's are NA in at least one strain)
+for(i in 1:7){
+  onena[which(snp.tables.chr1q[[i]]$Ref == 'N')] <- TRUE
+}
+nanum2 <- sum(onena); nanum2
+
+# and (for visualization) add a few positions before & after big gap
+onena[c(358900:358902,370252:370261)] <- TRUE
+nanum3 <- sum(onena); nanum3
+
+# build a data.frame to display this;
+gapulate <- function(mask, snp.tab = snp.tables.chr1q){
+  # first, pack ref nucs from all 7 strains together (with '-' for NA)
+  refs <- character(sum(mask))
+  for(i in 1:7){
+    tmp <- snp.tab[[i]]$Ref[mask]
+    tmp[is.na(tmp)] <- '-'
+    refs <- paste(refs, tmp, sep='')
+  }
+  df.mask <- data.frame(ref=refs, row.names=(1:nrow(snp.tab[[1]]))[mask], stringsAsFactors=F)
+  # then append coverage; zeros turn out to match NAs
+  for(i in 1:7){
+    df.mask <- cbind(df.mask, snp.tab[[i]]$rawCov[mask])
+    names(df.mask)[i+1] <- names(snp.tab)[i]
+  }
+  return(df.mask)
+}
+summary.onena <- gapulate(onena)
+# show a few (1st/last few, all N's):
+show.first <- 1:22
+show.gap   <- unique(sort(c(377:404,grep('N',summary.onena$ref,fixed=T))))
+show.last  <- nrow(summary.onena)+(-5:0)
+summary.onena[show.first,]  # 1st few
+summary.onena[show.gap,]    # flanks of big gap + all N's
+summary.onena[show.last,]   # last few
+chr1.len
+@
+
+Figuring out \emph{where} the gaps are.
+
+<<>>=
+make.gap.tab <- function(nna.mask, snp.tab=snp.tables.chr1q){
+  wna <- which(nna.mask)
+  wna <- append(wna,wna[length(wna)]+999999999) #append "infinity"; simplifies end case in loop below
+  #build a table of gaps (i.e., consecutive T's in mask)
+  gap.table <- NULL
+  g.start.i <- 1
+  for(i in 2:length(wna)){
+    if(wna[i]-wna[i-1]>1){
+      g.start <- wna[g.start.i]
+      g.end <- wna[i-1]
+      g.len <- g.end-g.start+1
+      gap.table <-rbind(gap.table, c(start=g.start, end=g.end, length=g.len))
+      g.start.i <- i
+    }
+  }
+  return(gap.table)
+}
+@
+<<>>=
+gap.tables <- vector('list',7)
+gap.tables2 <- vector('list',7)
+for(st in 1:7){
+  gap.table <- make.gap.tab(is.na(snp.tables.chr1q[[st]]$Ref))
+  gap.tables[[st]] <- gap.table
+  # find largest pair of gaps
+  g.max <- max(gap.table[,'length'])
+  i.max <- which(gap.table[,'length'] == g.max)
+  g.max2 <- max(gap.table[,'length'][-i.max])
+  i.max2 <- which(gap.table[,'length'] == g.max2)
+  gap.tables2[[st]] <- gap.table[c(i.max,i.max2),]
+}
+names(gap.tables) <- names(snp.tables.chr1q)
+#gap.tables
+names(gap.tables2) <- names(snp.tables.chr1q)
+gap.tables2
+@
+
+Defining ``gaps'' to be 1 or more consecutive NAs, the chunk above shows (on Chr 1) all 7 isolates have a single gap of about 11340, starting near 358910, while the next largest gap is less that 100 bp.   Based on the earlier look at NA vs N, \emph{none} of the short gaps have N in the ref seq; they just happened to have \emph{coverage} gaps in that strain.  The gap in the ref seq will necessarily have zero counts except at its edges (can't align to NN...N), so what we really want is runs of positions that are NA in all 7, with some border of N's.
+
+<<>>=
+nna <- ! logical(chr1.len) #initialize to TRUE
+for(i in 1:7){
+  nna <- nna & (is.na(snp.tables.chr1q[[i]]$Ref) | (snp.tables.chr1q[[i]]$Ref=='N'))
+}
+sum(nna)
+
+#there's only one big one:
+all.n.na <- make.gap.tab(nna)
+all.n.na
+
+# and none of the small ones show N's at borders (big gap marked by NNNNNNN @ 358903--370258):
+nnab <- nna
+nnab[358904:370257] <- FALSE # omit all but 1st/last of big gap; print rest
+gapulate(nnab)
+
+# so our real gap is:
+the.gap <- all.n.na[which(all.n.na[,'length']==max(all.n.na[,'length'])),]
+the.gap
+@
+
+\section{Deserts}
+
+Also load the desert tables:
+
+<<>>=
+# from svn+ssh://ceg1.ocean.washington.edu/var/svn/7_strains/trunk/code/snpNB/data
+load('../../../data/des.rda')
+@
+
+Structure of desert tables:
+<<>>=
+names(des)         # [1] "tp1007"  "tp1012"  "tp1013"  "tp1014"  "tp1015"  "thapsIT" "tp1335" 
+names(des)[[6]] <- 'tp3367'  # override oldschool name
+names(des[[1]])    # [1] "Chr1"   ...   "Chr24"
+str(des[[1]][[1]])
+@
+
+Show desert containing the gap in all 7:
+
+<<>>=
+gapped.desert <- data.frame(id=names(des),chr='Chr1',start=0,end=0,len=0,pre.gap=0,post.gap=0,
+                            stringsAsFactors=FALSE)
+for(i in 1:7){
+  hit <- des[[i]][[1]][,1] < the.gap['start'] & the.gap['end'] <  des[[i]][[1]][,2] 
+  gapped.desert[i,c('start','end','len')] <- des[[i]][[1]][hit,]
+}
+gapped.desert$pre.gap  <- the.gap['start'] - gapped.desert$start
+gapped.desert$post.gap <- gapped.desert$end - the.gap['end']
+gapped.desert
+@
+
+The post-gap slice of the desert is short enough ($<2$ Kb) that it probably would not qualify as a desert in its own right, but the pre-gap portion ($>25$ Kb) certainly does, and is present in all 7.  From a quick look at the ``big n'' table in ncsnps, it is among the largest of the 7-way shared deserts;  I see only three larger ones ($\approx40$ Kb each, on Chrs 9, 12, and 17).  Fuzzy thought: CNVnator calls 1.5-2.0x coverage for much of the pre-gap region in Italy (but none of the others), making me wonder whether something structural like a mis-assembly, large repeat and/or recombination hotspots may have contributed to the sequencing gap and adjacent desert.  In any case, while a curiosity, it doesn't seem to overturn any of our other interpretation.
+
+<<>>=
+seechunk(6,350000,25000,snp.tables=snp.tables.chr1q)
+@
+
+\section{The Fig}
+
+Order of isolates, top-to-bottom in fig:
+<<>>=
+strain.order <- c(7,1,2,5,4,3,6) 
+names(des)[strain.order]
+@
+
+Coordinate system: $x$ coords are genomic positions, i.e., roughly 1..3e6 for Chr 1, printed about 6 inches wide; $y$ coords are arbitrary, think of them as 300 units per inch.  Drawing:  Deserts near each other may visually merge due to the finite size of pixels. To see whether this is distorting the apparent landscape, this code can draw in two modes: first draw each bar as a wide ``nondesert'' (white) rectangle, overlaid by ``desert'' (blue) rectangles for each desert; Optionally, the top half of the bar is the reverse: white nondesert rectangles drawn over a blue background (so non-deserts separated by short deserts may blur together).  This effect is strongest in H-clade where there are many short deserts (shorter than 3Kb, say), but overall I don't think it is misrepresenting the similarities/differences within/between L-/H-clade.  A few sample figures illustrating this are shown below, too.  Additional parameter ``\texttt{min.desert}'' prevents plotting of shorter deserts.
+
+[2017-07-18: write relevant data to Fig2A-data.rda and moved draw.des.row and draw.des.fig to wlr.r so that I can generate Fig2A+B in one script. Various prototyping and exploration left here.]
+
+``Blur'' due to fat pixels.  (Again, botton half draws deserts over white background, then the gap (pink); top half draws non-des over blue background.)
+
+<<>>=
+draw.des.fig(des, all.n.na, draw.nondes=TRUE)
+@
+
+The effect is slightly ameliorated with short deserts hidden:
+
+<<>>=
+unlist(lapply(des,function(x){min(x[[1]][,'Length'])}))
+draw.des.fig(des, all.n.na, draw.nondes=TRUE, min.des=3000)
+@
+
+But, in summary, I think the pixel-blur efect is not so strong that I think we need to deviate from the simple draw-deserts-over-white-background model.
+ 
+Figure prototype for paper:
+
+<<draw.the.fig>>=
+if(FALSE){
+  # color tests
+  pdf(fpath('Fig2A-desert-distribution-figa'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'pink')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figb'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'deeppink')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figc'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'goldenrod')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figd'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'green')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-fige'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'darkgreen')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figf'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'yellow')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figg'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'orange')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figh'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'grey55')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figi'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'firebrick2')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figj'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'hotpink')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figk'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'firebrick3')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figl'), width=6.5, height=3.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'grey80',d.col='dodgerblue2')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figm'), width=6.5, height=2.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'gold',d.col='dodgerblue2')
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-fign'), width=6.5, height=2.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'gold',d.col='dodgerblue2',min.des=5000)
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figo'), width=6.5, height=2.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'gold',d.col='dodgerblue2',min.des=8000)
+  dev.off()
+  pdf(fpath('Fig2A-desert-distribution-figp'), width=6.5, height=2.1)
+  draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'gold',d.col='dodgerblue2',min.des=10000)
+  dev.off()
+}
+pdf(fpath('Fig2A-desert-distribution-figq'), width=6.5, height=2.1)
+draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'gold',d.col='dodgerblue2',min.des=10000,twotone='lightblue')
+dev.off()
+@
+\noindent and shown juxtaposed with Fig2b for comparison as Fig~\ref{fig:2a2b}.  (Surrounding boxes just to make marginal space obvious; change fbox to mbox to remove.)
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics{\Sexpr{fpath('Fig2A-desert-distribution-fig')}}}\\
+    \fbox{\includegraphics{../../../inst/doc/figures4paper/Fig2B-bigdes-snpdens-ny.pdf}}
+  \end{center}
+  \caption{Proposed caption: Attributes of SNP deserts for {\it T. pseudonana\/} isolates. A) SNP distributions across the 3 Mb of Chromosome 1 for the seven {\it T. pseudonana\/} isolates. Regions in blue have significantly low SNP density (``SNP deserts'') based on a negative binomial model (Methods). Pink(???) region is a gap of known size in the reference sequence. The large region centered near 1.5Mb is a 320Kb SNP desert present in all L-isolates but neither H-isolate. B) SNP densities (SNP per base-pair---$\mu\pm2\sigma$) in the 29 deserts that span at least 50Kb of the CCMP 1335 genome (blue) and the thirty regions surrounding these deserts (including deserts smaller than 50Kb; black).  }
+  \label{fig:2a2b}
+\end{figure}
+
+<<>>=
+Fig2A.data.Description <- 'This .rda file contains the "gap table" all.n.na built by Fig2A-desert-distribution.rnw'
+save(Fig2A.data.Description, all.n.na,file='Fig2A-data.rda',compress=FALSE)
+@
+
+\vfill\footnotesize\flushright SVN ID I miss you $ $Id: Fig2A-desert-distribution 2017-07-18 or later ruzzo $ $
+\end{document}

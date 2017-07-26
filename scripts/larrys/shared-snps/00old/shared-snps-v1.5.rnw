@@ -1,0 +1,457 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+\begin{document}
+\title{Exploration of Shared SNPs in Thaps}
+\maketitle
+
+Some rather raw ramblings on SNP positions shared between two or more of the isolates.  To document it all thoroughly, I've
+included my code, even though largely uninteresting to anyone else.  I will summarize it as we go.
+
+Load the data file, and prune it to just Chromosome 1:
+<<size='small'>>=
+   load('~/Documents/s/papers/Thaps/tonys-svn/data/full.tables.ch1p100.rda')
+   tables <- lapply(full.tables.ch1, function(x){x[x$chr=='Chr1',]})
+@
+
+Is brief, ``tables'' will be a list of 7 data frames, one per strain, giving read counts for each nucleotide at each
+position, SNP calls, etc.:
+<<size='small'>>=
+names(tables)
+str(tables[[1]])
+@
+
+For a given strain, the following function returns a vector of 0:4 to indicate which nonreference nucleotide has the
+maximum read count at the corresponding position.  The values 1..4 indicate that the max count occurred at A, G, C, T,
+resp.  (Ties are resolved arbitrarily (a<g<c<t), which possibly deserves further attention.)  The value 0 means all nonreference
+counts are below threshold, based \emph{either} on absolute count or as a fraction of coverage.  Default only excludes 0
+counts.
+
+<<size='small'>>=
+nref.nuc.new <- function(strain=1, mask=T, thresh.count=0, thresh.rate=0.0){
+	# get read count for max nonref nuc
+	nref <- apply(tables[[strain]][mask, c("a", "g", "c", "t")], 1, max)
+	# where does nref count match a (g,c,t, resp) count
+	as <- ifelse(nref == tables[[strain]][mask,'a'],1,0)
+	gs <- ifelse(nref == tables[[strain]][mask,'g'],2,0)
+	cs <- ifelse(nref == tables[[strain]][mask,'c'],3,0)
+	ts <- ifelse(nref == tables[[strain]][mask,'t'],4,0)
+	# most positions will show 3 zeros and one of 1:4, so max identifies max nonref count;
+	# ties broken arbitrarily  (a<g<c<t)
+	merge <- pmax(as,gs,cs,ts)
+	# but if max nonref count is zero or below threshold, return 0
+	merge[nref == 0 | nref < thresh.count] <- 0
+	merge[nref/tables[[strain]][mask,'Cov'] < thresh.rate] <- 0
+	return(merge)
+}
+@
+
+Get union and intersection of the sets of called SNPs. (``\$snp'' is 0/1.)
+<<size='small'>>=
+union.snps     <- tables[[1]]$snp
+intersect.snps <- tables[[1]]$snp
+for(i in 2:7) {
+	union.snps     <- pmax(union.snps,    tables[[i]]$snp)
+	intersect.snps <- pmin(intersect.snps,tables[[i]]$snp)
+}
+nusnps <- sum(union.snps)
+nisnps <- sum(intersect.snps)
+@
+
+There are nusnps=\Sexpr{nusnps} positions called as SNPs in one or more strains (but only nisnps=\Sexpr{nisnps} that are
+shared among all 7).  It is appropriate that SNP calls should be conservative, to avoid many false positives, but, if a
+position is called a SNP in one strain, we often see a significant number of reads for the same non-reference nucleotide
+at that position in other strains, even if they are not called as SNPs. For my purposes below, these will be considered
+``shared SNPs,'' based on three different levels of permissiveness.  Note that, e.g., $>85\%$ of all positions have zero 
+reads for any non-reference nucleotide:
+<<size='small'>>=
+unlist(lapply(tables,function(x){sum(x$Cov==x$.match)}))/nrow(tables[[1]])
+@
+
+Build a table of max non-reference nucleotides at each position in the union.snps set.  The three criteria are
+\begin{itemize}
+  \item any non-zero count at any coverage is considered significant
+  \item count $\geq 2$  count/coverage $\geq$ 0.05 are considered significant
+  \item count $\geq 4$  count/coverage $\geq$ 0.10 are considered significant
+\end{itemize}
+In all three cases, the nonref nucleotide must also be consistent across all strains passing that threshold;see below.
+<<size='small'>>=
+non.refs <- vector('list',3)
+for(i in 1:3){
+  non.refs[[i]] <- matrix(0,nrow=nusnps,ncol=7)
+}
+for(i in 1:7){
+	non.refs[[1]][,i] <- nref.nuc.new(i,mask=union.snps==1,thresh.count=0,thresh.rate=0.00)
+	non.refs[[2]][,i] <- nref.nuc.new(i,mask=union.snps==1,thresh.count=2,thresh.rate=0.05)
+  non.refs[[3]][,i] <- nref.nuc.new(i,mask=union.snps==1,thresh.count=4,thresh.rate=0.10)
+}
+for(i in 1:3){
+  colnames(non.refs[[i]]) <- names(tables)
+  rownames(non.refs[[i]]) <- paste(tables[[1]]$chr[union.snps==1],':',tables[[1]]$pos[union.snps==1],sep='')
+}
+@
+
+``non.refs'' indicates the non-ref nucleotide having the highest read count in each strain.  If, for a given position, the max
+of this code is the same as the min (among non-zero values), then every strain having any nonref reads in that position,
+in fact has most non-reference reads on the \emph{same} nucleotide.  These are defined as the ``consistent'' SNPs.
+<<size='small'>>=
+find.consistent <- function(nr){
+	nr.max <- apply(nr,1,max)
+	nr.min <- apply(nr,1,function(x){ifelse(max(x)==0,0,min(x[x>0]))})
+  return(nr.min == nr.max)
+}
+consistent  <- lapply(non.refs, find.consistent)
+consistent.count <- unlist(lapply(consistent, sum))
+consistent.count
+@
+I.e., if the \Sexpr{nusnps} positions in which a SNP is called, \Sexpr{sum(consistent.count[1])} are consistent by my loose
+definition, and \Sexpr{sum(consistent[3])} are consistent by my tightest definition.  The increase in concordance
+supports the view that the loose definition is too loose.  (*TODO* I suspect, but have not yet systematically checked, that
+most of the rest are positions with low coverage and/or very low read counts on the mixture of non-reference
+nucleotides.)
+
+The following analysis looks at the sharing patterns among the consistent SNPs.  I assume that shared SNPs reflect
+shared ancestry, and that SNPs accumulate slowly over time.  Then, in outline, the story is consistent with what we have
+seen in other analyses---there seem to be 3 groups: 1013 (Wales) in one, 3367 (Italy) in another, and the other 5 in a
+third, with some hints as to the order of divergence.
+
+Analysis is broken into cases based on how many strains share a particular SNP.  To count them, first convert the 
+7-way consistent sharing pattern into a 7-bit binary number, and tabulate based on that:
+<<size='small'>>=
+# convert (n x 7) 0-1 matrix to n vector of 0-127
+tobin <- function(x){
+  bin <- integer(nrow(x)) # initialized to 0
+  for(i in 1:7){
+    bin <- bin*2 + as.integer(x[,i]>0)
+  }
+  return(bin)
+}
+snp.counts <- NULL ### lapply(non.refs,function(nr){apply(nr > 0, 1, sum)})  ###NO LONGER USED
+
+# get full set of patterns
+snp.pattern.all <- lapply(non.refs,tobin)
+# prune to just the consistent ones
+snp.pattern <- snp.pattern.all
+for(i in 1:3){
+  snp.pattern[[i]][!consistent[[i]]] <- NA
+}
+
+# analogous to built-in ``table'' but simpler.  Count entries in an integer
+# vector sharing values in a (smallish) range.  Result is a 2-column matrix with
+# the shared values in col 1 and count of occurrences of that value in col 2. 
+# Out-of-range values cause subscript error.
+mytable <- function(vec, therange=range(vec)){
+  counts <- matrix(0,nrow=therange[2]-therange[1]+1,ncol=2,dimnames=list(NULL,c('val','count')))
+  counts[1:nrow(counts),1] <- therange[1]:therange[2]
+  for(i in 1:length(vec)){
+    counts[vec[i]-therange[1]+1,2] <- counts[vec[i]-therange[1]+1,2] + 1
+  }
+  return(counts)
+}
+
+pattern.counts <- lapply(snp.pattern, function(x){mytable(x,c(0,127))})
+@
+
+To display the results, build a data frame whose i-th row, $0 \leq i \leq 127$ has
+<<size='small'>>=
+tobitvec <- function(x){
+  bitvec <- integer(7)
+  for(i in 7:1){
+    bitvec[i] <- x %% 2
+    x <- x %/% 2
+  }
+  return(bitvec)
+}
+
+flg <- function(x){
+  return(ifelse(x==1,'X',''))
+}
+
+pat.summary <- function(listOfTbls){
+  mydf <- data.frame(pat=0:127,sharedBy=NA,tp1007='',tp1012='',tp1013='',tp1014='',tp1015='',tp3367='',tp1335='', 
+                     count1=NA,count2=NA,count3=NA,stringsAsFactors=F)
+  
+  for(i in 1:128){
+    bvec <- tobitvec(i-1)
+    mydf[i,'sharedBy']=sum(bvec)
+    mydf[i,'tp1007']=flg(bvec[1])
+    mydf[i,'tp1012']=flg(bvec[2])
+    mydf[i,'tp1013']=flg(bvec[3])
+    mydf[i,'tp1014']=flg(bvec[4])
+    mydf[i,'tp1015']=flg(bvec[5])
+    mydf[i,'tp3367']=flg(bvec[6])
+    mydf[i,'tp1335']=flg(bvec[7])
+  }
+  
+  for(i in 1:length(listOfTbls)){
+    tbl <- listOfTbls[[i]]
+    mydf[,9+i] <- tbl[,2]  ## count1/2/3 are columns 10/11/12 in mydf
+    #for(j in 1:length(tbl)){
+      #k <- as.integer(rownames(tbl)[j])
+      #mydf[k+1,9+i] <- tbl[j]  ## count1/2/3 are columns 10/11/12
+    #}
+  }
+  
+  mydf$pat <-as.octmode(mydf$pat)  # display bit pattern in octal
+  return(mydf)
+}
+
+pat.summaries <- pat.summary(pattern.counts)
+pat.summaries[order(pat.summaries$sharedBy),]
+@
+
+Some sanity checking: table sums equal to number of consistent positions?
+<<size='small'>>=
+all(consistent.count == apply(pat.summaries[,10:12],2,sum))
+@
+
+More sanity checking: visually inspect a pattern with small counts.  Chr1 2524239 
+is in c1 and c2 but not c3; Chr1 1088766 is in c2 only.  All look good
+<<size='small'>>=
+unlist(lapply(snp.pattern,function(x){sum(x==12)}))
+source('/Users/ruzzo/Documents/s/papers/Thaps/tonys-svn/7_strains/trunk/code/snpNB/R/wlr.R')
+full.tables <- tables # fix name used in wlr.R
+sp1 <- snp.pattern[[1]]==12
+sp2 <- snp.pattern[[2]]==12
+sp3 <- snp.pattern[[3]]==12
+
+r1 <- rownames(non.refs[[1]])[which(sp1)]
+r2 <- rownames(non.refs[[2]])[which(sp2)]
+r3 <- rownames(non.refs[[3]])[which(sp3)]
+c1 <- as.integer(substr(r1,6,99))
+c2 <- as.integer(substr(r2,6,99))
+c3 <- as.integer(substr(r3,6,99))
+c1
+c2
+c3
+seecounts(c2)
+@
+
+More sanity:  are the 83 sites shared by zero in the tightest condition due to low coverage?  Seemingly yes:
+<<size='small'>>=
+zp3 <- snp.pattern[[3]] == 0
+zr3 <- rownames(non.refs[[3]])[which(zp3)]
+zc3 <- as.integer(substr(zr3,6,99))
+zc3
+seecounts(zc3[1:5])
+@
+
+Turning to the main analysis, there is a large increase in the number of consistent positions between the loose and medium stringency levels; medium and tight are similar in most respects.  The likely interpretation is that the loose criterion is including many ``SNPs'' induced by read errors, and that either of the tighter criteria are successfully filtering them out.  In the interest of simplicity, the narrative below will focus on the shared SNPs at the medium stringency level (the ``count2'' columjn in the data frame), although the numbers for all three are displayed.
+
+First look at completely shared SNPs, those found in all 7 strains.
+<<size='small'>>=
+pat.summaries[pat.summaries$pat==127,] # Chr1 count1 = 8593, count2 = 7054, count3 = 4790
+@
+
+I.e., of the \Sexpr{consistent.count[2]} consistent positions, \Sexpr{round(pat.summaries[pat.summaries$pat==127,'count2']/consistent.count[2]*100,1)}\% are shared by all 7 strains.
+
+Next look at singletons---SNPs that are called in one strain and no other strain has a significant number of non-ref reads at that
+position. Presumably these are variants that arose in a given population after it separated from the others.
+<<size='small'>>=
+sum(consistent & snp.counts==1) #  9669 on chr1
+singles <- vector('integer',7)
+names(singles) <- names(tables)
+for(i in 1:7){
+	singles[i] <- sum(non.refs[consistent & snp.counts==1,i]>0)
+}
+print(singles)
+@
+The high counts for Italy and Wales suggest that they have been separated from each other and from the rest for a long
+time.  Conversely, the low counts for the other 5 suggest that none of them has been isolated for very long (if at all).
+
+Next look at consistent SNPs shared between just a pair of isolates.
+<<size='small'>>=
+sum(consistent & snp.counts==2) # 7641 on chr1
+pairs <- matrix(0,nrow=7,ncol=7)
+rownames(pairs) <- names(tables)
+colnames(pairs) <- names(tables)
+for(i in 1:6){
+	for(j in (i+1):7){
+		pairs[i,j] <- sum(non.refs[consistent & snp.counts==2,i]>0 & non.refs[consistent & snp.counts==2,j]>0)
+	}
+}
+print(pairs)
+@
+I.e., of the \Sexpr{sum(consistent & snp.counts==2)} paired SNPs, \Sexpr{pairs[3,6]} or
+\Sexpr{round(pairs[3,6]/sum(consistent & snp.counts==2)*100,1)}\% are found between Italy and Wales, with comparatively
+few shared between any pair \emph{not} including one of the European isolates.
+
+SNPs shared among exactly 3 isolates are relatively rare, and the 5 trios containg both Italy and Wales predominate. 
+<<size='small'>>=
+sum(consistent & snp.counts==3) # 1438 on chr1
+triples <- NULL
+for(i in 1:5){
+	for(j in (i+1):6){
+		for(k in (j+1):7){
+			temp <- sum(non.refs[consistent & snp.counts==3,i]>0 
+				  & non.refs[consistent & snp.counts==3,j]>0 
+				  & non.refs[consistent & snp.counts==3,k]>0)
+			if(temp>0){
+				triples <- rbind(triples, data.frame(
+					i=names(tables)[i],
+					j=names(tables)[j],
+					k=names(tables)[k],
+					count=temp))
+			}
+		}
+	}
+}
+print(triples[order(triples[4],decreasing=T),])
+@
+
+Four-way sharing is even less common, with the non-European coastal isolates (i.e., not gyre) dominating.
+<<size='small'>>=
+sum(consistent & snp.counts==4) # 564 on chr1
+quads <- NULL
+for(i in 1:4){
+	for(j in (i+1):5){
+		for(k in (j+1):6){
+			for(l in (k+1):7){
+				temp <- sum(non.refs[consistent & snp.counts==4,i]>0 
+					  & non.refs[consistent & snp.counts==4,j]>0 
+					  & non.refs[consistent & snp.counts==4,k]>0
+					  & non.refs[consistent & snp.counts==4,l]>0)
+				if(temp>0){
+					quads <- rbind(quads, data.frame(
+						i=names(tables)[i],
+						j=names(tables)[j],
+						k=names(tables)[k],
+						l=names(tables)[l],
+						count=temp))
+				}
+			}
+		}
+	}
+}
+print(quads[order(quads[5],decreasing=T),])
+@
+
+Five-way sharing is much more common, and is strongly dominated by the 5 non-Europeans.
+<<size='small'>>=
+sum(consistent & snp.counts==5) # 3969 on chr1
+quints <- NULL
+for(i in 1:3){
+	for(j in (i+1):4){
+		for(k in (j+1):5){
+			for(l in (k+1):6){
+				for(m in (l+1):7){
+					temp <- sum(non.refs[consistent & snp.counts==5,i]>0 
+						  & non.refs[consistent & snp.counts==5,j]>0 
+						  & non.refs[consistent & snp.counts==5,k]>0
+						  & non.refs[consistent & snp.counts==5,l]>0
+						  & non.refs[consistent & snp.counts==5,m]>0)
+					if(temp>0){
+						quints <- rbind(quints, data.frame(
+							i=names(tables)[i],
+							j=names(tables)[j],
+							k=names(tables)[k],
+							l=names(tables)[l],
+							m=names(tables)[m],
+							count=temp))
+					}
+				}
+			}
+		}
+	}
+}
+print(quints[order(quints[6],decreasing=T),])
+@
+
+Six-way sharing is also common, with the set \emph{ex}cluding Italy having the most mutually-shared SNPs.  
+<<size='small'>>=
+sum(consistent & snp.counts==6) # 4166 on chr1
+sexts <- NULL
+for(i in 1:7){
+	temp <- sum(non.refs[consistent & snp.counts==6,i] == 0) 
+	if(temp>0){
+	  sexts <- rbind(sexts, data.frame(EXclude=names(tables)[i],count=temp))
+	}
+}
+print(sexts[order(sexts[2],decreasing=T),])
+@
+
+So, overall, the picture looks like a long shared history (8600 7-way shared positions), followed by a split of the 5
+from Europe, then a long shared history in the 5 (3484 quintuples), in parallel with a long shared history in Europe
+(5920 pairs), then long separate histories in Italy and Wales ($>$4500), and very limited differentiation among the 5
+non-Europeans, but if we split hairs, we get the following tree (newick format):
+\begin{verbatim}
+(((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Australia:29):9,
+(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8593);
+\end{verbatim}
+rendered via {\tt http://iubio.bio.indiana.edu/treeapp/treeprint-form.html} as Fig~\ref{fig:tree}.
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=.4]{shared-snp-tree-annotated.pdf}
+    \caption{Inferred Tree.}
+    \label{fig:tree}
+  \end{center}
+\end{figure}
+Note: to visually resolve the edges among the 5, I scaled those length by 5x - 10x.
+
+Maybe I can plot a tree:
+<<tree,size='small',fig.width=4.5,fig.height=3,fig.align='center',fig.path=paste(getwd(),'/figs/newick-',sep='')>>=
+newick <- '(((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Australia:29):9,
+(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8593,imaginary_outgroup:0);'
+library(ape)
+plot(read.tree(text=newick))
+axis(1);axis(2)
+text(3000,3.5,"an edge\nlabel")
+@
+
+Looking at pairwise counts of shared SNPs (without regard to how many other strains share the SNP), we have:
+<<size='small'>>=
+sum(consistent) # 36040 on chr1
+pairwise <- matrix(0,nrow=7,ncol=7)
+rownames(pairwise) <- names(tables)
+colnames(pairwise) <- names(tables)
+for(i in 1:6){
+	for(j in (i+1):7){
+		pairwise[i,j] <- sum(non.refs[consistent,i]>0 & non.refs[consistent,j]>0)
+	}
+}
+print(pairwise)
+pw <- pairwise+t(pairwise)
+p  <- c(1,2,5,7,4,3,6)
+print(pw[p,p])
+@
+
+
+{\Large\bf Noise:} Various sources of ``noise'' in the data:
+\begin{enumerate}
+  \item deep coalescence
+  \item read errors
+  \item low reads depth
+  \item skew because 1335 is the reference
+  \item varying error rates and sequencing depth among the 7
+  \item varying numbers of founder cells in the sequencing cultures
+  \item tri-allelic positions where stochastic fluctuation is sequence sampling promotes the rare allele to prominence
+\end{enumerate}
+
+{\Large\bf To Do:}
+\begin{enumerate}
+  \item try filtering out singleton reads
+  \item any spacial structure to various sub-classes?
+  \item any association of .8 group to various subclasses?
+  \item after top level split, should I reanalyze halves of partition in isolation?
+\end{enumerate}
+
+\iffalse
+\begin{description}
+  \item[Plotting:] Plotting, which may be needed in later assignments, is also easy, including the ability to overlay
+    additional points or lines on a plot:
+    <<plot1,size='small',fig.width=4.5,fig.height=3,fig.align='center',fig.path=paste(getwd(),'/figs/rstarter-',sep='')>>=
+      plot(x,x^2-1)
+      xsmooth <- (-300:300)/100
+      lines(xsmooth,xsmooth^2-1,col='blue')
+      points(x,7-2*abs(x),pch='*',col='red')
+    @
+\end{description}
+\fi
+
+\end{document}

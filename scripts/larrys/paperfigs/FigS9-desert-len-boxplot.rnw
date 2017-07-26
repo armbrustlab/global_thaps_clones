@@ -1,0 +1,63 @@
+% -*- mode: Latex; fill-column: 120; -*-
+\documentclass{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[breaklinks=true,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{bookmark}
+\usepackage{times}
+\usepackage{amsmath}
+%\usepackage{graphicx}\usepackage[]{color}  knitr adds these
+
+\begin{document}
+\title{FigS9: Desert Length Distribution Boxplot for ``Supplement''}
+\maketitle
+
+\tableofcontents
+
+\section{Intro}
+A simple driver script to build above fig.  
+
+\section{Preliminaries}
+Load utility R code and do setup:
+
+<<size='footnotesize'>>=
+source('../../../R/wlr.R') # load util code; path relative this folder or sibling in scripts/larrys 
+setup.my.wd('paperfigs')   # set working dir; UPDATE if this file moves, or if COPY/PASTE to new file
+setup.my.knitr('FigS9-desert-len-boxplot-knitr/') # knitr's "unnamed-chunk-nnn" figures
+my.figs.dir <- 'FigS9-desert-len-boxplot-figs-mine/'  # my named figures
+generic.setup(my.figs.dir)
+@
+<<loaddestables>>=
+# from svn+ssh://ceg1.ocean.washington.edu/var/svn/7_strains/trunk/code/snpNB/data
+load('../../../data/des.rda') # defines "des"
+des.df <- des.to.df(des)      # convert to data.frame
+@
+
+\section{The Fig}
+
+<<>>=
+pdf(paste(my.figs.dir, 'FigS9-desert-len-boxplot-fig.pdf', sep=''),width=6.5,height=5)
+boxplot(des.df[[1]]$Length/1000,
+        des.df[[2]]$Length/1000,
+        des.df[[3]]$Length/1000,
+        des.df[[4]]$Length/1000,
+        des.df[[5]]$Length/1000,
+        des.df[[6]]$Length/1000,
+        des.df[[7]]$Length/1000,
+        main='Desert Length Distribution',
+        xlab='Isolate CCMP ID (Location)',
+        ylab='Desert Length (Kb)', 
+        ylim=c(1.6,450),
+        col='lightblue',
+        log='y')
+ccmp  <- substr(st.locs(1:7,loc=F),5,8)
+where <- paste('(',st.locs(1:7,id=F,loc=F,locabbrv=T),')',sep='')
+mtext(ccmp, side=1,at=1:7,line=0.8,cex=1.0)
+mtext(where,side=1,at=1:7,line=1.7,cex=0.8)
+dev.off()
+@
+
+\includegraphics{FigS9-desert-len-boxplot-figs-mine/FigS9-desert-len-boxplot-fig.pdf}
+
+\vfill\footnotesize\flushright SVN ID I miss you. $ $Id FigS9-desert-len-boxplot 2017-06-29 or later.$ $
+\end{document}

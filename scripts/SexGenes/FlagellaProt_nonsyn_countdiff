@@ -1,0 +1,7 @@
+Sequence Difference Count Matrix
+Input Alignment File: C:\users\koesterj\My Documents\Dropbox\Julie\Tps7_2_08_2013\SexGenes\Tps7_1495_flagellar_rev_comp.fasta
+
+Seq->	ref	1013	3367
+ref	ID	10	9
+1013	10	ID	7
+3367	9	7	ID
