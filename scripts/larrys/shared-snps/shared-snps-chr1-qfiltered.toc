@@ -18,9 +18,9 @@
 \contentsline {subsection}{\numberline {7.2}Sanity Checks}{26}{subsection.7.2}
 \contentsline {subsection}{\numberline {7.3}Main Analysis}{31}{subsection.7.3}
 \contentsline {section}{\numberline {8}Trees}{35}{section.8}
-\contentsline {section}{\numberline {9}Semi-Automated Tree-Building}{45}{section.9}
-\contentsline {subsection}{\numberline {9.1}Bootstrap}{51}{subsection.9.1}
-\contentsline {section}{\numberline {10}Notes}{54}{section.10}
-\contentsline {section}{\numberline {11}Appendix: Old Trees, etc.}{55}{section.11}
-\contentsline {subsection}{\numberline {11.1}HWE Sharing}{55}{subsection.11.1}
-\contentsline {subsection}{\numberline {11.2}Old Tree Stuff}{56}{subsection.11.2}
+\contentsline {section}{\numberline {9}Semi-Automated Tree-Building}{46}{section.9}
+\contentsline {subsection}{\numberline {9.1}Bootstrap}{52}{subsection.9.1}
+\contentsline {section}{\numberline {10}Notes}{55}{section.10}
+\contentsline {section}{\numberline {11}Appendix: Old Trees, etc.}{56}{section.11}
+\contentsline {subsection}{\numberline {11.1}HWE Sharing}{56}{subsection.11.1}
+\contentsline {subsection}{\numberline {11.2}Old Tree Stuff}{57}{subsection.11.2}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2016.7.7)  29 JUN 2017 16:34
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2016.7.7)  26 JUL 2017 14:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -513,7 +513,7 @@ d util code; path relative this folder or sibling in scripts/larrys [][]
 
 Overfull \hbox (29.4453pt too wide) in paragraph at lines 102--102
 []\OT1/pcr/m/n/8 ## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I mi
-ss you.  $Id: wlr.R  2017-06-26 or later $[] 
+ss you.  $Id: wlr.R  2017-07-21 or later $[] 
  []
 
 
@@ -714,21 +714,21 @@ nsistent SNPs @ specified stringency & strain[][]
  []
 
 
-Overfull \hbox (34.2453pt too wide) in paragraph at lines 677--677
+Overfull \hbox (29.4453pt too wide) in paragraph at lines 677--677
 []           []\OT1/pcr/m/n/8 snplist[] []<-[] []\OT1/pcr/b/n/8 strsplit[][]\OT
-1/pcr/m/n/8 (filtered.snps[][]$[][]Code[][]$[][]\OT1/pcr/b/n/8 get.snp.locs.cha
-r[][]\OT1/pcr/m/n/8 (strain, stringency),[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 :\
-TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 ,[] []fixed[][]=[][]TRUE[][])[][] 
+1/pcr/m/n/8 (refined.snps[][]$[][]Code[][]$[][]\OT1/pcr/b/n/8 get.snp.locs.char
+[][]\OT1/pcr/m/n/8 (strain, stringency),[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 :\T
+S1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 ,[] []fixed[][]=[][]TRUE[][])[][] 
  []
 
 [8]
-Package color Info: Redefining color shadecolor on input line 706.
+Package color Info: Redefining color shadecolor on input line 711.
  [9]
-Package color Info: Redefining color shadecolor on input line 767.
-Package color Info: Redefining color shadecolor on input line 778.
-Package color Info: Redefining color shadecolor on input line 811.
+Package color Info: Redefining color shadecolor on input line 772.
+Package color Info: Redefining color shadecolor on input line 783.
+Package color Info: Redefining color shadecolor on input line 816.
 
-Overfull \hbox (13.9454pt too wide) in paragraph at lines 814--814
+Overfull \hbox (13.9454pt too wide) in paragraph at lines 819--819
 [][]\OT1/pcr/m/n/8 esnps2[] []<-[] []\OT1/pcr/b/n/8 as.integer[][]\OT1/pcr/m/n/
 8 ([][]\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\O
 T1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 strsplit[][]\OT1/pcr/m/n/8 (esnps[[][]\OT1/pcr
@@ -739,58 +739,58 @@ sy/m/n/8 f\OT1/pcr/m/n/8 x[[][]2[][]]\OMS/cmsy/m/n/8 g\OT1/pcr/m/n/8 )))[][]
  []
 
 [10]
-Package color Info: Redefining color shadecolor on input line 867.
+Package color Info: Redefining color shadecolor on input line 872.
  [11]
-Package color Info: Redefining color shadecolor on input line 963.
+Package color Info: Redefining color shadecolor on input line 968.
  [12]
-Package color Info: Redefining color shadecolor on input line 979.
+Package color Info: Redefining color shadecolor on input line 984.
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 #      strain   chr  start    end length filtered     type  co
 v_ratio   dup_frac   iStart     iEnd[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 # 1    tp1012  Chr1  10601  13500   2900    FALSE CNVnator 0.6
 3738000 0.41187900    10601    13500[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 # 2    tp1012  Chr1 112001 116500   4500    FALSE CNVnator 1.5
 4893000 0.00907677   112001   116500[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 # 3    tp1012  Chr1 215001 221100   6100    FALSE CNVnator 1.6
 5381000 0.01178470   215001   221100[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 # 4    tp1012  Chr1 358901 370300  11400     TRUE CNVnator 0.0
 0204431 0.97997300   358901   370300[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 # 1955 tp1335 Chr24 259901 278000  18100    FALSE CNVnator 1.4
 1458000 0.38091100 31264334 31282433[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 1010--1010
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 1015--1015
 []\OT1/pcr/m/n/8 # 1956 tp1335 Chr24 286901 289800   2900    FALSE CNVnator 1.7
 4941000 0.74228100 31291334 31294233[] 
  []
 
-Package color Info: Redefining color shadecolor on input line 1015.
+Package color Info: Redefining color shadecolor on input line 1020.
 [13]
-Package color Info: Redefining color shadecolor on input line 1081.
+Package color Info: Redefining color shadecolor on input line 1086.
 
-Overfull \hbox (4.3454pt too wide) in paragraph at lines 1089--1089
+Overfull \hbox (4.3454pt too wide) in paragraph at lines 1094--1094
 []  []\OT1/pcr/m/n/8 homnr.unhemi[] []=[] []\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m
 /n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 list[][]\
 OT1/pcr/m/n/8 ([][]1[][],[][]2[][],[][]3[][],[][]4[][],[][]5[][],[][]6[][],[][]
@@ -799,19 +799,11 @@ OT1/pcr/m/n/8 ([][]1[][],[][]2[][],[][]3[][],[][]4[][],[][]5[][],[][]6[][],[][]
 ])\OMS/cmsy/m/n/8 g\OT1/pcr/m/n/8 ))[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 1102.
-[14]
-Underfull \vbox (badness 10000) detected at line 1240
- []
+Package color Info: Redefining color shadecolor on input line 1107.
+[14] [15]
+Package color Info: Redefining color shadecolor on input line 1255.
 
-
-Underfull \vbox (badness 10000) detected at line 1240
- []
-
-[15]
-Package color Info: Redefining color shadecolor on input line 1250.
-
-Overfull \hbox (19.84529pt too wide) in paragraph at lines 1407--1407
+Overfull \hbox (19.84529pt too wide) in paragraph at lines 1412--1412
 [][]\OT1/pcr/b/n/8 colnames[][]\OT1/pcr/m/n/8 (vs.stringency)[] []<-[] []\OT1/p
 cr/b/n/8 c[][]\OT1/pcr/m/n/8 ([][]\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 [[1]]\TS1/pcr/
 m/n/8 '[][]\OT1/pcr/m/n/8 ,[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 [[2]]\TS1/pcr/m/
@@ -825,82 +817,82 @@ OT1/pcr/m/n/8 )[][]
  []
 
 [16] [17] [18]
-Package color Info: Redefining color shadecolor on input line 1458.
-Package color Info: Redefining color shadecolor on input line 1482.
+Package color Info: Redefining color shadecolor on input line 1463.
+Package color Info: Redefining color shadecolor on input line 1487.
  [19]
-Package color Info: Redefining color shadecolor on input line 1517.
-Package color Info: Redefining color shadecolor on input line 1558.
- [20] [21]
-Package color Info: Redefining color shadecolor on input line 1604.
+Package color Info: Redefining color shadecolor on input line 1522.
+ [20]
+Package color Info: Redefining color shadecolor on input line 1563.
+ [21]
+Package color Info: Redefining color shadecolor on input line 1611.
 
-Overfull \hbox (6.4453pt too wide) in paragraph at lines 1607--1607
+Overfull \hbox (6.4453pt too wide) in paragraph at lines 1614--1614
 [][]\OT1/pcr/m/n/8 fil.fiveway.count[]   []<-[] []\OT1/pcr/b/n/8 sum[][]\OT1/pc
 r/m/n/8 ((snp.tables[[[][]4[][]]][][]$[][]snp[] []*[] []i4.snps)[union.snps[] [
 ]==[] []1[][]][] []&[] []consistent[[[][]2[][]]])[][] 
  []
 
 
-Overfull \hbox (1.6453pt too wide) in paragraph at lines 1609--1609
+Overfull \hbox (1.6453pt too wide) in paragraph at lines 1616--1616
 [][]\OT1/pcr/m/n/8 fil.p.value[] []<-[] []\OT1/pcr/b/n/8 pbinom[][]\OT1/pcr/m/n
 /8 ([][]\OT1/pcr/b/n/8 floor[][]\OT1/pcr/m/n/8 (fil.fiveway.count[][]/[][]gyre.
 count[][]*[][]24[][])[][]-[][]1[][],[] []24[][],[] []1[][]/[][]16[][],[] []lowe
 r.tail[] []=[] []FALSE[][])[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 1637.
+Package color Info: Redefining color shadecolor on input line 1644.
 
-Overfull \hbox (16.0453pt too wide) in paragraph at lines 1646--1646
+Overfull \hbox (16.0453pt too wide) in paragraph at lines 1653--1653
 []\OT1/pcr/m/n/8 #  [1] 3.15e-25 7.19e-23 7.85e-21 5.46e-19 2.72e-17 1.03e-15 3
 .11e-14 7.58e-13 1.53e-11 2.58e-10[] 
  []
 
 
-Overfull \hbox (16.0453pt too wide) in paragraph at lines 1646--1646
+Overfull \hbox (16.0453pt too wide) in paragraph at lines 1653--1653
 []\OT1/pcr/m/n/8 # [11] 3.68e-09 4.44e-08 4.57e-07 4.00e-06 2.98e-05 1.89e-04 1
 .01e-03 4.50e-03 1.66e-02 4.98e-02[] 
  []
 
-Package color Info: Redefining color shadecolor on input line 1653.
-
-Overfull \hbox (16.0453pt too wide) in paragraph at lines 1662--1662
+Package color Info: Redefining color shadecolor on input line 1660.
+[22]
+Overfull \hbox (16.0453pt too wide) in paragraph at lines 1669--1669
 []\OT1/pcr/m/n/8 #  [1] 1.00e+00 7.88e-01 4.48e-01 1.87e-01 5.95e-02 1.49e-02 3
 .01e-03 4.99e-04 6.90e-05 8.02e-06[] 
  []
 
 
-Overfull \hbox (16.0453pt too wide) in paragraph at lines 1662--1662
+Overfull \hbox (16.0453pt too wide) in paragraph at lines 1669--1669
 []\OT1/pcr/m/n/8 # [11] 7.89e-07 6.60e-08 4.72e-09 2.87e-10 1.49e-11 6.59e-13 2
 .46e-14 7.66e-16 1.98e-17 4.14e-19[] 
  []
 
-[22]
-Package color Info: Redefining color shadecolor on input line 1669.
-Package color Info: Redefining color shadecolor on input line 1685.
- [23]
-Package color Info: Redefining color shadecolor on input line 1736.
+Package color Info: Redefining color shadecolor on input line 1676.
+Package color Info: Redefining color shadecolor on input line 1692.
+[23]
+Package color Info: Redefining color shadecolor on input line 1743.
 
-Overfull \hbox (43.8453pt too wide) in paragraph at lines 1758--1758
+Overfull \hbox (43.8453pt too wide) in paragraph at lines 1765--1765
 []          []\OT1/pcr/m/n/8 fiveway.count[]   []=[] []\OT1/pcr/b/n/8 c[][]\OT1
 /pcr/m/n/8 (gi.twoway.count,   ni.twoway.count,   niw.threeway.count,   iw.twow
 ay.count),[][] 
  []
 
 
-Overfull \hbox (53.44531pt too wide) in paragraph at lines 1759--1759
+Overfull \hbox (53.44531pt too wide) in paragraph at lines 1766--1766
 []          []\OT1/pcr/m/n/8 fiveway.percent[] []=[] []\OT1/pcr/b/n/8 c[][]\OT1
 /pcr/m/n/8 (gi.twoway.percent, ni.twoway.percent, niw.threeway.percent, iw.twow
 ay.percent),[][] 
  []
 
 
-Overfull \hbox (15.04529pt too wide) in paragraph at lines 1760--1760
+Overfull \hbox (15.04529pt too wide) in paragraph at lines 1767--1767
 []          []\OT1/pcr/m/n/8 p.value[]         []=[] []\OT1/pcr/b/n/8 c[][]\OT1
 /pcr/m/n/8 (gi.p.value,        ni.p.value,        niw.p.value,          iw.p.va
 lue)[][] 
  []
 
 
-Overfull \hbox (53.90128pt too wide) in paragraph at lines 1763--1763
+Overfull \hbox (53.90128pt too wide) in paragraph at lines 1770--1770
 [][]\OT1/pcr/b/n/8 colnames[][]\OT1/pcr/m/n/8 (consistency.comparison)[[][]1[][
 ]:[][]2[][]][] []<-[] []\OT1/pcr/b/n/8 c[][]\OT1/pcr/m/n/8 ([][]\TS1/pcr/m/n/8 
 '\OT1/pcr/m/n/8 552232way.count\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 ,[] []\TS1/pc
@@ -909,16 +901,16 @@ r/m/n/8 '\OT1/pcr/m/n/8 552232way.percent\TS1/pcr/m/n/8 '[][]\OT1/pcr/m/n/8 )[]
  []
 
 [24]
-Package color Info: Redefining color shadecolor on input line 1812.
-Package color Info: Redefining color shadecolor on input line 1855.
+Package color Info: Redefining color shadecolor on input line 1819.
+Package color Info: Redefining color shadecolor on input line 1862.
 LaTeX Font Info:    Font shape `OMS/pcr/m/it' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1891.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1898.
 
  [25]
-Package color Info: Redefining color shadecolor on input line 1914.
-Package color Info: Redefining color shadecolor on input line 1936.
+Package color Info: Redefining color shadecolor on input line 1921.
+Package color Info: Redefining color shadecolor on input line 1943.
 
-Overfull \hbox (13.9454pt too wide) in paragraph at lines 1965--1965
+Overfull \hbox (13.9454pt too wide) in paragraph at lines 1972--1972
 [][]\OT1/pcr/m/n/8 c1[] []<-[] []\OT1/pcr/b/n/8 as.integer[][]\OT1/pcr/m/n/8 ([
 ][]\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\OT1/p
 cr/m/n/8 ([][]\OT1/pcr/b/n/8 strsplit[][]\OT1/pcr/m/n/8 (r1[[][]1[][]:[][]\OT1/
@@ -930,7 +922,7 @@ n/8 ([][]x[][])\OMS/cmsy/m/n/8 f\OT1/pcr/m/n/8 x[[][]2[][]]\OMS/cmsy/m/n/8 g\OT
  []
 
 
-Overfull \hbox (13.9454pt too wide) in paragraph at lines 1966--1966
+Overfull \hbox (13.9454pt too wide) in paragraph at lines 1973--1973
 [][]\OT1/pcr/m/n/8 c2[] []<-[] []\OT1/pcr/b/n/8 as.integer[][]\OT1/pcr/m/n/8 ([
 ][]\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\OT1/p
 cr/m/n/8 ([][]\OT1/pcr/b/n/8 strsplit[][]\OT1/pcr/m/n/8 (r2[[][]1[][]:[][]\OT1/
@@ -942,7 +934,7 @@ n/8 ([][]x[][])\OMS/cmsy/m/n/8 f\OT1/pcr/m/n/8 x[[][]2[][]]\OMS/cmsy/m/n/8 g\OT
  []
 
 
-Overfull \hbox (13.9454pt too wide) in paragraph at lines 1967--1967
+Overfull \hbox (13.9454pt too wide) in paragraph at lines 1974--1974
 [][]\OT1/pcr/m/n/8 c3[] []<-[] []\OT1/pcr/b/n/8 as.integer[][]\OT1/pcr/m/n/8 ([
 ][]\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\OT1/p
 cr/m/n/8 ([][]\OT1/pcr/b/n/8 strsplit[][]\OT1/pcr/m/n/8 (r3[[][]1[][]:[][]\OT1/
@@ -954,7 +946,7 @@ n/8 ([][]x[][])\OMS/cmsy/m/n/8 f\OT1/pcr/m/n/8 x[[][]2[][]]\OMS/cmsy/m/n/8 g\OT
  []
 
 
-Overfull \hbox (13.9454pt too wide) in paragraph at lines 1968--1968
+Overfull \hbox (13.9454pt too wide) in paragraph at lines 1975--1975
 [][]\OT1/pcr/m/n/8 c4[] []<-[] []\OT1/pcr/b/n/8 as.integer[][]\OT1/pcr/m/n/8 ([
 ][]\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\OT1/p
 cr/m/n/8 ([][]\OT1/pcr/b/n/8 strsplit[][]\OT1/pcr/m/n/8 (r4[[][]1[][]:[][]\OT1/
@@ -966,24 +958,24 @@ n/8 ([][]x[][])\OMS/cmsy/m/n/8 f\OT1/pcr/m/n/8 x[[][]2[][]]\OMS/cmsy/m/n/8 g\OT
  []
 
 [26]
-Package color Info: Redefining color shadecolor on input line 2030.
+Package color Info: Redefining color shadecolor on input line 2037.
 LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <7> not available
-(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 2033.
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 2040.
 LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <7> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 2042.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 2049.
 
  [27] [28]
-Underfull \vbox (badness 10000) detected at line 2215
+Underfull \vbox (badness 10000) detected at line 2222
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2215
+Underfull \vbox (badness 10000) detected at line 2222
  []
 
 [29]
-Package color Info: Redefining color shadecolor on input line 2223.
+Package color Info: Redefining color shadecolor on input line 2230.
 
-Overfull \hbox (33.14542pt too wide) in paragraph at lines 2227--2227
+Overfull \hbox (33.14542pt too wide) in paragraph at lines 2234--2234
 [][]\OT1/pcr/m/n/8 zc3[] []<-[] []\OT1/pcr/b/n/8 as.integer[][]\OT1/pcr/m/n/8 (
 [][]\OT1/pcr/b/n/8 unlist[][]\OT1/pcr/m/n/8 ([][]\OT1/pcr/b/n/8 lapply[][]\OT1/
 pcr/m/n/8 ([][]\OT1/pcr/b/n/8 strsplit[][]\OT1/pcr/m/n/8 (zr3[[][]1[][]:[][]\OT
@@ -995,58 +987,58 @@ g\OT1/pcr/m/n/8 )))[][]
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #   [1]  16115  16615  19117  25748  43500  55857  56591  6578
 7  66879  68328  80862  81001  90622[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #  [14]  90721  91284 110754 116443 116453 120183 126702 12798
 6 129056 147698 153874 159756 160912[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #  [27] 161271 170686 180314 181477 182139 196862 196864 19916
 6 206132 206143 221888 234931 242276[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #  [40] 242914 244505 268954 274655 282391 282511 283646 28936
 3 311952 312625 314132 326217 371008[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #  [53] 376784 387078 387091 389263 395153 406158 410771 43178
 8 438958 438976 443898 447253 448223[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #  [66] 452774 488812 495476 498133 501830 501975 504462 50642
 2 515441 515595 530113 530114 532320[] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2239--2239
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2246--2246
 []\OT1/pcr/m/n/8 #  [79] 534149 541667 543095 575081 585297 586276 612732 62258
 5 651159 652889 655373 655380 657704[] 
  []
 
 [30]
-Package color Info: Redefining color shadecolor on input line 2300.
+Package color Info: Redefining color shadecolor on input line 2307.
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2306--2306
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2313--2313
 [][]\OT1/pcr/m/sl/8 #   subset=as.octmode(\TS1/pcr/m/sl/8 '\OT1/pcr/m/sl/8 35\T
 S1/pcr/m/sl/8 '\OT1/pcr/m/sl/8 ) select those with sharing pattern a subset (op
 tionally proper) of this[][] 
  []
 
 
-Overfull \hbox (0.64528pt too wide) in paragraph at lines 2310--2310
+Overfull \hbox (0.64528pt too wide) in paragraph at lines 2317--2317
 [][]\OT1/pcr/m/n/8 showgroup[] []<-[] []\OT1/pcr/b/n/8 function[][]\OT1/pcr/m/n
 /8 ([][]p.summ[][]=pat.summaries,[] []sharedBy[][]=[][]0[][]:[][]7[][],[] []sub
 set[][]=[][]127[][],[] []split[][]=[][]\OT1/pcr/b/n/8 NULL[][]\OT1/pcr/m/n/8 ,[
@@ -1054,28 +1046,28 @@ set[][]=[][]127[][],[] []split[][]=[][]\OT1/pcr/b/n/8 NULL[][]\OT1/pcr/m/n/8 ,[
  []
 
 [31]
-Package color Info: Redefining color shadecolor on input line 2369.
-Package color Info: Redefining color shadecolor on input line 2383.
-Package color Info: Redefining color shadecolor on input line 2407.
-Package color Info: Redefining color shadecolor on input line 2442.
-Package color Info: Redefining color shadecolor on input line 2461.
+Package color Info: Redefining color shadecolor on input line 2376.
+Package color Info: Redefining color shadecolor on input line 2390.
+Package color Info: Redefining color shadecolor on input line 2414.
+Package color Info: Redefining color shadecolor on input line 2449.
+Package color Info: Redefining color shadecolor on input line 2468.
  [32]
-Package color Info: Redefining color shadecolor on input line 2502.
+Package color Info: Redefining color shadecolor on input line 2509.
  [33]
-Package color Info: Redefining color shadecolor on input line 2553.
-Package color Info: Redefining color shadecolor on input line 2602.
+Package color Info: Redefining color shadecolor on input line 2560.
+Package color Info: Redefining color shadecolor on input line 2609.
  [34]
-Package color Info: Redefining color shadecolor on input line 2637.
-Package color Info: Redefining color shadecolor on input line 2687.
-Package color Info: Redefining color shadecolor on input line 2705.
+Package color Info: Redefining color shadecolor on input line 2644.
+Package color Info: Redefining color shadecolor on input line 2694.
+Package color Info: Redefining color shadecolor on input line 2712.
 LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <7> not available
-(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 2707.
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 2714.
 
 LaTeX Font Info:    Font shape `TS1/pcr/m/it' in size <7> not available
-(Font)              Font shape `TS1/pcr/m/sl' tried instead on input line 2720.
+(Font)              Font shape `TS1/pcr/m/sl' tried instead on input line 2727.
 
 
-Overfull \hbox (9.04463pt too wide) in paragraph at lines 2793--2793
+Overfull \hbox (9.04463pt too wide) in paragraph at lines 2800--2800
 []              []\OT1/pcr/m/n/7 sub2[] []=[] []\OT1/pcr/b/n/7 list[][]\OT1/pcr
 /m/n/7 ([][]id[][]=[][]1012[][],[] []length[][]=[][]\OT1/pcr/b/n/7 pat.count[][
 ]\OT1/pcr/m/n/7 ([][]\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 040\TS1/pcr/m/n/7 '[][]\OT1
@@ -1087,7 +1079,7 @@ T1/pcr/m/n/7 Perth\TS1/pcr/m/n/7 '[][]\OT1/pcr/m/n/7 ),[] []\OT1/pcr/m/sl/7 #61
  []
 
 
-Overfull \hbox (17.52863pt too wide) in paragraph at lines 2796--2796
+Overfull \hbox (17.52863pt too wide) in paragraph at lines 2803--2803
 []              []\OT1/pcr/m/n/7 sub1[] []=[] []\OT1/pcr/b/n/7 list[][]\OT1/pcr
 /m/n/7 ([][]id[][]=[][]1015[][],[] []length[][]=[][]\OT1/pcr/b/n/7 pat.count[][
 ]\OT1/pcr/m/n/7 ([][]\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 004\TS1/pcr/m/n/7 '[][]\OT1
@@ -1099,20 +1091,20 @@ r/m/n/7 Puget Sound\TS1/pcr/m/n/7 '[][]\OT1/pcr/m/n/7 ),[] []\OT1/pcr/m/sl/7 #2
  []
 
 [35]
-Underfull \vbox (badness 10000) detected at line 2808
+Underfull \vbox (badness 10000) detected at line 2815
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2808
+Underfull \vbox (badness 10000) detected at line 2815
  []
 
 [36]
-Package color Info: Redefining color shadecolor on input line 2815.
+Package color Info: Redefining color shadecolor on input line 2822.
 LaTeX Font Info:    Font shape `OMS/pcr/m/it' in size <7> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 2862.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 2870.
 
 
-Overfull \hbox (13.24463pt too wide) in paragraph at lines 2912--2912
+Overfull \hbox (13.24463pt too wide) in paragraph at lines 2920--2920
 []  []\OT1/pcr/b/n/7 plot[][]\OT1/pcr/m/n/7 ([][]0[][],[][]0[][],[] []type[][]=
 [][]\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 n\TS1/pcr/m/n/7 '[][]\OT1/pcr/m/n/7 ,[] []bt
 y[][]=[][]\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 n\TS1/pcr/m/n/7 '[][]\OT1/pcr/m/n/7 ,[
@@ -1125,7 +1117,7 @@ y[][]=[][]\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 n\TS1/pcr/m/n/7 '[][]\OT1/pcr/m/n/7 ,[
  []
 
 
-Overfull \hbox (8.8391pt too wide) in paragraph at lines 2944--2944
+Overfull \hbox (8.8391pt too wide) in paragraph at lines 2953--2953
 []  []\OT1/pcr/b/n/7 if[][]\OT1/pcr/m/n/7 (pltdebug)\OMS/cmsy/m/n/7 f[][]\OT1/p
 cr/b/n/7 cat[][]\OT1/pcr/m/n/7 ([][]\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 Plot width h
 acking:\TS1/pcr/m/n/7 '[][]\OT1/pcr/m/n/7 , provisional.tree.x.lim, tree.x.lim,
@@ -1134,252 +1126,249 @@ ade.dx)\OMS/cmsy/m/n/7 g[][]
  []
 
 [37]
-Underfull \vbox (badness 10000) detected at line 3091
+Underfull \vbox (badness 10000) detected at line 3114
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3091
+Underfull \vbox (badness 10000) detected at line 3114
  []
 
 [38]
-Underfull \vbox (badness 10000) detected at line 3091
+Underfull \vbox (badness 10000) detected at line 3114
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3091
+Underfull \vbox (badness 10000) detected at line 3114
  []
 
 [39]
-Package color Info: Redefining color shadecolor on input line 3108.
+Package color Info: Redefining color shadecolor on input line 3117.
  [40]
-<figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf, id=256, 578.16pt x 361.35pt
+Package color Info: Redefining color shadecolor on input line 3151.
+
+<figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf, id=254, 578.16pt x 361.35pt
 >
 File: figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf Graphic file (type pdf)
 
  <use figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf>
 Package pdftex.def Info: figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf used
- on input line 3133.
+ on input line 3179.
 (pdftex.def)             Requested size: 578.15858pt x 361.34912pt.
 
-Overfull \hbox (36.13358pt too wide) in paragraph at lines 3132--3134
+Overfull \hbox (36.13358pt too wide) in paragraph at lines 3178--3180
 []| [] 
  []
 
-Package color Info: Redefining color shadecolor on input line 3139.
-Package color Info: Redefining color shadecolor on input line 3151.
+Package color Info: Redefining color shadecolor on input line 3185.
+Package color Info: Redefining color shadecolor on input line 3197.
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf, id=258, 
-650.43pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf Grap
-hic file (type pdf)
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf, id=256, 650.43pt x 
+361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf Graphic file (t
+ype pdf)
 
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf>
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tr
-ee-loose-1.pdf used on input line 3158.
+rains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.
+pdf used on input line 3204.
 (pdftex.def)             Requested size: 469.75502pt x 260.98232pt.
-Package color Info: Redefining color shadecolor on input line 3171.
+Package color Info: Redefining color shadecolor on input line 3217.
 
-[41 <./figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf>]
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf, id=273,
- 650.43pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf Gra
-phic file (type pdf)
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf, id=258, 650.43pt x
+ 361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf Graphic file (
+type pdf)
 
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf>
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tr
-ee-medium-1.pdf used on input line 3181.
+rains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1
+.pdf used on input line 3227.
 (pdftex.def)             Requested size: 469.75502pt x 260.98232pt.
-Package color Info: Redefining color shadecolor on input line 3194.
+Package color Info: Redefining color shadecolor on input line 3240.
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf, id=275,
- 650.43pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf Gra
-phic file (type pdf)
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf, id=260, 650.43pt x
+ 361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf Graphic file (
+type pdf)
 
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf>
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tr
-ee-strict-1.pdf used on input line 3201.
+rains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1
+.pdf used on input line 3247.
 (pdftex.def)             Requested size: 469.75502pt x 260.98232pt.
-Package color Info: Redefining color shadecolor on input line 3214.
+Package color Info: Redefining color shadecolor on input line 3260.
+ [41] [42 <./figs-mine/paperfig-medium-tree-Chr1-qfiltered.pdf>] [43 </homes/gw
+s/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/f
+igs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf> </homes/gws/ruzzo/Documents/g
+/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Ch
+r1-qfiltered-tree-medium-1.pdf>]
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf, id=305, 650.43
+pt x 361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf Graphic fi
+le (type pdf)
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf, id=
-277, 650.43pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf
- Graphic file (type pdf)
-
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf>
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tr
-ee-unfiltered-1.pdf used on input line 3221.
+rains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfilter
+ed-1.pdf used on input line 3267.
 (pdftex.def)             Requested size: 469.75502pt x 260.98232pt.
-Package color Info: Redefining color shadecolor on input line 3236.
-[42 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-loose-1.pdf>]
-[43 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-1.pdf> </h
-omes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/la
-rrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf>]
-Package color Info: Redefining color shadecolor on input line 3266.
-Package color Info: Redefining color shadecolor on input line 3293.
-Package color Info: Redefining color shadecolor on input line 3323.
- [44 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf
->]
-Package color Info: Redefining color shadecolor on input line 3352.
-Package color Info: Redefining color shadecolor on input line 3384.
+Package color Info: Redefining color shadecolor on input line 3282.
+Package color Info: Redefining color shadecolor on input line 3312.
+ [44 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-strict-1.pdf>]
+Package color Info: Redefining color shadecolor on input line 3339.
+Package color Info: Redefining color shadecolor on input line 3369.
+ [45 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-unfiltered-1.pdf>]
+Package color Info: Redefining color shadecolor on input line 3398.
+Package color Info: Redefining color shadecolor on input line 3430.
+ [46]
+Package color Info: Redefining color shadecolor on input line 3479.
 
-[45]
-Package color Info: Redefining color shadecolor on input line 3433.
-
-Overfull \hbox (10.24529pt too wide) in paragraph at lines 3504--3504
+Overfull \hbox (10.24529pt too wide) in paragraph at lines 3550--3550
 []\OT1/pcr/m/n/8 # root: 177 ; shared: 6449 .  max l 077 , max r 010 , max both
  010 , min cross 010 , min ratio 010 .[] 
  []
 
-[46]
-Package color Info: Redefining color shadecolor on input line 3514.
-Package color Info: Redefining color shadecolor on input line 3549.
- [47]
-Package color Info: Redefining color shadecolor on input line 3584.
-Package color Info: Redefining color shadecolor on input line 3620.
+[47]
+Package color Info: Redefining color shadecolor on input line 3560.
+Package color Info: Redefining color shadecolor on input line 3595.
  [48]
-Underfull \vbox (badness 10000) detected at line 3730
+Package color Info: Redefining color shadecolor on input line 3630.
+Package color Info: Redefining color shadecolor on input line 3666.
+ [49]
+Underfull \vbox (badness 10000) detected at line 3776
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3730
+Underfull \vbox (badness 10000) detected at line 3776
  []
 
-[49]
-Package color Info: Redefining color shadecolor on input line 3736.
-Package color Info: Redefining color shadecolor on input line 3766.
- [50]
-Package color Info: Redefining color shadecolor on input line 3804.
-Package color Info: Redefining color shadecolor on input line 3823.
+[50]
+Package color Info: Redefining color shadecolor on input line 3782.
+Package color Info: Redefining color shadecolor on input line 3812.
  [51]
-Package color Info: Redefining color shadecolor on input line 3878.
+Package color Info: Redefining color shadecolor on input line 3850.
+Package color Info: Redefining color shadecolor on input line 3869.
  [52]
-Package color Info: Redefining color shadecolor on input line 3953.
-Package color Info: Redefining color shadecolor on input line 3973.
+Package color Info: Redefining color shadecolor on input line 3925.
+ [53]
+Package color Info: Redefining color shadecolor on input line 4000.
+Package color Info: Redefining color shadecolor on input line 4020.
 
-Overfull \hbox (29.4453pt too wide) in paragraph at lines 3995--3995
+Overfull \hbox (29.4453pt too wide) in paragraph at lines 4042--4042
 []  []\OT1/pcr/m/n/8 bcor[i][] []<-[] []\OT1/pcr/b/n/8 cor[][]\OT1/pcr/m/n/8 (p
 attern.counts[[[][]2[][]]][,[][]2[][]],boot.counts[[[][]2[][]]][,[][]2[][]])[] 
 []\OT1/pcr/m/sl/8 # just curious - how correlated are they?[][] 
  []
 
-[53]
-Package color Info: Redefining color shadecolor on input line 4053.
+[54]
+Package color Info: Redefining color shadecolor on input line 4100.
 
-Overfull \hbox (15.04529pt too wide) in paragraph at lines 4055--4055
+Overfull \hbox (15.04529pt too wide) in paragraph at lines 4102--4102
 [][]\OT1/pcr/m/sl/8 # \TS1/pcr/m/sl/8 '\OT1/pcr/m/sl/8 opt\TS1/pcr/m/sl/8 ' \OT
 1/pcr/m/sl/8 hacking is trying to force knitr to show more digits of bcor in su
 mmary, as Rstudio does, but[][] 
  []
 
 
-Overfull \hbox (19.84529pt too wide) in paragraph at lines 4056--4056
+Overfull \hbox (19.84529pt too wide) in paragraph at lines 4103--4103
 [][]\OT1/pcr/m/sl/8 # it still fails...  Bottom line is the correlation seems t
 o be  > .999 in all samples, rounds to 1.0,[][] 
  []
 
 
-Overfull \hbox (19.84529pt too wide) in paragraph at lines 4072--4072
-[]\OT1/pcr/m/n/8 #          Min.           1st Qu.        Median         Mean  
-         3rd Qu.        Max.          sd[] 
+Overfull \hbox (53.44531pt too wide) in paragraph at lines 4119--4119
+[]\OT1/pcr/m/n/8 #          Min.            1st Qu.         Median          Mea
+n            3rd Qu.         Max.            sd[] 
  []
 
 
-Overfull \hbox (77.44533pt too wide) in paragraph at lines 4072--4072
-[]\OT1/pcr/m/n/8 # bcor     "   0.9998723" "   0.9999124" "   0.9999239" "   0.
-9999219" "   0.9999498" "   0.999951" "   0.0000323"[] 
+Overfull \hbox (115.84535pt too wide) in paragraph at lines 4119--4119
+[]\OT1/pcr/m/n/8 # bcor     "   0.99990971" "   0.99996074" "   0.99996325" "  
+ 0.99995328" "   0.99996497" "   0.99996773" "   0.00002449"[] 
  []
 
 
-Overfull \hbox (77.44533pt too wide) in paragraph at lines 4072--4072
-[]\OT1/pcr/m/n/8 # b52cross "6852"         "6852"         "6856"         "6910"
-         "6979"         "7011"        "  78.4314988"[] 
+Overfull \hbox (115.84535pt too wide) in paragraph at lines 4119--4119
+[]\OT1/pcr/m/n/8 # b52cross "6904"          "6948"          "6960"          "69
+74.8"        "6995"          "7067"          "  60.94833878"[] 
  []
 
 
-Overfull \hbox (77.44533pt too wide) in paragraph at lines 4072--4072
-[]\OT1/pcr/m/n/8 # b61cross "6212"         "6239"         "6282"         "6283"
-         "6341"         "6341"        "  58.5363135"[] 
+Overfull \hbox (111.04535pt too wide) in paragraph at lines 4119--4119
+[]\OT1/pcr/m/n/8 # b61cross "6319"          "6326"          "6348"          "63
+49.2"        "6376"          "6377"          "  27.1237903"[] 
  []
 
 
-Overfull \hbox (77.44533pt too wide) in paragraph at lines 4072--4072
-[]\OT1/pcr/m/n/8 # b61-b52  "-670"         "-640"         "-638"         "-627"
-         "-617"         "-570"        "  37.0405184"[] 
+Overfull \hbox (115.84535pt too wide) in paragraph at lines 4119--4119
+[]\OT1/pcr/m/n/8 # b61-b52  "-719"          "-622"          "-618"          "-6
+25.6"        "-585"          "-584"          "  55.16611279"[] 
  []
 
 
-Overfull \hbox (39.0453pt too wide) in paragraph at lines 4072--4072
-[]\OT1/pcr/m/n/8 # % rev    " 100"         " 100"         " 100"         " 100"
-         " 100"         " 100"        "   0"[] 
+Overfull \hbox (72.64532pt too wide) in paragraph at lines 4119--4119
+[]\OT1/pcr/m/n/8 # % rev    " 100"          " 100"          " 100"          " 1
+00"          " 100"          " 100"          "   0"[] 
  []
 
-[54]
-Package color Info: Redefining color shadecolor on input line 4163.
- [55]
-Package color Info: Redefining color shadecolor on input line 4171.
+[55]
+Package color Info: Redefining color shadecolor on input line 4210.
+Package color Info: Redefining color shadecolor on input line 4218.
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/share-plot-1.pdf, id=387, 578.16pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/share-plot-1.pdf Graphic file (type pdf)
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/share-plot-1.pdf, id=377, 578.16pt x 361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/share-plot-1.pdf Graphic file (type pdf)
 
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/share-plot-1.pdf>
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/share-plot-1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/share-plot-1.pdf used on
- input line 4184.
+rains/scripts/larrys/shared-snps/figs-knitr/share-plot-1.pdf used on input line
+ 4231.
 (pdftex.def)             Requested size: 469.75502pt x 293.59616pt.
-Package color Info: Redefining color shadecolor on input line 4205.
+ [56]
+Package color Info: Redefining color shadecolor on input line 4252.
 
-Overfull \hbox (475.84558pt too wide) in paragraph at lines 4207--4207
+Overfull \hbox (475.84558pt too wide) in paragraph at lines 4254--4254
 [][]\OT1/pcr/m/n/8 newick.chr1.loose[] []<-[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 
 (((tp3367_Italy:4551,tp1013_Wales:4954):5920,(((tp1007_Virginia:10,tp1012_Austr
 alia:29):9,(tp1015_Puget_Sound:90,tp1335_NY:13):11):320,tp1014_Gyre:22):3484):8
 593,outgroup:0);\TS1/pcr/m/n/8 '[][] 
  []
 
-<00old/shared-snp-tree-annotated-v1.pdf, id=389, 614.295pt x 794.97pt>
+<00old/shared-snp-tree-annotated-v1.pdf, id=393, 614.295pt x 794.97pt>
 File: 00old/shared-snp-tree-annotated-v1.pdf Graphic file (type pdf)
 
 <use 00old/shared-snp-tree-annotated-v1.pdf>
 Package pdftex.def Info: 00old/shared-snp-tree-annotated-v1.pdf used on input l
-ine 4220.
+ine 4267.
 (pdftex.def)             Requested size: 307.14674pt x 397.48402pt.
-Package color Info: Redefining color shadecolor on input line 4237.
- [56 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/share-plot-1.pdf>] [57 <./00old/shared-snp-
-tree-annotated-v1.pdf>]
-Overfull \hbox (528.64561pt too wide) in paragraph at lines 4239--4239
+Package color Info: Redefining color shadecolor on input line 4284.
+
+Overfull \hbox (528.64561pt too wide) in paragraph at lines 4286--4286
 [][]\OT1/pcr/m/n/8 newick.chr1.med[] []<-[] []\TS1/pcr/m/n/8 '\OT1/pcr/m/n/8 ((
 (tp3367_Italy:8813,tp1013_Wales:9652):9365,(((e_tp1007_Virginia:30,d_tp1012_Aus
 tralia:61):19,(c_tp1015_Puget_Sound:207,b_tp1335_NY:41):18):1005,a_tp1014_Gyre:
 61):3912):7054,outgroup:0);\TS1/pcr/m/n/8 '[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 4254.
+Package color Info: Redefining color shadecolor on input line 4301.
 
-Overfull \hbox (454.24431pt too wide) in paragraph at lines 4287--4287
+Overfull \hbox (454.24431pt too wide) in paragraph at lines 4334--4334
 [][]\OT1/pcr/m/n/7 oldwick.medium[] []<-[] []\TS1/pcr/m/n/7 '\OT1/pcr/m/n/7 (((
 CCMP3367_Italy:8813,CCMP1013_Wales:9652):9365,(((e_CCMP1007_Virginia:30,d_CCMP1
 012_Australia:61):19,(c_CCMP1015_Puget_Sound:207,b_CCMP1335_NY:41):18):1005,a_C
@@ -1387,88 +1376,87 @@ CMP1014_NPG:61):3912):7054,outgroup:0);\TS1/pcr/m/n/7 '[][]
  []
 
 
-Overfull \hbox (156.04453pt too wide) in paragraph at lines 4289--4289
+Overfull \hbox (156.04453pt too wide) in paragraph at lines 4336--4336
 [][]\OT1/pcr/m/n/7 simple.oldwick.medium[] []<-[] []\TS1/pcr/m/n/7 '\OT1/pcr/m/
 n/7 (((Italy:8813,Wales:9652):9365,(((Virginia:30,Australia:61):19,(Puget:207,N
 Y:41):18):1005,Gyre:61):3912):7054,outgroup:0);\TS1/pcr/m/n/7 '[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 4312.
+[57 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/share-plot-1.pdf>] [58 <./00old/shared-snp-tree-annotat
+ed-v1.pdf>]
+Package color Info: Redefining color shadecolor on input line 4359.
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-1.pd
-f, id=411, 578.16pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-1.pdf, id=415, 
+578.16pt x 361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-1.pdf Grap
+hic file (type pdf)
+
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-1.pdf>
+Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
+rains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-u
+nlabeled-1.pdf used on input line 4369.
+(pdftex.def)             Requested size: 252.94499pt x 158.09024pt.
+Package color Info: Redefining color shadecolor on input line 4382.
+
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-shortscale-1.pd
+f, id=417, 578.16pt x 361.35pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-shortscale
 -1.pdf Graphic file (type pdf)
 
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-shortscale-
 1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tr
-ee-medium-unlabeled-1.pdf used on input line 4322.
+rains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-u
+nlabeled-shortscale-1.pdf used on input line 4389.
 (pdftex.def)             Requested size: 252.94499pt x 158.09024pt.
-Package color Info: Redefining color shadecolor on input line 4335.
+Package color Info: Redefining color shadecolor on input line 4402.
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-shor
-tscale-1.pdf, id=413, 578.16pt x 361.35pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled
--shortscale-1.pdf Graphic file (type pdf)
-
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-
-shortscale-1.pdf>
-Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tr
-ee-medium-unlabeled-shortscale-1.pdf used on input line 4342.
-(pdftex.def)             Requested size: 252.94499pt x 158.09024pt.
- [58] [59 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snp
-NB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unla
-beled-1.pdf> </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/
-snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-u
-nlabeled-shortscale-1.pdf>]
-Package color Info: Redefining color shadecolor on input line 4355.
-
-Overfull \hbox (374.44437pt too wide) in paragraph at lines 4357--4357
+Overfull \hbox (374.44437pt too wide) in paragraph at lines 4404--4404
 [][]\OT1/pcr/m/n/7 fullgenome.newick.medium[] []<-[] []\TS1/pcr/m/n/7 '\OT1/pcr
 /m/n/7 (((3367_Italy:86155,1013_Wales:95697):89598,(((e_1007_VA:330,d_1012_Aust
 ralia:632):1296,(c_1015_WA:2113,b_1335_NY:658):480):10059,a_1014_NPG:568):39517
 ):69526,outgroup:0);\TS1/pcr/m/n/7 '[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 4392.
+[59] [60 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/l
+arrys/shared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-1.pdf>
+ </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sh
+ared-snps/figs-knitr/newick-Chr1-qfiltered-tree-medium-unlabeled-shortscale-1.p
+df>]
+Package color Info: Redefining color shadecolor on input line 4439.
 
-</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts
-/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf, id=438, 578.16pt x
- 505.89pt>
-File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/sc
-ripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf Graphic file (
-type pdf)
+</homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/sha
+red-snps/figs-knitr/fullgenome-tree-medium-1.pdf, id=443, 578.16pt x 505.89pt>
+File: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larry
+s/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf Graphic file (type pdf)
 
-<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scr
-ipts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf>
+<use /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys
+/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf>
 Package pdftex.def Info: /homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_st
-rains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1
-.pdf used on input line 4407.
+rains/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf used o
+n input line 4454.
 (pdftex.def)             Requested size: 469.75502pt x 411.0346pt.
- [60] [61 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snp
-NB/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4421.
- [62]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 4421.
-
-(./shared-snps-chr1-qfiltered.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4421.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 4421.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4421.
+ [61] [62 </homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/
+larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1.pdf>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4468.
+ [63]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 4468.
+ (./shared-snps-chr1-qfiltered.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4468.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 4468.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4468.
  ) 
 Here is how much of TeX's memory you used:
- 7322 strings out of 495063
- 111463 string characters out of 3182181
- 334116 words of memory out of 3000000
+ 7323 strings out of 495063
+ 111107 string characters out of 3182181
+ 336864 words of memory out of 3000000
  10250 multiletter control sequences out of 15000+200000
  32032 words of font info for 76 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1486,10 +1474,10 @@ e/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/t
 imes/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pf
 b>
-Output written on shared-snps-chr1-qfiltered.pdf (62 pages, 746561 bytes).
+Output written on shared-snps-chr1-qfiltered.pdf (63 pages, 748695 bytes).
 PDF statistics:
- 613 PDF objects out of 1000 (max. 8388607)
- 510 compressed objects within 6 object streams
- 122 named destinations out of 1000 (max. 500000)
+ 617 PDF objects out of 1000 (max. 8388607)
+ 513 compressed objects within 6 object streams
+ 123 named destinations out of 1000 (max. 500000)
  259 words of extra memory for PDF output out of 10000 (max. 10000000)
 

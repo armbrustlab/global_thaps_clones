@@ -98,11 +98,11 @@ Load utility R code; do setup:
 \hlkwd{source}\hlstd{(}\hlstr{'../../../R/wlr.R'}\hlstd{)} \hlcom{# load util code; path relative this folder or sibling in scripts/larrys }
 \end{alltt}
 \begin{verbatim}
-## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-06-26 or later $
+## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
 \end{verbatim}
 \begin{alltt}
 \hlkwd{setup.my.wd}\hlstd{(}\hlstr{'shared-snps'}\hlstd{)} \hlcom{# set working dir; UPDATE if this file moves, or if COPY/PASTE to new file}
-\hlkwd{setup.my.knitr}\hlstd{(}\hlstr{'f-knitr/'}\hlstd{)}
+\hlkwd{setup.my.knitr}\hlstd{(}\hlstr{'figs-knitr/'}\hlstd{)}
 \hlkwd{generic.setup}\hlstd{(}\hlstr{'figs-mine/'}\hlstd{)}
 \end{alltt}
 \end{kframe}
@@ -194,7 +194,7 @@ will/won't force removal (actually, rename):
 \hlkwd{decache}\hlstd{(params}\hlopt{$}\hlstd{clear.cache)}
 \end{alltt}
 \begin{verbatim}
-# Rename of 'cache' to 'cache80604' returned TRUE .
+# Rename of 'cache' to 'cache91396' returned TRUE .
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -646,9 +646,9 @@ are defined as the ``consistent'' SNPs.
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# wrap this in a data structure to be cached:}
-\hlstd{Description} \hlkwb{<-} \hlstr{[2757 chars quoted with ''']}
+\hlstd{Description} \hlkwb{<-} \hlstr{[2753 chars quoted with ''']}
 
-\hlstd{filtered.snps} \hlkwb{<-}
+\hlstd{refined.snps} \hlkwb{<-}
   \hlkwd{list}\hlstd{(}\hlkwc{Description}\hlstd{=Description,}
 
        \hlkwc{Data}\hlstd{=}\hlkwd{list}\hlstd{(}
@@ -661,19 +661,19 @@ are defined as the ``consistent'' SNPs.
        \hlkwc{Code}\hlstd{=}\hlkwd{list}\hlstd{(}
          \hlkwc{get.snps} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{strain}\hlstd{,} \hlkwc{stringency}\hlstd{=}\hlnum{2}\hlstd{)\{}
            \hlcom{# return nusnps x 1 Bool vector of consistent SNPs @ specified stringency & strain}
-           \hlkwd{return}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps[[stringency]]} \hlopt{&}
-                  \hlstd{filtered.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{non.ref.nucleotide[[stringency]][,strain]} \hlopt{>} \hlnum{0}\hlstd{)}
+           \hlkwd{return}\hlstd{(refined.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps[[stringency]]} \hlopt{&}
+                  \hlstd{refined.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{non.ref.nucleotide[[stringency]][,strain]} \hlopt{>} \hlnum{0}\hlstd{)}
          \hlstd{\}}
          \hlstd{,}
          \hlkwc{get.snp.locs.char} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{strain}\hlstd{,} \hlkwc{stringency}\hlstd{=}\hlnum{2}\hlstd{)\{}
            \hlcom{# return char vector of locations of consistent SNPs @ specified stringency & strain}
-           \hlstd{snps} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(strain, stringency)}
+           \hlstd{snps} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(strain, stringency)}
            \hlkwd{return}\hlstd{(}\hlkwd{names}\hlstd{(snps)[snps])}
          \hlstd{\}}
          \hlstd{,}
          \hlkwc{get.snp.locs.df} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{strain}\hlstd{,} \hlkwc{stringency}\hlstd{=}\hlnum{2}\hlstd{)\{}
            \hlcom{# return data frame (Chr/Pos) of locations of consistent SNPs @ specified stringency & strain}
-           \hlstd{snplist} \hlkwb{<-} \hlkwd{strsplit}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snp.locs.char}\hlstd{(strain, stringency),} \hlstr{':'}\hlstd{,} \hlkwc{fixed}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+           \hlstd{snplist} \hlkwb{<-} \hlkwd{strsplit}\hlstd{(refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snp.locs.char}\hlstd{(strain, stringency),} \hlstr{':'}\hlstd{,} \hlkwc{fixed}\hlstd{=}\hlnum{TRUE}\hlstd{)}
            \hlcom{# strsplit returns long list of 2-vectors, 1st=chr, 2nd=char position}
            \hlstd{df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{Chr}\hlstd{=}           \hlkwd{unlist}\hlstd{(}\hlkwd{lapply}\hlstd{(snplist,}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(x[}\hlnum{1}\hlstd{])\})),}
                             \hlkwc{Pos}\hlstd{=}\hlkwd{as.integer}\hlstd{(}\hlkwd{unlist}\hlstd{(}\hlkwd{lapply}\hlstd{(snplist,}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(x[}\hlnum{2}\hlstd{])\}))),}
@@ -684,17 +684,22 @@ are defined as the ``consistent'' SNPs.
   \hlstd{)}
 
 \hlcom{# dont't clobber existing .rda, but save if absent.  (delete to re-save)}
-\hlstd{rda.filtered} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'../00common/mycache/filtered.snps'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'rda'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'.'}\hlstd{)}
-\hlkwa{if}\hlstd{(}\hlkwd{file.exists}\hlstd{(rda.filtered))\{}
-  \hlkwd{cat}\hlstd{(}\hlstr{'Pre-existing file'}\hlstd{, rda.filtered,} \hlstr{'unchanged.\textbackslash{}n'}\hlstd{)}
+\hlcom{# result for trunc, unfiltered tables saved to "data" else "mycache"}
+\hlkwa{if}\hlstd{(}\hlkwd{which.snp.tables}\hlstd{()} \hlopt{==} \hlstr{'trunc-unfiltered'}\hlstd{)\{}
+  \hlstd{rda.refined} \hlkwb{<-} \hlstr{'../../../data/refined.snps-trunc-unfiltered.rda'}
 \hlstd{\}} \hlkwa{else} \hlstd{\{}
-  \hlkwd{cat}\hlstd{(}\hlstr{'Saving'}\hlstd{, rda.filtered,} \hlstr{'...'}\hlstd{)}
-  \hlkwd{save}\hlstd{(filtered.snps,} \hlkwc{file}\hlstd{=rda.filtered,} \hlkwc{compress}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+  \hlstd{rda.refined} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'../00common/mycache/refined.snps'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'rda'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'.'}\hlstd{)}
+\hlstd{\}}
+\hlkwa{if}\hlstd{(}\hlkwd{file.exists}\hlstd{(rda.refined))\{}
+  \hlkwd{cat}\hlstd{(}\hlstr{'Pre-existing file'}\hlstd{, rda.refined,} \hlstr{'unchanged.\textbackslash{}n'}\hlstd{)}
+\hlstd{\}} \hlkwa{else} \hlstd{\{}
+  \hlkwd{cat}\hlstd{(}\hlstr{'Saving'}\hlstd{, rda.refined,} \hlstr{'...'}\hlstd{)}
+  \hlkwd{save}\hlstd{(refined.snps,} \hlkwc{file}\hlstd{=rda.refined,} \hlkwc{compress}\hlstd{=}\hlnum{TRUE}\hlstd{)}
   \hlkwd{cat}\hlstd{(}\hlstr{'Saved.\textbackslash{}n'}\hlstd{)}
 \hlstd{\}}
 \end{alltt}
 \begin{verbatim}
-# Pre-existing file ../00common/mycache/filtered.snps.trunc-qfiltered.rda unchanged.
+# Saving ../00common/mycache/refined.snps.trunc-qfiltered.rda ...Saved.
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -704,14 +709,14 @@ Knitr seems to be failing to format the long char string above, which says:
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{cat}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Description)}
+\hlkwd{cat}\hlstd{(refined.snps}\hlopt{$}\hlstd{Description)}
 \end{alltt}
 \begin{verbatim}
 # Contents of this .rda file:
 # 
 #   * Description: this text
 # 
-#   * Data -- 5 items defining filtered SNPs, at 4 different stringency levels, as defined
+#   * Data -- 5 items defining refined SNPs, at 4 different stringency levels, as defined
 #     in shared-snps.rnw:
 # 
 #     * based.on.which.snp.tables: {"Chr1","full","trunc"}-{"unfiltered","qfiltered"}, 
@@ -730,7 +735,7 @@ Knitr seems to be failing to format the long char string above, which says:
 #     * non.ref.nucleotide: 4 arrays, each nusnps x 7, of values 0..4 (0..1 in the 4th 
 #       array).  In the 1st 3 arrays, 0 means the given position in the given strain did
 #       not have nonreference read counts above the corresponding filtering threshold,
-#       i.e., is NOT a filtered SNP in that strain, whereas 1..4 mean that it did pass
+#       i.e., is NOT a refined SNP in that strain, whereas 1..4 mean that it did pass
 #       threshold, for A,C,G,T resp.  In the 4th array, this value is just 1/0,
 #       indicating is/is not a called SNP in that strain.
 # 
@@ -742,12 +747,12 @@ Knitr seems to be failing to format the long char string above, which says:
 #       and uniformity of data structures, the 4th is all TRUE, i.e., union of SNPs
 #       across all strains, without any regard for thresholds or consistency.
 # 
-#       In short, the filtered SNPs according to our medium filtering criteria are
+#       In short, the refined SNPs according to our medium filtering criteria are
 #       strains/positions where consistent.snps[[2]]==TRUE and non.ref.nucleotide[[2]]>0.
 # 
 #       Rownames in both non.ref.nucs and consistent define location, e.g. "Chr1:333".
 # 
-#   * Code -- simple routines to extract filtered SNPs in (potentially) convenient formats:
+#   * Code -- simple routines to extract refined SNPs in (potentially) convenient formats:
 # 
 #     * get.snps(strain, stringency=2)
 #       returns nusnps x 1 Bool vector of consistent SNPs @ specified stringency in
@@ -1264,10 +1269,10 @@ stats, such as those shown in Table 1 of the paper.
   \hlkwd{cat}\hlstd{(}\hlstr{'\textbackslash{}nStringency'}\hlstd{, stringency,} \hlkwd{ifelse}\hlstd{(stringency}\hlopt{==}\hlnum{4}\hlstd{,}\hlstr{'(i.e. raw SAMTools SNP calls)'}\hlstd{,}\hlstr{''}\hlstd{),}
       \hlstr{':\textbackslash{}n--------------\textbackslash{}n'}\hlstd{)}
   \hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{7}\hlstd{)\{}
-    \hlstd{f.snps.i} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(i, stringency)}
+    \hlstd{f.snps.i} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(i, stringency)}
     \hlstd{snp.counts[i,stringency]} \hlkwb{<-} \hlkwd{sum}\hlstd{(f.snps.i)}
     \hlkwa{for}\hlstd{(j} \hlkwa{in} \hlstd{i}\hlopt{:}\hlnum{7}\hlstd{)\{}
-      \hlstd{f.snps.j} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(j, stringency)}
+      \hlstd{f.snps.j} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(j, stringency)}
       \hlstd{snp.inter[i,j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(f.snps.i} \hlopt{&} \hlstd{f.snps.j)}
       \hlstd{snp.union[i,j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(f.snps.i} \hlopt{|} \hlstd{f.snps.j)}
     \hlstd{\}}
@@ -1557,6 +1562,8 @@ Arbitrarily pick one isolate, say, $A$, as the ``template''.  Arbitrarily pick a
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{gyre.count} \hlkwb{<-} \hlkwd{sum}\hlstd{(snp.tables[[}\hlnum{4}\hlstd{]]}\hlopt{$}\hlstd{snp)}
+\hlcom{# NOTE: what we now calle "refined" SNPs were once called "filtered" SNPs and I have NOT tried}
+\hlcom{# to update variable names and annotation in the code below to reflect the terminology change...}
 \hlcom{# 'unfil.' => unfiltered for consistency; see below.}
 \hlstd{unfil.fiveway.count}   \hlkwb{<-} \hlkwd{sum}\hlstd{( snp.tables[[}\hlnum{4}\hlstd{]]}\hlopt{$}\hlstd{snp} \hlopt{*} \hlstd{i4.snps)}
 \hlstd{unfil.fiveway.percent} \hlkwb{<-} \hlstd{unfil.fiveway.count} \hlopt{/} \hlstd{gyre.count} \hlopt{*} \hlnum{100}
@@ -3013,7 +3020,8 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
                       \hlkwc{col.clade} \hlstd{=}\hlstr{'black'}\hlstd{,}    \hlkwc{lwd.clade}\hlstd{=}\hlnum{1}\hlstd{,}   \hlkwc{cex.clade} \hlstd{=}\hlnum{1.0}\hlstd{,} \hlkwc{font.clade} \hlstd{=}\hlnum{3}\hlstd{,}
                       \hlkwc{col.legbox}\hlstd{=}\hlstr{'beige'}\hlstd{,}                   \hlkwc{cex.legend}\hlstd{=}\hlnum{0.8}\hlstd{,}
                       \hlkwc{col.tip}   \hlstd{=}\hlstr{'darkblue'}\hlstd{,}                                \hlkwc{font.tip}   \hlstd{=}\hlnum{4}\hlstd{,}
-                      \hlkwc{plusx}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{pltdebug}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{])\{}
+                      \hlkwc{plusx}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{pltdebug}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],}
+                      \hlkwc{straight.arrow}\hlstd{=}\hlnum{FALSE}\hlstd{)\{}
 
   \hlcom{####}
   \hlcom{#}
@@ -3082,8 +3090,8 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{3.62}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'all'}  \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'in 7'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'\textbackslash{}n'}\hlstd{),} \hlcom{# 7054}
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{5.75}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'abcde'}\hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'in 5'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'\textbackslash{}n'}\hlstd{),} \hlcom{# 3912}
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{3}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{1.50}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'fg'}   \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'in 2'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'\textbackslash{}n'}\hlstd{),} \hlcom{# 9365}
-    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{2}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{2.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'f'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 1013'}\hlstd{),}         \hlcom{# 9652 }
-    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{1}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{1.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'g'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 3367'}\hlstd{),}         \hlcom{# 8813 }
+    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{2}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{2.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'f'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 1013'}\hlstd{),}  \hlcom{# 9652 }
+    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{1}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{1.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'g'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 3367'}\hlstd{),}  \hlcom{# 8813 }
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,}\hlnum{5}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{4.35}\hlstd{,} \hlstr{'* '}\hlstd{)}
 
   \hlcom{####}
@@ -3129,6 +3137,7 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
   \hlstd{xdel} \hlkwb{<-} \hlnum{3}\hlopt{*}\hlstd{clade.dx}        \hlcom{# space between labeled clade tips and marker line}
 
   \hlstd{tree.x.lim} \hlkwb{<-} \hlnum{1.03}\hlopt{*}\hlstd{(}\hlkwd{max}\hlstd{(tiplabel.x)}\hlopt{+}\hlstd{xdel)}  \hlcom{# <== FINAL plot width}
+  \hlstd{tree.y.lim} \hlkwb{<-} \hlnum{7}
   \hlkwa{if}\hlstd{(pltdebug)\{}\hlkwd{cat}\hlstd{(}\hlstr{'Plot width hacking:'}\hlstd{, provisional.tree.x.lim, tree.x.lim, tree.x.lim}\hlopt{/}\hlnum{1.03}\hlopt{/}\hlkwd{max}\hlstd{(tip), clade.dx)\}}
 
   \hlkwd{par}\hlstd{(}\hlkwc{new}\hlstd{=T)}  \hlcom{# I.e., NOT starting a new plot}
@@ -3138,8 +3147,8 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
   \hlcom{# REAL PLOT}
   \hlcom{#}
   \hlkwd{plot}\hlstd{(the.tree,}
-       \hlkwc{x.lim} \hlstd{= tree.x.lim,}
-       \hlkwc{y.lim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{7}\hlstd{),}
+       \hlkwc{x.lim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, tree.x.lim),}
+       \hlkwc{y.lim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, tree.y.lim),}
        \hlkwc{font}\hlstd{=font.tip,} \hlkwc{label.offset}\hlstd{=}\hlnum{100}\hlstd{,}             \hlcom{# bold-italic, nudged slightly right}
        \hlkwc{tip.color}\hlstd{=col.tip,} \hlkwc{edge.color}\hlstd{=col.edge,}
        \hlkwc{edge.width}\hlstd{=lwd.edge,}
@@ -3180,14 +3189,38 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
   \hlstd{taily} \hlkwb{<-} \hlstd{spy[}\hlnum{1}\hlstd{]}
   \hlstd{headx} \hlkwb{<-} \hlstd{spx[}\hlnum{4}\hlstd{]}
   \hlstd{heady} \hlkwb{<-} \hlstd{spy[}\hlnum{4}\hlstd{]}
-  \hlkwd{arrows}\hlstd{(headx,heady,headx}\hlopt{+}\hlstd{tree.x.lim}\hlopt{*}\hlnum{1e-3}\hlstd{,heady,} \hlkwc{length}\hlstd{=}\hlnum{.1}\hlstd{,}\hlkwc{col}\hlstd{=col.arrow,}\hlkwc{lwd}\hlstd{=lwd.arrow)}
-  \hlkwd{lines}\hlstd{(}\hlkwd{rev}\hlstd{(serx),} \hlkwd{rev}\hlstd{(sery),} \hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{1}\hlstd{),}\hlkwc{col}\hlstd{=col.arrow,} \hlkwc{lwd}\hlstd{=lwd.arrow)}
+  \hlstd{textx} \hlkwb{<-} \hlstd{(headx}\hlopt{+}\hlstd{tailx)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(headx}\hlopt{-}\hlstd{tailx)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.01}\hlstd{)}
+  \hlstd{texty} \hlkwb{<-} \hlstd{(heady}\hlopt{+}\hlstd{taily)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(heady}\hlopt{-}\hlstd{taily)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.10}\hlstd{)}
   \hlstd{bottle.txt} \hlkwb{<-} \hlstr{"inbreeding\textbackslash{}nLoH / LoS"}
-  \hlkwa{if}\hlstd{(T)\{}
-    \hlkwd{text}\hlstd{((headx}\hlopt{+}\hlstd{tailx)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(headx}\hlopt{-}\hlstd{tailx)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.01}\hlstd{), (heady}\hlopt{+}\hlstd{taily)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(heady}\hlopt{-}\hlstd{taily)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.10}\hlstd{),}
-         \hlstd{bottle.txt,} \hlkwc{srt}\hlstd{=}\hlnum{66}\hlstd{,} \hlkwc{font}\hlstd{=font.arrow,} \hlkwc{cex}\hlstd{=cex.arrow,} \hlkwc{col}\hlstd{=col.arrow)}
+  \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{straight.arrow)\{}
+    \hlkwd{arrows}\hlstd{(headx,heady,headx}\hlopt{+}\hlstd{tree.x.lim}\hlopt{*}\hlnum{1e-3}\hlstd{,heady,} \hlkwc{length}\hlstd{=}\hlnum{.1}\hlstd{,}\hlkwc{col}\hlstd{=col.arrow,}\hlkwc{lwd}\hlstd{=lwd.arrow)}
+    \hlkwd{lines}\hlstd{(}\hlkwd{rev}\hlstd{(serx),} \hlkwd{rev}\hlstd{(sery),} \hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{1}\hlstd{),}\hlkwc{col}\hlstd{=col.arrow,} \hlkwc{lwd}\hlstd{=lwd.arrow)}
+    \hlstd{textangle} \hlkwb{<-} \hlnum{66}
+    \hlstd{textadj} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{)}
   \hlstd{\}} \hlkwa{else} \hlstd{\{}
-    \hlcom{# experiment at wrapping text along curved path; not too pretty, but retain for now, maybe revisit}
+    \hlcom{# Tweak positioning slightly; visualize a rectangle from 7-node to base of L-clade;}
+    \hlcom{# center text, rotated, on diagonal towards L-clade; ditto the straight arrow.}
+    \hlstd{llx} \hlkwb{<-} \hlstd{inode[}\hlnum{2}\hlstd{]} \hlcom{# the aforementioned rectangle}
+    \hlstd{urx} \hlkwb{<-} \hlstd{inode[}\hlnum{4}\hlstd{]}
+    \hlstd{lly} \hlkwb{<-} \hlnum{3.62}
+    \hlstd{ury} \hlkwb{<-} \hlnum{5.75}
+    \hlcom{# rect(llx,lly,urx,ury) # show rect for debug}
+    \hlstd{textx} \hlkwb{<-} \hlstd{(llx}\hlopt{+}\hlstd{urx)}\hlopt{/}\hlnum{2}    \hlcom{# center text}
+    \hlstd{texty} \hlkwb{<-} \hlstd{(lly}\hlopt{+}\hlstd{ury)}\hlopt{/}\hlnum{2}
+    \hlstd{textangle} \hlkwb{<-} \hlkwd{atan}\hlstd{(}\hlkwd{grconvertY}\hlstd{(ury}\hlopt{-}\hlstd{lly,}\hlkwc{to}\hlstd{=}\hlstr{'dev'}\hlstd{)}\hlopt{/}\hlkwd{grconvertX}\hlstd{(urx}\hlopt{-}\hlstd{llx,}\hlkwc{to}\hlstd{=}\hlstr{'dev'}\hlstd{))}\hlopt{*}\hlnum{360}\hlopt{/}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{pi)}
+    \hlstd{textadj} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0.50}\hlstd{,} \hlnum{0.43}\hlstd{)} \hlcom{#tweak position; ".5" = center in x , ".43" raises, THEN rotate.}
+    \hlstd{alpha} \hlkwb{<-} \hlnum{.78} \hlcom{# fraction along diag at which arrow begins}
+    \hlstd{beta}  \hlkwb{<-} \hlnum{.95} \hlcom{# ... and ends}
+    \hlkwd{arrows}\hlstd{((}\hlnum{1}\hlopt{-}\hlstd{alpha)}\hlopt{*}\hlstd{llx} \hlopt{+} \hlstd{alpha}\hlopt{*}\hlstd{urx,}
+           \hlstd{(}\hlnum{1}\hlopt{-}\hlstd{alpha)}\hlopt{*}\hlstd{lly} \hlopt{+} \hlstd{alpha}\hlopt{*}\hlstd{ury,}
+           \hlstd{(}\hlnum{1}\hlopt{-}\hlstd{beta)}\hlopt{*}\hlstd{llx}  \hlopt{+} \hlstd{beta}\hlopt{*}\hlstd{urx,}
+           \hlstd{(}\hlnum{1}\hlopt{-}\hlstd{beta)}\hlopt{*}\hlstd{lly}  \hlopt{+} \hlstd{beta}\hlopt{*}\hlstd{ury,} \hlkwc{length}\hlstd{=}\hlnum{.1}\hlstd{,}\hlkwc{col}\hlstd{=col.arrow,}\hlkwc{lwd}\hlstd{=lwd.arrow,}\hlkwc{angle}\hlstd{=}\hlnum{25}\hlstd{)}
+  \hlstd{\}}
+  \hlkwa{if}\hlstd{(T)\{}
+    \hlkwd{text}\hlstd{(textx, texty, bottle.txt,} \hlkwc{srt}\hlstd{=textangle,} \hlkwc{font}\hlstd{=font.arrow,} \hlkwc{cex}\hlstd{=cex.arrow,}
+         \hlkwc{col}\hlstd{=col.arrow,} \hlkwc{adj}\hlstd{=textadj)}
+  \hlstd{\}} \hlkwa{else} \hlstd{\{}
+    \hlcom{# experiment at wrapping text along curved path; unpretty, but retain for now, maybe revisit}
     \hlstd{bottlec} \hlkwb{<-} \hlkwd{strsplit}\hlstd{(bottle,}\hlkwc{split}\hlstd{=}\hlkwa{NULL}\hlstd{)[[}\hlnum{1}\hlstd{]]}
     \hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(bottlec))\{}
       \hlkwd{text}\hlstd{(xser[i],yser[i],bottlec[i],} \hlkwc{srt}\hlstd{=}\hlnum{65}\hlstd{,} \hlkwc{font}\hlstd{=}\hlnum{4}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.7}\hlstd{,} \hlkwc{col}\hlstd{=col.arrow)}
@@ -3260,7 +3293,17 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
     \hlstd{\}}
   \hlstd{\}}
 \hlstd{\}}
-
+\hlkwa{if}\hlstd{(}\hlnum{FALSE}\hlstd{)\{}\hlcom{#for debug convenience}
+  \hlkwd{pdf}\hlstd{(paperfig.path,} \hlkwc{width}\hlstd{=}\hlnum{8}\hlstd{,}\hlkwc{height}\hlstd{=}\hlnum{5}\hlstd{,}\hlkwc{onefile}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{family}\hlstd{=}\hlstr{'Helvetica'}\hlstd{,}\hlkwc{fonts}\hlstd{=}\hlstr{'Courier'}\hlstd{,}\hlkwc{pointsize}\hlstd{=}\hlnum{10}\hlstd{)}
+  \hlkwd{show.tree}\hlstd{(newick.medium,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],} \hlkwc{pltdebug}\hlstd{=F,}\hlkwc{straight.arrow}\hlstd{=T)}
+  \hlkwd{dev.off}\hlstd{()}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
 \hlstd{caption} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{stringency}\hlstd{,}\hlkwc{which.tables}\hlstd{=}\hlkwd{which.snp.tables}\hlstd{(}\hlkwc{string.val}\hlstd{=F))\{}
   \hlstd{caption.where} \hlkwb{<-} \hlstr{'(UNKNOWN genome subset).'}
   \hlkwa{if}\hlstd{(which.tables[}\hlnum{1}\hlstd{]}\hlopt{==}\hlstr{'Chr1'}\hlstd{) \{caption.where} \hlkwb{<-} \hlstr{'on Chr1.'}\hlstd{\}}
@@ -3297,16 +3340,19 @@ the paper fig directly rather than via Knitr.)
 \begin{alltt}
 \hlcom{###}
 \hlcom{#}
-\hlcom{# MAKE PDF FOR PAPER}
+\hlcom{# MAKE PROTOTYPE PDF FOR PAPER, *AND* SAVE DATA NEEDED TO BUILD IT}
 \hlcom{#}
-\hlkwa{if}\hlstd{(}\hlkwd{which.snp.tables}\hlstd{()} \hlopt{==} \hlstr{'trunc-unfiltered'}\hlstd{)\{}
-  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/Fig3-paperfig-medium-tree-'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
+\hlstd{w.s.t.} \hlkwb{<-} \hlkwd{which.snp.tables}\hlstd{()}
+\hlkwa{if}\hlstd{(w.s.t.} \hlopt{==} \hlstr{'trunc-unfiltered'}\hlstd{)\{}
+  \hlstd{rda.Description} \hlkwb{<-} \hlstr{'This .rda contains data to generate Fig 3; see shared.snps.rnw for details.'}
+  \hlkwd{save}\hlstd{(rda.Description, w.s.t., pat.summaries, consistent.count,} \hlkwc{file}\hlstd{=}\hlstr{'Fig3-data.rda'}\hlstd{)}
+  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/paperfig-medium-tree-'}\hlstd{, w.s.t.,} \hlstr{'--Fig3proto.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
 \hlstd{\}} \hlkwa{else} \hlstd{\{}
-  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/paperfig-medium-tree-'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
+  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/paperfig-medium-tree-'}\hlstd{, w.s.t.,} \hlstr{'.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
 \hlstd{\}}
 \hlkwd{pdf}\hlstd{(paperfig.path,} \hlkwc{width}\hlstd{=}\hlnum{8}\hlstd{,}\hlkwc{height}\hlstd{=}\hlnum{5}\hlstd{,}\hlkwc{onefile}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{family}\hlstd{=}\hlstr{'Helvetica'}\hlstd{,}\hlkwc{fonts}\hlstd{=}\hlstr{'Courier'}\hlstd{,}\hlkwc{pointsize}\hlstd{=}\hlnum{10}\hlstd{)}
 \hlstd{newick.medium} \hlkwb{<-} \hlkwd{newickize}\hlstd{(}\hlkwd{make.tree}\hlstd{(pat.summaries[,}\hlstr{'count2'}\hlstd{]))}
-\hlkwd{show.tree}\hlstd{(newick.medium,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],} \hlkwc{pltdebug}\hlstd{=F)}
+\hlkwd{show.tree}\hlstd{(newick.medium,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],} \hlkwc{pltdebug}\hlstd{=F,}\hlkwc{straight.arrow}\hlstd{=T)}
 \hlkwd{dev.off}\hlstd{()}
 \end{alltt}
 \begin{verbatim}
@@ -3343,7 +3389,7 @@ Figure~\ref{fig:tree-loose}, i.e., criteria [[1]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-loose-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-loose-1} 
 
 }
 
@@ -3366,7 +3412,7 @@ Figure~\ref{fig:tree-medium}, i.e. [[2]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-medium-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-medium-1} 
 
 }
 
@@ -3386,7 +3432,7 @@ Figure~\ref{fig:tree-strict}, i.e. [[3]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-strict-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-strict-1} 
 
 }
 
@@ -3406,7 +3452,7 @@ Figure~\ref{fig:tree-unfiltered}, i.e. [[4]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-unfiltered-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-unfiltered-1} 
 
 }
 
@@ -4083,7 +4129,7 @@ tabulated in a 128 row table analogous to pattern.summaries, for analysis by sho
 \hlkwd{str}\hlstd{(boot.sample)}
 \end{alltt}
 \begin{verbatim}
-#  int [1:469906] 127 109 16 18 18 2 16 109 18 2 ...
+#  int [1:469906] 18 2 109 18 16 2 127 18 2 25 ...
 \end{verbatim}
 \begin{alltt}
 \hlstd{boot.count} \hlkwb{<-} \hlkwd{mytable}\hlstd{(boot.sample,}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{127}\hlstd{))}
@@ -4091,21 +4137,21 @@ tabulated in a 128 row table analogous to pattern.summaries, for analysis by sho
 \end{alltt}
 \begin{verbatim}
 #      val count
-# [1,]   0   625
-# [2,]   1   631
-# [3,]   2 85325
-# [4,]   3   292
-# [5,] 124   722
-# [6,] 125 13882
-# [7,] 126  2292
-# [8,] 127 62392
+# [1,]   0   600
+# [2,]   1   668
+# [3,]   2 84782
+# [4,]   3   317
+# [5,] 124   714
+# [6,] 125 13529
+# [7,] 126  2444
+# [8,] 127 62227
 \end{verbatim}
 \begin{alltt}
 \hlstd{boot.counts} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwa{NULL}\hlstd{,boot.count,}\hlkwa{NULL}\hlstd{)} \hlcom{# dummy list with just c2 summaries}
 \hlkwd{cor}\hlstd{(pattern.counts[[}\hlnum{2}\hlstd{]][,}\hlnum{2}\hlstd{],boot.counts[[}\hlnum{2}\hlstd{]][,}\hlnum{2}\hlstd{])} \hlcom{# just curious - how correlated are they?}
 \end{alltt}
 \begin{verbatim}
-# [1] 0.9999865
+# [1] 0.9999912
 \end{verbatim}
 \begin{alltt}
 \hlstd{boot.summaries} \hlkwb{<-} \hlkwd{pat.summary}\hlstd{(boot.counts)}
@@ -4113,47 +4159,47 @@ tabulated in a 128 row table analogous to pattern.summaries, for analysis by sho
 \end{alltt}
 \begin{verbatim}
 #       Pat ShrBy 1007 1012 1013 1014 1015 3367 1335 count1 count2 count3 count4
-# 1     000     0                                        NA    625     NA     NA
-# 2     001     1                                  X     NA    631     NA     NA
-# 3     002     1                             X          NA  85325     NA     NA
-# 5     004     1                        X               NA   2121     NA     NA
-# 6     005     2                        X         X     NA    550     NA     NA
-# 9     010     1                   X                    NA    523     NA     NA
-# 10    011     2                   X              X     NA    484     NA     NA
-# 14    015     3                   X    X         X     NA   1022     NA     NA
-# 17    020     1              X                         NA  93622     NA     NA
-# 19    022     2              X              X          NA  87425     NA     NA
-# 20    023     3              X              X    X     NA    549     NA     NA
-# 23    026     3              X         X    X          NA    458     NA     NA
-# 24    027     4              X         X    X    X     NA    736     NA     NA
-# 28    033     4              X    X         X    X     NA   1042     NA     NA
-# 30    035     4              X    X    X         X     NA    528     NA     NA
-# 32    037     5              X    X    X    X    X     NA   1832     NA     NA
-# 33    040     1         X                              NA    659     NA     NA
-# 38    045     3         X              X         X     NA    612     NA     NA
-# 46    055     4         X         X    X         X     NA    721     NA     NA
-# 55    066     4         X    X         X    X          NA    478     NA     NA
-# 56    067     5         X    X         X    X    X     NA    992     NA     NA
-# 64    077     6         X    X    X    X    X    X     NA    751     NA     NA
-# 97    140     2    X    X                              NA   1107     NA     NA
-# 101   144     3    X    X              X               NA   1184     NA     NA
-# 102   145     4    X    X              X         X     NA  12647     NA     NA
-# 103   146     4    X    X              X    X          NA    515     NA     NA
-# 104   147     5    X    X              X    X    X     NA   4052     NA     NA
-# 109   154     4    X    X         X    X               NA   1408     NA     NA
-# 110   155     5    X    X         X    X         X     NA  35461     NA     NA
-# 111   156     5    X    X         X    X    X          NA    575     NA     NA
-# 112   157     6    X    X         X    X    X    X     NA  10806     NA     NA
-# 115   162     4    X    X    X              X          NA   1904     NA     NA
-# 117   164     4    X    X    X         X               NA    653     NA     NA
-# 118   165     5    X    X    X         X         X     NA   5063     NA     NA
-# 119   166     5    X    X    X         X    X          NA   1925     NA     NA
-# 120   167     6    X    X    X         X    X    X     NA  21159     NA     NA
-# 125   174     5    X    X    X    X    X               NA    722     NA     NA
-# 126   175     6    X    X    X    X    X         X     NA  13882     NA     NA
-# 127   176     6    X    X    X    X    X    X          NA   2292     NA     NA
-# 128   177     7    X    X    X    X    X    X    X     NA  62392     NA     NA
-# Other   (    88 rows   w/   c2    <  400    )          NA  10473     NA     NA
+# 1     000     0                                        NA    600     NA     NA
+# 2     001     1                                  X     NA    668     NA     NA
+# 3     002     1                             X          NA  84782     NA     NA
+# 5     004     1                        X               NA   2183     NA     NA
+# 6     005     2                        X         X     NA    512     NA     NA
+# 9     010     1                   X                    NA    496     NA     NA
+# 10    011     2                   X              X     NA    522     NA     NA
+# 14    015     3                   X    X         X     NA    962     NA     NA
+# 17    020     1              X                         NA  94351     NA     NA
+# 19    022     2              X              X          NA  87810     NA     NA
+# 20    023     3              X              X    X     NA    622     NA     NA
+# 23    026     3              X         X    X          NA    416     NA     NA
+# 24    027     4              X         X    X    X     NA    756     NA     NA
+# 28    033     4              X    X         X    X     NA   1024     NA     NA
+# 30    035     4              X    X    X         X     NA    548     NA     NA
+# 32    037     5              X    X    X    X    X     NA   1910     NA     NA
+# 33    040     1         X                              NA    696     NA     NA
+# 38    045     3         X              X         X     NA    590     NA     NA
+# 46    055     4         X         X    X         X     NA    672     NA     NA
+# 55    066     4         X    X         X    X          NA    477     NA     NA
+# 56    067     5         X    X         X    X    X     NA    984     NA     NA
+# 64    077     6         X    X    X    X    X    X     NA    836     NA     NA
+# 97    140     2    X    X                              NA   1098     NA     NA
+# 101   144     3    X    X              X               NA   1208     NA     NA
+# 102   145     4    X    X              X         X     NA  12366     NA     NA
+# 103   146     4    X    X              X    X          NA    512     NA     NA
+# 104   147     5    X    X              X    X    X     NA   4120     NA     NA
+# 109   154     4    X    X         X    X               NA   1402     NA     NA
+# 110   155     5    X    X         X    X         X     NA  35560     NA     NA
+# 111   156     5    X    X         X    X    X          NA    606     NA     NA
+# 112   157     6    X    X         X    X    X    X     NA  10853     NA     NA
+# 115   162     4    X    X    X              X          NA   1963     NA     NA
+# 117   164     4    X    X    X         X               NA    624     NA     NA
+# 118   165     5    X    X    X         X         X     NA   5137     NA     NA
+# 119   166     5    X    X    X         X    X          NA   1934     NA     NA
+# 120   167     6    X    X    X         X    X    X     NA  20694     NA     NA
+# 125   174     5    X    X    X    X    X               NA    714     NA     NA
+# 126   175     6    X    X    X    X    X         X     NA  13529     NA     NA
+# 127   176     6    X    X    X    X    X    X          NA   2444     NA     NA
+# 128   177     7    X    X    X    X    X    X    X     NA  62227     NA     NA
+# Other   (    88 rows   w/   c2    <  400    )          NA  10498     NA     NA
 # Total                                                  NA 469906     NA     NA
 \end{verbatim}
 \end{kframe}
@@ -4167,72 +4213,72 @@ Tree partition analysis (and how to pluck out only the best rows based on 3 smal
 \hlstd{tp} \hlkwb{<-} \hlkwd{treepart}\hlstd{(boot.summaries,}\hlkwc{root}\hlstd{=}\hlnum{127}\hlstd{) ; tp}
 \end{alltt}
 \begin{verbatim}
-# root: 177 ; shared: 62392 .  max l 077 , max r 010 , max both 010 , min cross 010 , min ratio 010 . 
+# root: 177 ; shared: 62227 .  max l 077 , max r 010 , max both 010 , min cross 010 , min ratio 010 . 
 # All the same?: FALSE
 #    pat   left  right   both  cross    all     ratio      best
-# 1   01   1256 288443 289699 118440 408139 0.2901953          
-# 2   02  85950 178885 264835 143304 408139 0.3511157          
-# 3   03  86873 104979 191852 216287 408139 0.5299347          
-# 4   04   2746 278944 281690 126449 408139 0.3098185          
-# 5   05   3927 273725 277652 130487 408139 0.3197122          
-# 6   06  88232  99824 188056 220083 408139 0.5392354          
-# 7   07  89887  97655 187542 220597 408139 0.5404948          
-# 8   10   1148 331649 332797  75342 408139 0.1845989 < R B C O
-# 9   11   2263 281358 283621 124518 408139 0.3050872          
-# 10  12  86520 122657 209177 198962 408139 0.4874859          
-# 11  13  88143 101715 189858 218281 408139 0.5348202          
-# 12  14   3402 275412 278814 129325 408139 0.3168651          
-# 13  15   6089 272628 278717 129422 408139 0.3171028          
-# 14  16  88996  98179 187175 220964 408139 0.5413940          
-# 15  17  92728  96929 189657 218482 408139 0.5353127          
-# 16  20  94247 165944 260191 147948 408139 0.3624942          
-# 17  21  95027  96301 191328 216811 408139 0.5312185          
-# 18  22 266997  61606 328603  79536 408139 0.1948748          
-# 19  23 268618   8714 277332 130807 408139 0.3204962          
-# 20  24  96546  91668 188214 219925 408139 0.5388483          
-# 21  25  98115  89369 187484 220655 408139 0.5406369          
-# 22  26 269915   4918 274833 133306 408139 0.3266191          
-# 23  27 273243   3368 276611 131528 408139 0.3222628          
-# 24  30  94831 113202 208033 200106 408139 0.4902888          
-# 25  31  96325  93227 189552 218587 408139 0.5355700          
-# 26  32 267778  21354 289132 119007 408139 0.2915845          
-# 27  33 271371   6442 277813 130326 408139 0.3193177          
-# 28  34  97375  90017 187392 220747 408139 0.5408623          
-# 29  35 101208  88637 189845 218294 408139 0.5348521          
-# 30  36 271299   3653 274952 133187 408139 0.3263276          
-# 31  37 280336   2740 283076 125063 408139 0.3064226          
-# 32  40   1284 283167 284451 123688 408139 0.3030536          
-# 33  41   2006 272572 274578 133561 408139 0.3272439          
-# 34  42  86730 102533 189263 218876 408139 0.5362781          
-# 35  43  87827  98064 185891 222248 408139 0.5445400          
-# 36  44   3686 272305 275991 132148 408139 0.3237818          
-# 37  45   5570 268498 274068 134071 408139 0.3284935          
-# 38  46  89436  96842 186278 221861 408139 0.5435918          
-# 39  47  92135  95276 187411 220728 408139 0.5408158          
-# 40  50   1841 275289 277130 131009 408139 0.3209911          
-# 41  51   3109 271039 274148 133991 408139 0.3282975          
-# 42  52  87348  99102 186450 221689 408139 0.5431703          
-# 43  53  89239  97163 186402 221737 408139 0.5432879          
-# 44  54   4449 269457 273906 134233 408139 0.3288904          
-# 45  55   8622 267664 276286 131853 408139 0.3230591          
-# 46  56  90373  95507 185880 222259 408139 0.5445669          
-# 47  57  96176  94671 190847 217292 408139 0.5323971          
-# 48  60  95036  93947 188983 219156 408139 0.5369641          
-# 49  61  95981  89660 185641 222498 408139 0.5451525          
-# 50  62 268207   6970 275177 132962 408139 0.3257763          
-# 51  63 270256   3906 274162 133977 408139 0.3282632          
-# 52  64  97792  88671 186463 221676 408139 0.5431385          
-# 53  65 100405  86959 187364 220775 408139 0.5409309          
-# 54  66 272203   2669 274872 133267 408139 0.3265236          
-# 55  67 278088   1506 279594 128545 408139 0.3149540          
-# 56  70  95662  90856 186518 221621 408139 0.5430037          
-# 57  71  97409  88836 186245 221894 408139 0.5436726          
-# 58  72 269072   4619 273691 134448 408139 0.3294172          
-# 59  73 273297   3211 276508 131631 408139 0.3225151          
-# 60  74  98775  87363 186138 222001 408139 0.5439348          
-# 61  75 104642  86369 191011 217128 408139 0.5319952          
-# 62  76 273963   1642 275605 132534 408139 0.3247276          
-# 63  77 287626    974 288600 119539 408139 0.2928880       < L
+# 1   01   1268 289265 290533 117746 408279 0.2883959          
+# 2   02  85382 179137 264519 143760 408279 0.3521122          
+# 3   03  86367 105773 192140 216139 408279 0.5293904          
+# 4   04   2783 279686 282469 125810 408279 0.3081471          
+# 5   05   3963 274240 278203 130076 408279 0.3185959          
+# 6   06  87716 100567 188283 219996 408279 0.5388374          
+# 7   07  89418  98307 187725 220554 408279 0.5402041          
+# 8   10   1096 331755 332851  75428 408279 0.1847462 < R B C O
+# 9   11   2286 281996 284282 123997 408279 0.3037065          
+# 10  12  85939 123202 209141 199138 408279 0.4877498          
+# 11  13  87673 102514 190187 218092 408279 0.5341739          
+# 12  14   3422 276174 279596 128683 408279 0.3151840          
+# 13  15   6086 273191 279277 129002 408279 0.3159653          
+# 14  16  88479  98916 187395 220884 408279 0.5410124          
+# 15  17  92218  97618 189836 218443 408279 0.5350336          
+# 16  20  94951 165296 260247 148032 408279 0.3625756          
+# 17  21  95790  95849 191639 216640 408279 0.5306175          
+# 18  22 267543  61374 328917  79362 408279 0.1943818          
+# 19  23 269321   8779 278100 130179 408279 0.3188481          
+# 20  24  97330  91176 188506 219773 408279 0.5382912          
+# 21  25  98899  88783 187682 220597 408279 0.5403094          
+# 22  26 270489   4932 275421 132858 408279 0.3254098          
+# 23  27 273958   3311 277269 131010 408279 0.3208835          
+# 24  30  95505 112516 208021 200258 408279 0.4904930          
+# 25  31  97115  92767 189882 218397 408279 0.5349210          
+# 26  32 268291  21112 289403 118876 408279 0.2911636          
+# 27  33 272091   6515 278606 129673 408279 0.3176088          
+# 28  34  98142  89531 187673 220606 408279 0.5403315          
+# 29  35 101992  88090 190082 218197 408279 0.5344311          
+# 30  36 271866   3665 275531 132748 408279 0.3251404          
+# 31  37 281103   2719 283822 124457 408279 0.3048332          
+# 32  40   1296 283851 285147 123132 408279 0.3015879          
+# 33  41   2061 273142 275203 133076 408279 0.3259438          
+# 34  42  86211 103290 189501 218778 408279 0.5358542          
+# 35  43  87379  98842 186221 222058 408279 0.5438879          
+# 36  44   3768 273016 276784 131495 408279 0.3220714          
+# 37  45   5635 268963 274598 133681 408279 0.3274256          
+# 38  46  88975  97624 186599 221680 408279 0.5429620          
+# 39  47  91719  95936 187655 220624 408279 0.5403756          
+# 40  50   1819 275928 277747 130532 408279 0.3197127          
+# 41  51   3179 271605 274784 133495 408279 0.3269700          
+# 42  52  86807  99874 186681 221598 408279 0.5427612          
+# 43  53  88822  97953 186775 221504 408279 0.5425310          
+# 44  54   4519 270157 274676 133603 408279 0.3272346          
+# 45  55   8615 268167 276782 131497 408279 0.3220763          
+# 46  56  89905  96267 186172 222107 408279 0.5440079          
+# 47  57  95668  95360 191028 217251 408279 0.5321141          
+# 48  60  95744  93371 189115 219164 408279 0.5367996          
+# 49  61  96761  89126 185887 222392 408279 0.5447059          
+# 50  62 268745   6953 275698 132581 408279 0.3247314          
+# 51  63 270977   3919 274896 133383 408279 0.3266957          
+# 52  64  98594  88179 186773 221506 408279 0.5425359          
+# 53  65 101214  86346 187560 220719 408279 0.5406083          
+# 54  66 272780   2683 275463 132816 408279 0.3253070          
+# 55  67 278829   1435 280264 128015 408279 0.3135478          
+# 56  70  96339  90329 186668 221611 408279 0.5427930          
+# 57  71  98221  88296 186517 221762 408279 0.5431629          
+# 58  72 269584   4636 274220 134059 408279 0.3283514          
+# 59  73 274043   3224 277267 131012 408279 0.3208884          
+# 60  74  99588  86839 186427 221852 408279 0.5433833          
+# 61  75 105462  85769 191231 217048 408279 0.5316169          
+# 62  76 274561   1642 276203 132076 408279 0.3234945          
+# 63  77 288510    925 289435 118844 408279 0.2910853       < L
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -4246,10 +4292,10 @@ Tree partition analysis (and how to pluck out only the best rows based on 3 smal
 \end{alltt}
 \begin{verbatim}
 #    pat   left  right   both  cross    all     ratio      best
-# 8   10   1148 331649 332797  75342 408139 0.1845989 < R B C O
-# 18  22 266997  61606 328603  79536 408139 0.1948748          
-# 1   01   1256 288443 289699 118440 408139 0.2901953          
-# 63  77 287626    974 288600 119539 408139 0.2928880       < L
+# 8   10   1096 331755 332851  75428 408279 0.1847462 < R B C O
+# 18  22 267543  61374 328917  79362 408279 0.1943818          
+# 1   01   1268 289265 290533 117746 408279 0.2883959          
+# 63  77 288510    925 289435 118844 408279 0.2910853       < L
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -4294,510 +4340,510 @@ Now repeat the above nboot times, and summarize results:
 \end{alltt}
 \begin{verbatim}
 #    pat   left  right   both  cross    all     ratio      best
-# 8   10   1088 332249 333337  75187 408524 0.1840455 < R B C O
-# 18  22 267474  61282 328756  79768 408524 0.1952590          
-# 1   01   1196 289143 290339 118185 408524 0.2892976          
-# 63  77 288371    896 289267 119257 408524 0.2919216       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1057 332177 333234  74775 408009 0.1832680 < R B C O
-# 18  22 267508  61021 328529  79480 408009 0.1947996          
-# 1   01   1160 289146 290306 117703 408009 0.2884814          
-# 63  77 288256    873 289129 118880 408009 0.2913661       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1209 332226 333435  74716 408151 0.1830597 < R B C O
-# 18  22 267615  61098 328713  79438 408151 0.1946289          
-# 1   01   1252 289364 290616 117535 408151 0.2879694          
-# 63  77 288335    981 289316 118835 408151 0.2911545       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1115 332625 333740  74945 408685 0.1833808 < R B C O
-# 18  22 267324  61658 328982  79703 408685 0.1950231          
-# 1   01   1226 289045 290271 118414 408685 0.2897439          
-# 63  77 288062    967 289029 119656 408685 0.2927830       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1147 332068 333215  75372 408587 0.1844699 < R B C O
-# 18  22 267629  61237 328866  79721 408587 0.1951139          
-# 1   01   1220 289521 290741 117846 408587 0.2884233          
-# 63  77 288475    921 289396 119191 408587 0.2917151       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1094 332239 333333  75144 408477 0.1839614 < R B C O
-# 18  22 267590  61319 328909  79568 408477 0.1947919          
-# 1   01   1209 289230 290439 118038 408477 0.2889710          
-# 63  77 288291    936 289227 119250 408477 0.2919381       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1129 331922 333051  75091 408142 0.1839825 < R B C O
-# 18  22 267142  61339 328481  79661 408142 0.1951796          
-# 1   01   1183 288932 290115 118027 408142 0.2891812          
-# 63  77 287829    914 288743 119399 408142 0.2925428       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1078 331642 332720  75177 407897 0.1843039 < R B C O
-# 18  22 267228  61500 328728  79169 407897 0.1940907          
-# 1   01   1221 289013 290234 117663 407897 0.2884625          
-# 63  77 287876    933 288809 119088 407897 0.2919561       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1108 332043 333151  75154 408305 0.1840634 < R B C O
-# 18  22 267364  61672 329036  79269 408305 0.1941416          
-# 1   01   1177 289100 290277 118028 408305 0.2890682          
-# 63  77 288049    914 288963 119342 408305 0.2922864       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1134 331690 332824  75413 408237 0.1847285 < R B C O
-# 18  22 267249  61601 328850  79387 408237 0.1944630          
-# 1   01   1204 288856 290060 118177 408237 0.2894814          
-# 63  77 287661    938 288599 119638 408237 0.2930602       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1169 331836 333005  75157 408162 0.1841352 < R B C O
-# 18  22 267443  61137 328580  79582 408162 0.1949765          
-# 1   01   1246 289175 290421 117741 408162 0.2884663          
-# 63  77 288198    960 289158 119004 408162 0.2915607       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1104 332220 333324  75231 408555 0.1841392 < R B C O
-# 18  22 267058  61409 328467  80088 408555 0.1960275          
-# 1   01   1253 289103 290356 118199 408555 0.2893099          
-# 63  77 287999    960 288959 119596 408555 0.2927293       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1102 332340 333442  74746 408188 0.1831166 < R B C O
-# 18  22 267721  61287 329008  79180 408188 0.1939792          
-# 1   01   1142 289604 290746 117442 408188 0.2877155          
-# 63  77 288502    885 289387 118801 408188 0.2910448       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1096 332522 333618  74810 408428 0.1831657 < R B C O
-# 18  22 267564  61396 328960  79468 408428 0.1945704          
-# 1   01   1231 289156 290387 118041 408428 0.2890130          
-# 63  77 288348    926 289274 119154 408428 0.2917381       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1099 332217 333316  74923 408239 0.1835273 < R B C O
-# 18  22 267385  61375 328760  79479 408239 0.1946874          
-# 1   01   1197 289117 290314 117925 408239 0.2888627          
-# 63  77 288070    946 289016 119223 408239 0.2920422       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1151 332282 333433  74768 408201 0.1831647 < R B C O
-# 18  22 267648  61608 329256  78945 408201 0.1933974          
-# 1   01   1229 289252 290481 117720 408201 0.2883873          
-# 63  77 288379    948 289327 118874 408201 0.2912144       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1118 331932 333050  75132 408182 0.1840650 < R B C O
-# 18  22 267582  61339 328921  79261 408182 0.1941805          
-# 1   01   1225 289232 290457 117725 408182 0.2884130          
-# 63  77 288235    956 289191 118991 408182 0.2915146       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1045 332077 333122  75027 408149 0.1838226 < R B C O
-# 18  22 267395  61457 328852  79297 408149 0.1942844          
-# 1   01   1193 288978 290171 117978 408149 0.2890562          
-# 63  77 288010    891 288901 119248 408149 0.2921678       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1178 332105 333283  74818 408101 0.1833321 < R B C O
-# 18  22 267564  61296 328860  79241 408101 0.1941701          
-# 1   01   1292 289112 290404 117697 408101 0.2884016          
-# 63  77 288323    930 289253 118848 408101 0.2912220       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1123 332123 333246  75316 408562 0.1843441 < R B C O
-# 18  22 267365  61401 328766  79796 408562 0.1953094          
-# 1   01   1228 289097 290325 118237 408562 0.2893979          
-# 63  77 288070    965 289035 119527 408562 0.2925554       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1109 331845 332954  74932 407886 0.1837082 < R B C O
-# 18  22 267420  61249 328669  79217 407886 0.1942136          
-# 1   01   1211 288896 290107 117779 407886 0.2887547          
-# 63  77 287997    930 288927 118959 407886 0.2916477       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1152 331872 333024  75339 408363 0.1844903 < R B C O
-# 18  22 267153  61616 328769  79594 408363 0.1949099          
-# 1   01   1232 288949 290181 118182 408363 0.2894043          
-# 63  77 287763    957 288720 119643 408363 0.2929820       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1067 332072 333139  75272 408411 0.1843045 < R B C O
-# 18  22 267734  61335 329069  79342 408411 0.1942700          
-# 1   01   1188 289283 290471 117940 408411 0.2887777          
-# 63  77 288273    931 289204 119207 408411 0.2918800       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1107 332585 333692  74967 408659 0.1834463 < R B C O
-# 18  22 267848  61315 329163  79496 408659 0.1945289          
-# 1   01   1163 289634 290797 117862 408659 0.2884116          
-# 63  77 288339    917 289256 119403 408659 0.2921825       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1111 331964 333075  75043 408118 0.1838757 < R B C O
-# 18  22 267208  61212 328420  79698 408118 0.1952818          
-# 1   01   1245 288957 290202 117916 408118 0.2889262          
-# 63  77 287952    902 288854 119264 408118 0.2922292       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1117 331600 332717  75224 407941 0.1843992 < R B C O
-# 18  22 267370  61480 328850  79091 407941 0.1938785          
-# 1   01   1211 289091 290302 117639 407941 0.2883726          
-# 63  77 287962    927 288889 119052 407941 0.2918363       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1110 332218 333328  74679 408007 0.1830336 < R B C O
-# 18  22 267669  61266 328935  79072 408007 0.1938006          
-# 1   01   1252 289330 290582 117425 408007 0.2878014          
-# 63  77 288511    920 289431 118576 408007 0.2906225       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1156 332267 333423  74685 408108 0.1830030 < R B C O
-# 18  22 267426  61251 328677  79431 408108 0.1946323          
-# 1   01   1209 289277 290486 117622 408108 0.2882129          
-# 63  77 287916    924 288840 119268 408108 0.2922462       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1077 331827 332904  75204 408108 0.1842748 < R B C O
-# 18  22 267213  60935 328148  79960 408108 0.1959285          
-# 1   01   1171 288869 290040 118068 408108 0.2893058          
-# 63  77 288131    886 289017 119091 408108 0.2918125       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1099 332443 333542  75194 408736 0.1839672 < R B C O
-# 18  22 267643  61262 328905  79831 408736 0.1953119          
-# 1   01   1207 289344 290551 118185 408736 0.2891475          
-# 63  77 288192    920 289112 119624 408736 0.2926681       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1076 332146 333222  74863 408085 0.1834495 < R B C O
-# 18  22 267763  61240 329003  79082 408085 0.1937881          
-# 1   01   1267 289142 290409 117676 408085 0.2883615          
-# 63  77 288460    909 289369 118716 408085 0.2909100       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1077 332176 333253  75044 408297 0.1837976 < R B C O
-# 18  22 267789  61603 329392  78905 408297 0.1932539          
-# 1   01   1164 289199 290363 117934 408297 0.2888437          
-# 63  77 288326    907 289233 119064 408297 0.2916113       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1098 332186 333284  75189 408473 0.1840734 < R B C O
-# 18  22 267816  61180 328996  79477 408473 0.1945710          
-# 1   01   1163 289497 290660 117813 408473 0.2884230          
-# 63  77 288547    855 289402 119071 408473 0.2915027       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1098 332046 333144  75150 408294 0.1840585 < R B C O
-# 18  22 267518  61353 328871  79423 408294 0.1945240          
-# 1   01   1228 288934 290162 118132 408294 0.2893307          
-# 63  77 288237    902 289139 119155 408294 0.2918363       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1066 332545 333611  75075 408686 0.1836985 < R B C O
-# 18  22 267809  61506 329315  79371 408686 0.1942102          
-# 1   01   1236 289204 290440 118246 408686 0.2893322          
-# 63  77 288457    886 289343 119343 408686 0.2920164       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1048 332753 333801  74630 408431 0.1827236 < R B C O
-# 18  22 268561  61022 329583  78848 408431 0.1930510          
-# 1   01   1187 289914 291101 117330 408431 0.2872701          
-# 63  77 289021    844 289865 118566 408431 0.2902963       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1080 332679 333759  74430 408189 0.1823420 < R B C O
-# 18  22 267689  61137 328826  79363 408189 0.1944271          
-# 1   01   1174 289272 290446 117743 408189 0.2884522          
-# 63  77 288140    971 289111 119078 408189 0.2917227       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1081 332018 333099  75086 408185 0.1839509 < R B C O
-# 18  22 267605  61006 328611  79574 408185 0.1949459          
-# 1   01   1166 289258 290424 117761 408185 0.2884991          
-# 63  77 288192    904 289096 119089 408185 0.2917525       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1114 331620 332734  75019 407753 0.1839815 < R B C O
-# 18  22 266972  61317 328289  79464 407753 0.1948827          
-# 1   01   1189 288513 289702 118051 407753 0.2895160          
-# 63  77 287622    912 288534 119219 407753 0.2923804       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1130 332138 333268  75042 408310 0.1837868 < R B C O
-# 18  22 267820  61231 329051  79259 408310 0.1941148          
-# 1   01   1193 289360 290553 117757 408310 0.2884010          
-# 63  77 288265    926 289191 119119 408310 0.2917367       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1113 332374 333487  75242 408729 0.1840877 < R B C O
-# 18  22 267641  61564 329205  79524 408729 0.1945641          
-# 1   01   1236 289184 290420 118309 408729 0.2894558          
-# 63  77 288468    898 289366 119363 408729 0.2920346       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1176 332239 333415  74775 408190 0.1831868 < R B C O
-# 18  22 267737  61470 329207  78983 408190 0.1934957          
-# 1   01   1229 289220 290449 117741 408190 0.2884466          
-# 63  77 288216    934 289150 119040 408190 0.2916289       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1088 332082 333170  75305 408475 0.1843564 < R B C O
-# 18  22 267763  61011 328774  79701 408475 0.1951184          
-# 1   01   1202 289255 290457 118018 408475 0.2889234          
-# 63  77 288539    876 289415 119060 408475 0.2914744       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1081 332029 333110  75249 408359 0.1842717 < R B C O
-# 18  22 267378  61184 328562  79797 408359 0.1954089          
-# 1   01   1196 289257 290453 117906 408359 0.2887312          
-# 63  77 288070    937 289007 119352 408359 0.2922722       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1105 331970 333075  75010 408085 0.1838097 < R B C O
-# 18  22 267456  61316 328772  79313 408085 0.1943541          
-# 1   01   1198 289263 290461 117624 408085 0.2882341          
-# 63  77 288142    933 289075 119010 408085 0.2916304       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1117 331732 332849  75407 408256 0.1847052 < R B C O
-# 18  22 267113  61663 328776  79480 408256 0.1946818          
-# 1   01   1224 288880 290104 118152 408256 0.2894066          
-# 63  77 287705    959 288664 119592 408256 0.2929338       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1137 332017 333154  75210 408364 0.1841739 < R B C O
-# 18  22 267440  61708 329148  79216 408364 0.1939838          
-# 1   01   1189 289133 290322 118042 408364 0.2890607          
-# 63  77 287958    957 288915 119449 408364 0.2925062       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1060 332127 333187  74769 407956 0.1832771 < R B C O
-# 18  22 267320  61196 328516  79440 407956 0.1947269          
-# 1   01   1201 288758 289959 117997 407956 0.2892395          
-# 63  77 287988    894 288882 119074 407956 0.2918795       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1091 331836 332927  75518 408445 0.1848915 < R B C O
-# 18  22 266893  61841 328734  79711 408445 0.1951572          
-# 1   01   1206 288799 290005 118440 408445 0.2899778          
-# 63  77 287810    926 288736 119709 408445 0.2930847       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1096 331558 332654  75098 407752 0.1841757 < R B C O
-# 18  22 267263  61350 328613  79139 407752 0.1940861          
-# 1   01   1194 288884 290078 117674 407752 0.2885921          
-# 63  77 287955    913 288868 118884 407752 0.2915596       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1092 332374 333466  74958 408424 0.1835299 < R B C O
-# 18  22 267481  61191 328672  79752 408424 0.1952677          
-# 1   01   1179 289344 290523 117901 408424 0.2886730          
-# 63  77 288481    896 289377 119047 408424 0.2914790       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1137 332326 333463  74819 408282 0.1832532 < R B C O
-# 18  22 267629  61063 328692  79590 408282 0.1949388          
-# 1   01   1221 289539 290760 117522 408282 0.2878452          
-# 63  77 288445    935 289380 118902 408282 0.2912252       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1082 332312 333394  74641 408035 0.1829279 < R B C O
-# 18  22 267054  61549 328603  79432 408035 0.1946696          
-# 1   01   1164 288868 290032 118003 408035 0.2891982          
-# 63  77 287738    896 288634 119401 408035 0.2926244       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1098 332518 333616  74739 408355 0.1830246 < R B C O
-# 18  22 267725  61551 329276  79079 408355 0.1936526          
-# 1   01   1218 289516 290734 117621 408355 0.2880361          
-# 63  77 288406    910 289316 119039 408355 0.2915086       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1071 331552 332623  75435 408058 0.1848634 < R B C O
-# 18  22 267017  61378 328395  79663 408058 0.1952247          
-# 1   01   1133 288711 289844 118214 408058 0.2896990          
-# 63  77 287646    882 288528 119530 408058 0.2929240       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1098 332105 333203  74825 408028 0.1833820 < R B C O
-# 18  22 268130  61091 329221  78807 408028 0.1931412          
-# 1   01   1209 289421 290630 117398 408028 0.2877205          
-# 63  77 288769    901 289670 118358 408028 0.2900732       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1056 332349 333405  74768 408173 0.1831772 < R B C O
-# 18  22 267617  61250 328867  79306 408173 0.1942951          
-# 1   01   1198 289261 290459 117714 408173 0.2883924          
-# 63  77 288234    911 289145 119028 408173 0.2916116       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1134 331631 332765  75151 407916 0.1842316 < R B C O
-# 18  22 266934  61563 328497  79419 407916 0.1946945          
-# 1   01   1224 288614 289838 118078 407916 0.2894665          
-# 63  77 287736    967 288703 119213 407916 0.2922489       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1077 332415 333492  74725 408217 0.1830522 < R B C O
-# 18  22 267611  61114 328725  79492 408217 0.1947298          
-# 1   01   1247 289414 290661 117556 408217 0.2879743          
-# 63  77 288339    947 289286 118931 408217 0.2913426       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1091 332027 333118  75453 408571 0.1846754 < R B C O
-# 18  22 267451  61612 329063  79508 408571 0.1946002          
-# 1   01   1165 289098 290263 118308 408571 0.2895653          
-# 63  77 288092    895 288987 119584 408571 0.2926884       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1057 332387 333444  74868 408312 0.1833598 < R B C O
-# 18  22 267732  61419 329151  79161 408312 0.1938738          
-# 1   01   1207 289431 290638 117674 408312 0.2881963          
-# 63  77 288514    905 289419 118893 408312 0.2911817       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1101 332116 333217  75086 408303 0.1838977 < R B C O
-# 18  22 267164  61255 328419  79884 408303 0.1956488          
-# 1   01   1200 288871 290071 118232 408303 0.2895693          
-# 63  77 287998    953 288951 119352 408303 0.2923123       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1069 332419 333488  74856 408344 0.1833160 < R B C O
-# 18  22 267621  61374 328995  79349 408344 0.1943190          
-# 1   01   1159 289124 290283 118061 408344 0.2891214          
-# 63  77 288327    889 289216 119128 408344 0.2917344       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1148 332556 333704  74841 408545 0.1831891 < R B C O
-# 18  22 267952  61122 329074  79471 408545 0.1945220          
-# 1   01   1240 289552 290792 117753 408545 0.2882253          
-# 63  77 288516    955 289471 119074 408545 0.2914587       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1101 332137 333238  74929 408167 0.1835744 < R B C O
-# 18  22 267922  61656 329578  78589 408167 0.1925413          
-# 1   01   1223 289571 290794 117373 408167 0.2875612          
-# 63  77 288715    895 289610 118557 408167 0.2904620       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1133 332067 333200  75143 408343 0.1840193 < R B C O
-# 18  22 267756  61238 328994  79349 408343 0.1943195          
-# 1   01   1204 289116 290320 118023 408343 0.2890291          
-# 63  77 288490    931 289421 118922 408343 0.2912307       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1072 332726 333798  74937 408735 0.1833388 < R B C O
-# 18  22 268007  61152 329159  79576 408735 0.1946885          
-# 1   01   1214 289526 290740 117995 408735 0.2886834          
-# 63  77 288542    897 289439 119296 408735 0.2918664       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1060 331873 332933  75398 408331 0.1846492 < R B C O
-# 18  22 266840  61684 328524  79807 408331 0.1954468          
-# 1   01   1207 288474 289681 118650 408331 0.2905731          
-# 63  77 287491    844 288335 119996 408331 0.2938694       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1131 332016 333147  75348 408495 0.1844527 < R B C O
-# 18  22 267402  61661 329063  79432 408495 0.1944504          
-# 1   01   1187 289224 290411 118084 408495 0.2890709          
-# 63  77 288210    877 289087 119408 408495 0.2923120       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1121 332634 333755  75084 408839 0.1836518 < R B C O
-# 18  22 267858  61407 329265  79574 408839 0.1946341          
-# 1   01   1224 289747 290971 117868 408839 0.2882993          
-# 63  77 288530    902 289432 119407 408839 0.2920636       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1057 332011 333068  75162 408230 0.1841168 < R B C O
-# 18  22 267047  61710 328757  79473 408230 0.1946770          
-# 1   01   1211 288611 289822 118408 408230 0.2900522          
-# 63  77 287751    897 288648 119582 408230 0.2929280       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1005 332163 333168  74892 408060 0.1835318 < R B C O
-# 18  22 267603  61192 328795  79265 408060 0.1942484          
-# 1   01   1114 289175 290289 117771 408060 0.2886120          
-# 63  77 288165    866 289031 119029 408060 0.2916948       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1128 331715 332843  75146 407989 0.1841863 < R B C O
-# 18  22 266872  61518 328390  79599 407989 0.1951008          
-# 1   01   1239 288474 289713 118276 407989 0.2899000          
-# 63  77 287614    902 288516 119473 407989 0.2928339       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1153 331873 333026  75528 408554 0.1848666 < R B C O
-# 18  22 267239  61693 328932  79622 408554 0.1948873          
-# 1   01   1218 289133 290351 118203 408554 0.2893204          
-# 63  77 288098    926 289024 119530 408554 0.2925684       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1181 332057 333238  75164 408402 0.1840442 < R B C O
-# 18  22 267262  61364 328626  79776 408402 0.1953369          
-# 1   01   1232 289008 290240 118162 408402 0.2893277          
-# 63  77 287991    913 288904 119498 408402 0.2925990       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1085 332114 333199  75384 408583 0.1845011 < R B C O
-# 18  22 267795  61501 329296  79287 408583 0.1940536          
-# 1   01   1189 289403 290592 117991 408583 0.2887810          
-# 63  77 288337    904 289241 119342 408583 0.2920875       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1108 332117 333225  74967 408192 0.1836562 < R B C O
-# 18  22 268019  60927 328946  79246 408192 0.1941390          
-# 1   01   1173 289434 290607 117585 408192 0.2880630          
-# 63  77 288403    929 289332 118860 408192 0.2911865       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1074 332681 333755  74654 408409 0.1827922 < R B C O
-# 18  22 268204  60934 329138  79271 408409 0.1940971          
-# 1   01   1233 289838 291071 117338 408409 0.2873051          
-# 63  77 288804    935 289739 118670 408409 0.2905666       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1081 331931 333012  75016 408028 0.1838501 < R B C O
-# 18  22 267248  61314 328562  79466 408028 0.1947562          
-# 1   01   1192 288850 290042 117986 408028 0.2891615          
-# 63  77 287800    898 288698 119330 408028 0.2924554       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1098 332250 333348  74978 408326 0.1836229 < R B C O
-# 18  22 267508  61115 328623  79703 408326 0.1951945          
-# 1   01   1210 289169 290379 117947 408326 0.2888550          
-# 63  77 288035    885 288920 119406 408326 0.2924281       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1062 331758 332820  75472 408292 0.1848481 < R B C O
-# 18  22 267169  61442 328611  79681 408292 0.1951569          
-# 1   01   1197 288874 290071 118221 408292 0.2895501          
-# 63  77 287845    897 288742 119550 408292 0.2928051       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1126 332248 333374  75028 408402 0.1837111 < R B C O
-# 18  22 267470  61188 328658  79744 408402 0.1952586          
-# 1   01   1150 289188 290338 118064 408402 0.2890877          
-# 63  77 288350    892 289242 119160 408402 0.2917713       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1102 331714 332816  75144 407960 0.1841945 < R B C O
-# 18  22 267284  61325 328609  79351 407960 0.1945068          
-# 1   01   1216 288884 290100 117860 407960 0.2889009          
-# 63  77 287923    948 288871 119089 407960 0.2919134       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1073 332654 333727  74606 408333 0.1827087 < R B C O
-# 18  22 267923  61313 329236  79097 408333 0.1937071          
-# 1   01   1194 289413 290607 117726 408333 0.2883088          
-# 63  77 288537    905 289442 118891 408333 0.2911619       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1115 331827 332942  75207 408149 0.1842636 < R B C O
-# 18  22 267373  61532 328905  79244 408149 0.1941546          
-# 1   01   1239 289020 290259 117890 408149 0.2888406          
-# 63  77 287967    943 288910 119239 408149 0.2921458       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1096 331728 332824  75524 408348 0.1849501 < R B C O
-# 18  22 267499  61620 329119  79229 408348 0.1940232          
-# 1   01   1190 289150 290340 118008 408348 0.2889888          
-# 63  77 288115    904 289019 119329 408348 0.2922238       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1126 331817 332943  75278 408221 0.1844050 < R B C O
-# 18  22 267225  61408 328633  79588 408221 0.1949630          
-# 1   01   1224 288880 290104 118117 408221 0.2893457          
-# 63  77 287983    901 288884 119337 408221 0.2923343       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1104 332480 333584  74763 408347 0.1830869 < R B C O
-# 18  22 267561  61384 328945  79402 408347 0.1944474          
-# 1   01   1232 289180 290412 117935 408347 0.2888107          
-# 63  77 288409    862 289271 119076 408347 0.2916049       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1114 332099 333213  75182 408395 0.1840914 < R B C O
-# 18  22 267363  61708 329071  79324 408395 0.1942335          
-# 1   01   1204 289092 290296 118099 408395 0.2891784          
-# 63  77 288290    869 289159 119236 408395 0.2919624       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1125 332695 333820  74685 408505 0.1828252 < R B C O
-# 18  22 267604  61633 329237  79268 408505 0.1940441          
-# 1   01   1269 289222 290491 118014 408505 0.2888924          
-# 63  77 288106    947 289053 119452 408505 0.2924126       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1066 332944 334010  75159 409169 0.1836869 < R B C O
-# 18  22 268341  61323 329664  79505 409169 0.1943085          
-# 1   01   1205 289938 291143 118026 409169 0.2884529          
-# 63  77 288912    951 289863 119306 409169 0.2915812       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1117 332286 333403  74972 408375 0.1835862 < R B C O
-# 18  22 267625  61636 329261  79114 408375 0.1937288          
-# 1   01   1217 289401 290618 117757 408375 0.2883551          
-# 63  77 288278    916 289194 119181 408375 0.2918421       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1115 332162 333277  74871 408148 0.1834408 < R B C O
-# 18  22 267735  61234 328969  79179 408148 0.1939958          
-# 1   01   1268 289409 290677 117471 408148 0.2878147          
-# 63  77 288359    921 289280 118868 408148 0.2912375       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1155 331780 332935  75515 408450 0.1848819 < R B C O
-# 18  22 267313  61278 328591  79859 408450 0.1955172          
-# 1   01   1236 288846 290082 118368 408450 0.2897980          
-# 63  77 288241    937 289178 119272 408450 0.2920113       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1082 332301 333383  75049 408432 0.1837491 < R B C O
-# 18  22 268080  61236 329316  79116 408432 0.1937067          
-# 1   01   1218 289711 290929 117503 408432 0.2876929          
-# 63  77 288710    950 289660 118772 408432 0.2907999       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1115 331740 332855  75429 408284 0.1847464 < R B C O
-# 18  22 267114  61686 328800  79484 408284 0.1946782          
-# 1   01   1156 288920 290076 118208 408284 0.2895240          
-# 63  77 287972    945 288917 119367 408284 0.2923627       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1116 332395 333511  74763 408274 0.1831197 < R B C O
-# 18  22 267226  61297 328523  79751 408274 0.1953370          
-# 1   01   1286 288827 290113 118161 408274 0.2894159          
-# 63  77 287756    942 288698 119576 408274 0.2928817       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1083 331731 332814  75098 407912 0.1841034 < R B C O
-# 18  22 267237  61655 328892  79020 407912 0.1937183          
-# 1   01   1216 288726 289942 117970 407912 0.2892045          
-# 63  77 287693    917 288610 119302 407912 0.2924699       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1132 332497 333629  74856 408485 0.1832528 < R B C O
-# 18  22 267630  61654 329284  79201 408485 0.1938896          
-# 1   01   1225 289078 290303 118182 408485 0.2893178          
-# 63  77 288228    933 289161 119324 408485 0.2921135       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1081 331712 332793  74993 407786 0.1839028 < R B C O
-# 18  22 267312  61105 328417  79369 407786 0.1946340          
-# 1   01   1209 288948 290157 117629 407786 0.2884577          
-# 63  77 287747    864 288611 119175 407786 0.2922489       < L
-#    pat   left  right   both  cross    all     ratio      best
-# 8   10   1090 332121 333211  74760 407971 0.1832483 < R B C O
-# 18  22 267570  61236 328806  79165 407971 0.1940457          
-# 1   01   1303 289219 290522 117449 407971 0.2878857          
-# 63  77 288124    940 289064 118907 407971 0.2914594       < L
+# 8   10   1160 332014 333174  75109 408283 0.1839631 < R B C O
+# 18  22 267271  61464 328735  79548 408283 0.1948354          
+# 1   01   1221 288865 290086 118197 408283 0.2894977          
+# 63  77 288099    927 289026 119257 408283 0.2920940       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1094 331785 332879  75081 407960 0.1840401 < R B C O
+# 18  22 267351  61178 328529  79431 407960 0.1947029          
+# 1   01   1193 289019 290212 117748 407960 0.2886263          
+# 63  77 288087    923 289010 118950 407960 0.2915727       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1077 332566 333643  74877 408520 0.1832885 < R B C O
+# 18  22 267919  61400 329319  79201 408520 0.1938730          
+# 1   01   1193 289455 290648 117872 408520 0.2885342          
+# 63  77 288578    897 289475 119045 408520 0.2914056       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1099 331968 333067  74994 408061 0.1837813 < R B C O
+# 18  22 267149  61552 328701  79360 408061 0.1944807          
+# 1   01   1222 288655 289877 118184 408061 0.2896234          
+# 63  77 287835    915 288750 119311 408061 0.2923852       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1094 331997 333091  75318 408409 0.1844181 < R B C O
+# 18  22 267448  61849 329297  79112 408409 0.1937078          
+# 1   01   1198 289032 290230 118179 408409 0.2893643          
+# 63  77 288274    936 289210 119199 408409 0.2918618       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1085 332159 333244  75184 408428 0.1840814 < R B C O
+# 18  22 267430  61424 328854  79574 408428 0.1948299          
+# 1   01   1229 288886 290115 118313 408428 0.2896790          
+# 63  77 288071    913 288984 119444 408428 0.2924481       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1092 332052 333144  75376 408520 0.1845099 < R B C O
+# 18  22 267464  61343 328807  79713 408520 0.1951263          
+# 1   01   1170 289311 290481 118039 408520 0.2889430          
+# 63  77 288125    932 289057 119463 408520 0.2924288       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1084 332108 333192  74966 408158 0.1836691 < R B C O
+# 18  22 267710  61217 328927  79231 408158 0.1941185          
+# 1   01   1242 289256 290498 117660 408158 0.2882707          
+# 63  77 288517    886 289403 118755 408158 0.2909535       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1119 332162 333281  75485 408766 0.1846656 < R B C O
+# 18  22 267660  61604 329264  79502 408766 0.1944927          
+# 1   01   1196 289451 290647 118119 408766 0.2889648          
+# 63  77 288117    983 289100 119666 408766 0.2927494       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1109 332181 333290  75171 408461 0.1840347 < R B C O
+# 18  22 267410  61476 328886  79575 408461 0.1948166          
+# 1   01   1199 289122 290321 118140 408461 0.2892320          
+# 63  77 288130    942 289072 119389 408461 0.2922898       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1114 331931 333045  75374 408419 0.1845507 < R B C O
+# 18  22 267525  61921 329446  78973 408419 0.1933627          
+# 1   01   1234 289028 290262 118157 408419 0.2893034          
+# 63  77 288165    971 289136 119283 408419 0.2920604       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1092 331886 332978  75297 408275 0.1844272 < R B C O
+# 18  22 267181  61582 328763  79512 408275 0.1947511          
+# 1   01   1199 288894 290093 118182 408275 0.2894667          
+# 63  77 287855    898 288753 119522 408275 0.2927488       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1126 331522 332648  75408 408056 0.1847982 < R B C O
+# 18  22 266928  61673 328601  79455 408056 0.1947159          
+# 1   01   1245 288534 289779 118277 408056 0.2898548          
+# 63  77 287610    949 288559 119497 408056 0.2928446       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1041 332369 333410  74817 408227 0.1832730 < R B C O
+# 18  22 267763  61191 328954  79273 408227 0.1941885          
+# 1   01   1162 289338 290500 117727 408227 0.2883861          
+# 63  77 288333    898 289231 118996 408227 0.2914947       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1164 332149 333313  75134 408447 0.1839504 < R B C O
+# 18  22 267737  61479 329216  79231 408447 0.1939811          
+# 1   01   1247 289361 290608 117839 408447 0.2885050          
+# 63  77 288530    923 289453 118994 408447 0.2913328       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1127 332179 333306  74791 408097 0.1832677 < R B C O
+# 18  22 267615  61330 328945  79152 408097 0.1939539          
+# 1   01   1259 289192 290451 117646 408097 0.2882795          
+# 63  77 288472    923 289395 118702 408097 0.2908671       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1059 331695 332754  75177 407931 0.1842885 < R B C O
+# 18  22 266826  61315 328141  79790 407931 0.1955968          
+# 1   01   1218 288717 289935 117996 407931 0.2892548          
+# 63  77 287605    891 288496 119435 407931 0.2927824       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1113 332352 333465  74951 408416 0.1835163 < R B C O
+# 18  22 268249  61175 329424  78992 408416 0.1934106          
+# 1   01   1176 289774 290950 117466 408416 0.2876136          
+# 63  77 288882    889 289771 118645 408416 0.2905004       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1105 331707 332812  75289 408101 0.1844862 < R B C O
+# 18  22 267191  61398 328589  79512 408101 0.1948341          
+# 1   01   1213 289018 290231 117870 408101 0.2888256          
+# 63  77 288122    968 289090 119011 408101 0.2916214       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1106 332248 333354  74938 408292 0.1835402 < R B C O
+# 18  22 267667  61280 328947  79345 408292 0.1943340          
+# 1   01   1247 289422 290669 117623 408292 0.2880855          
+# 63  77 288256    935 289191 119101 408292 0.2917054       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1112 332321 333433  74941 408374 0.1835107 < R B C O
+# 18  22 267698  61208 328906  79468 408374 0.1945961          
+# 1   01   1234 289478 290712 117662 408374 0.2881231          
+# 63  77 288460    886 289346 119028 408374 0.2914681       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1067 332182 333249  74826 408075 0.1833634 < R B C O
+# 18  22 267830  61482 329312  78763 408075 0.1930111          
+# 1   01   1175 289535 290710 117365 408075 0.2876064          
+# 63  77 288417    888 289305 118770 408075 0.2910494       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1123 332364 333487  74821 408308 0.1832465 < R B C O
+# 18  22 267954  61230 329184  79124 408308 0.1937851          
+# 1   01   1236 289533 290769 117539 408308 0.2878685          
+# 63  77 288562    949 289511 118797 408308 0.2909495       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1046 331901 332947  75232 408179 0.1843113 < R B C O
+# 18  22 267330  61161 328491  79688 408179 0.1952281          
+# 1   01   1174 289077 290251 117928 408179 0.2889125          
+# 63  77 287867    921 288788 119391 408179 0.2924967       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1136 332210 333346  74916 408262 0.1834998 < R B C O
+# 18  22 267418  61060 328478  79784 408262 0.1954235          
+# 1   01   1173 289301 290474 117788 408262 0.2885108          
+# 63  77 288040    870 288910 119352 408262 0.2923417       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1092 332546 333638  75071 408709 0.1836784 < R B C O
+# 18  22 267576  61853 329429  79280 408709 0.1939766          
+# 1   01   1189 289391 290580 118129 408709 0.2890296          
+# 63  77 288227    893 289120 119589 408709 0.2926018       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1116 331900 333016  75085 408101 0.1839863 < R B C O
+# 18  22 267508  61256 328764  79337 408101 0.1944053          
+# 1   01   1262 289186 290448 117653 408101 0.2882938          
+# 63  77 288136    924 289060 119041 408101 0.2916949       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1076 332146 333222  74983 408205 0.1836896 < R B C O
+# 18  22 267828  61309 329137  79068 408205 0.1936968          
+# 1   01   1143 289247 290390 117815 408205 0.2886172          
+# 63  77 288442    890 289332 118873 408205 0.2912091       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1061 332297 333358  75054 408412 0.1837703 < R B C O
+# 18  22 267597  61312 328909  79503 408412 0.1946637          
+# 1   01   1193 289214 290407 118005 408412 0.2889362          
+# 63  77 288063    885 288948 119464 408412 0.2925085       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1041 332188 333229  74801 408030 0.1833223 < R B C O
+# 18  22 267732  61104 328836  79194 408030 0.1940887          
+# 1   01   1144 289333 290477 117553 408030 0.2880989          
+# 63  77 288289    919 289208 118822 408030 0.2912090       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1134 331704 332838  74970 407808 0.1838365 < R B C O
+# 18  22 267111  61420 328531  79277 407808 0.1943979          
+# 1   01   1232 288955 290187 117621 407808 0.2884225          
+# 63  77 288191    927 289118 118690 407808 0.2910438       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1091 331789 332880  75217 408097 0.1843116 < R B C O
+# 18  22 267288  61621 328909  79188 408097 0.1940421          
+# 1   01   1270 289086 290356 117741 408097 0.2885123          
+# 63  77 288116    939 289055 119042 408097 0.2917003       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1118 331550 332668  75272 407940 0.1845173 < R B C O
+# 18  22 267262  61409 328671  79269 407940 0.1943153          
+# 1   01   1193 288873 290066 117874 407940 0.2889494          
+# 63  77 287753    918 288671 119269 407940 0.2923690       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1107 331953 333060  74953 408013 0.1837025 < R B C O
+# 18  22 267920  60897 328817  79196 408013 0.1941017          
+# 1   01   1194 289418 290612 117401 408013 0.2877384          
+# 63  77 288605    894 289499 118514 408013 0.2904662       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1133 332284 333417  74786 408203 0.1832079 < R B C O
+# 18  22 267548  61139 328687  79516 408203 0.1947952          
+# 1   01   1217 289374 290591 117612 408203 0.2881214          
+# 63  77 288301    924 289225 118978 408203 0.2914677       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1164 331676 332840  75409 408249 0.1847133 < R B C O
+# 18  22 267218  61567 328785  79464 408249 0.1946459          
+# 1   01   1230 289089 290319 117930 408249 0.2888678          
+# 63  77 287957    991 288948 119301 408249 0.2922261       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1148 331936 333084  74919 408003 0.1836236 < R B C O
+# 18  22 267492  61070 328562  79441 408003 0.1947069          
+# 1   01   1229 289018 290247 117756 408003 0.2886155          
+# 63  77 288037    905 288942 119061 408003 0.2918140       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1115 332064 333179  75078 408257 0.1838989 < R B C O
+# 18  22 267679  61479 329158  79099 408257 0.1937481          
+# 1   01   1239 289119 290358 117899 408257 0.2887862          
+# 63  77 288288    933 289221 119036 408257 0.2915712       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1077 331731 332808  75096 407904 0.1841021 < R B C O
+# 18  22 267283  61294 328577  79327 407904 0.1944747          
+# 1   01   1174 288798 289972 117932 407904 0.2891170          
+# 63  77 287840    891 288731 119173 407904 0.2921594       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1110 332205 333315  74724 408039 0.1831296 < R B C O
+# 18  22 267699  61192 328891  79148 408039 0.1939717          
+# 1   01   1147 289270 290417 117622 408039 0.2882617          
+# 63  77 288498    896 289394 118645 408039 0.2907688       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1174 332154 333328  75231 408559 0.1841374 < R B C O
+# 18  22 267486  61640 329126  79433 408559 0.1944223          
+# 1   01   1223 289263 290486 118073 408559 0.2889987          
+# 63  77 288171    916 289087 119472 408559 0.2924229       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1056 332415 333471  75010 408481 0.1836316 < R B C O
+# 18  22 267522  61017 328539  79942 408481 0.1957056          
+# 1   01   1212 289197 290409 118072 408481 0.2890514          
+# 63  77 288093    881 288974 119507 408481 0.2925644       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1145 331829 332974  75131 408105 0.1840972 < R B C O
+# 18  22 267139  61335 328474  79631 408105 0.1951238          
+# 1   01   1197 288976 290173 117932 408105 0.2889747          
+# 63  77 287604    993 288597 119508 408105 0.2928364       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1091 332036 333127  75511 408638 0.1847870 < R B C O
+# 18  22 267495  61343 328838  79800 408638 0.1952829          
+# 1   01   1176 289294 290470 118168 408638 0.2891753          
+# 63  77 288205    883 289088 119550 408638 0.2925572       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1122 332241 333363  75029 408392 0.1837181 < R B C O
+# 18  22 267707  61407 329114  79278 408392 0.1941223          
+# 1   01   1197 289339 290536 117856 408392 0.2885855          
+# 63  77 288307    944 289251 119141 408392 0.2917320       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1027 331856 332883  75051 407934 0.1839783 < R B C O
+# 18  22 267542  60990 328532  79402 407934 0.1946442          
+# 1   01   1156 289237 290393 117541 407934 0.2881373          
+# 63  77 287942    890 288832 119102 407934 0.2919639       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1080 332197 333277  75099 408376 0.1838967 < R B C O
+# 18  22 267559  61270 328829  79547 408376 0.1947886          
+# 1   01   1199 289257 290456 117920 408376 0.2887535          
+# 63  77 288517    868 289385 118991 408376 0.2913761       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1119 332005 333124  75131 408255 0.1840296 < R B C O
+# 18  22 267285  61687 328972  79283 408255 0.1941997          
+# 1   01   1234 289004 290238 118017 408255 0.2890767          
+# 63  77 287841    971 288812 119443 408255 0.2925696       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1081 331731 332812  75434 408246 0.1847758 < R B C O
+# 18  22 267354  61334 328688  79558 408246 0.1948776          
+# 1   01   1197 288844 290041 118205 408246 0.2895436          
+# 63  77 287927    885 288812 119434 408246 0.2925540       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1093 332022 333115  75225 408340 0.1842215 < R B C O
+# 18  22 267666  61426 329092  79248 408340 0.1940736          
+# 1   01   1204 289443 290647 117693 408340 0.2882230          
+# 63  77 288320    927 289247 119093 408340 0.2916516       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1055 331379 332434  75436 407870 0.1849511 < R B C O
+# 18  22 267115  61588 328703  79167 407870 0.1940986          
+# 1   01   1152 288871 290023 117847 407870 0.2889327          
+# 63  77 287951    902 288853 119017 407870 0.2918013       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1105 332302 333407  74890 408297 0.1834204 < R B C O
+# 18  22 268082  61200 329282  79015 408297 0.1935233          
+# 1   01   1181 289606 290787 117510 408297 0.2878052          
+# 63  77 288711    904 289615 118682 408297 0.2906757       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1078 332142 333220  75209 408429 0.1841422 < R B C O
+# 18  22 267283  61519 328802  79627 408429 0.1949592          
+# 1   01   1178 288980 290158 118271 408429 0.2895754          
+# 63  77 287983    903 288886 119543 408429 0.2926898       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1127 332038 333165  75031 408196 0.1838112 < R B C O
+# 18  22 267354  61364 328718  79478 408196 0.1947055          
+# 1   01   1264 288958 290222 117974 408196 0.2890131          
+# 63  77 288250    925 289175 119021 408196 0.2915781       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1087 332264 333351  75074 408425 0.1838134 < R B C O
+# 18  22 267382  61626 329008  79417 408425 0.1944470          
+# 1   01   1229 289078 290307 118118 408425 0.2892036          
+# 63  77 288071    917 288988 119437 408425 0.2924331       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1128 332817 333945  74557 408502 0.1825132 < R B C O
+# 18  22 267873  60794 328667  79835 408502 0.1954336          
+# 1   01   1151 289597 290748 117754 408502 0.2882581          
+# 63  77 288560    941 289501 119001 408502 0.2913107       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1127 332385 333512  75240 408752 0.1840725 < R B C O
+# 18  22 268226  61185 329411  79341 408752 0.1941055          
+# 1   01   1174 289575 290749 118003 408752 0.2886909          
+# 63  77 289012    917 289929 118823 408752 0.2906970       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1148 332272 333420  75027 408447 0.1836885 < R B C O
+# 18  22 268023  61145 329168  79279 408447 0.1940986          
+# 1   01   1195 289731 290926 117521 408447 0.2877264          
+# 63  77 288467    923 289390 119057 408447 0.2914870       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1102 331761 332863  74937 407800 0.1837592 < R B C O
+# 18  22 267268  61140 328408  79392 407800 0.1946837          
+# 1   01   1192 289036 290228 117572 407800 0.2883080          
+# 63  77 288146    909 289055 118745 407800 0.2911844       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1080 332026 333106  74915 408021 0.1836057 < R B C O
+# 18  22 267540  61120 328660  79361 408021 0.1945022          
+# 1   01   1203 288877 290080 117941 408021 0.2890562          
+# 63  77 288033    934 288967 119054 408021 0.2917840       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1102 331970 333072  75098 408170 0.1839871 < R B C O
+# 18  22 267329  61629 328958  79212 408170 0.1940662          
+# 1   01   1225 289057 290282 117888 408170 0.2888208          
+# 63  77 287975    914 288889 119281 408170 0.2922336       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1086 332224 333310  75231 408541 0.1841455 < R B C O
+# 18  22 267226  61514 328740  79801 408541 0.1953317          
+# 1   01   1211 289182 290393 118148 408541 0.2891950          
+# 63  77 288177    924 289101 119440 408541 0.2923574       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1032 331970 333002  75095 408097 0.1840126 < R B C O
+# 18  22 267177  61161 328338  79759 408097 0.1954413          
+# 1   01   1239 288566 289805 118292 408097 0.2898625          
+# 63  77 287622    870 288492 119605 408097 0.2930798       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1079 332309 333388  75123 408511 0.1838947 < R B C O
+# 18  22 267445  61607 329052  79459 408511 0.1945088          
+# 1   01   1221 289226 290447 118064 408511 0.2890106          
+# 63  77 288076    948 289024 119487 408511 0.2924940       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1151 332468 333619  74727 408346 0.1829992 < R B C O
+# 18  22 267745  61343 329088  79258 408346 0.1940952          
+# 1   01   1258 289274 290532 117814 408346 0.2885151          
+# 63  77 288441    959 289400 118946 408346 0.2912873       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1082 332319 333401  74760 408161 0.1831630 < R B C O
+# 18  22 267397  61180 328577  79584 408161 0.1949819          
+# 1   01   1205 289038 290243 117918 408161 0.2889007          
+# 63  77 288157    908 289065 119096 408161 0.2917868       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1120 332303 333423  75026 408449 0.1836851 < R B C O
+# 18  22 267792  61632 329424  79025 408449 0.1934758          
+# 1   01   1246 289464 290710 117739 408449 0.2882588          
+# 63  77 288399    929 289328 119121 408449 0.2916423       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1074 331813 332887  74955 407842 0.1837844 < R B C O
+# 18  22 267249  61101 328350  79492 407842 0.1949088          
+# 1   01   1172 288819 289991 117851 407842 0.2889624          
+# 63  77 287898    910 288808 119034 407842 0.2918630       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1116 332412 333528  75202 408730 0.1839894 < R B C O
+# 18  22 268008  61191 329199  79531 408730 0.1945808          
+# 1   01   1212 289682 290894 117836 408730 0.2882979          
+# 63  77 288610    889 289499 119231 408730 0.2917109       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1113 332371 333484  75068 408552 0.1837416 < R B C O
+# 18  22 267733  61405 329138  79414 408552 0.1943792          
+# 1   01   1190 289535 290725 117827 408552 0.2884015          
+# 63  77 288431    915 289346 119206 408552 0.2917768       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1109 332385 333494  74803 408297 0.1832073 < R B C O
+# 18  22 267603  61327 328930  79367 408297 0.1943855          
+# 1   01   1147 289047 290194 118103 408297 0.2892576          
+# 63  77 288254    971 289225 119072 408297 0.2916308       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1065 332101 333166  75043 408209 0.1838348 < R B C O
+# 18  22 267045  61240 328285  79924 408209 0.1957919          
+# 1   01   1171 288784 289955 118254 408209 0.2896898          
+# 63  77 287749    885 288634 119575 408209 0.2929259       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1118 332168 333286  74889 408175 0.1834728 < R B C O
+# 18  22 267943  61004 328947  79228 408175 0.1941030          
+# 1   01   1197 289557 290754 117421 408175 0.2876732          
+# 63  77 288642    884 289526 118649 408175 0.2906817       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1059 331847 332906  75171 408077 0.1842079 < R B C O
+# 18  22 267922  61036 328958  79119 408077 0.1938825          
+# 1   01   1217 289434 290651 117426 408077 0.2877545          
+# 63  77 288736    873 289609 118468 408077 0.2903080       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1125 331670 332795  75154 407949 0.1842240 < R B C O
+# 18  22 267221  61269 328490  79459 407949 0.1947768          
+# 1   01   1232 288707 289939 118010 407949 0.2892764          
+# 63  77 287716    924 288640 119309 407949 0.2924606       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1103 331801 332904  75038 407942 0.1839428 < R B C O
+# 18  22 267190  61273 328463  79479 407942 0.1948292          
+# 1   01   1230 288729 289959 117983 407942 0.2892151          
+# 63  77 287880    926 288806 119136 407942 0.2920415       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1126 332034 333160  75395 408555 0.1845406 < R B C O
+# 18  22 267653  61154 328807  79748 408555 0.1951953          
+# 1   01   1187 289163 290350 118205 408555 0.2893246          
+# 63  77 288407    957 289364 119191 408555 0.2917380       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1072 332112 333184  75332 408516 0.1844040 < R B C O
+# 18  22 267519  61638 329157  79359 408516 0.1942617          
+# 1   01   1168 288977 290145 118371 408516 0.2897585          
+# 63  77 288145    913 289058 119458 408516 0.2924194       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1080 332189 333269  75366 408635 0.1844335 < R B C O
+# 18  22 267485  61696 329181  79454 408635 0.1944376          
+# 1   01   1226 289339 290565 118070 408635 0.2889376          
+# 63  77 288420    901 289321 119314 408635 0.2919818       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1108 332120 333228  75153 408381 0.1840267 < R B C O
+# 18  22 267504  61357 328861  79520 408381 0.1947201          
+# 1   01   1189 289019 290208 118173 408381 0.2893695          
+# 63  77 288109    905 289014 119367 408381 0.2922932       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1098 332205 333303  75119 408422 0.1839250 < R B C O
+# 18  22 267400  61362 328762  79660 408422 0.1950434          
+# 1   01   1201 289183 290384 118038 408422 0.2890099          
+# 63  77 288083    909 288992 119430 408422 0.2924181       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1107 332488 333595  75053 408648 0.1836617 < R B C O
+# 18  22 267864  61188 329052  79596 408648 0.1947789          
+# 1   01   1232 289595 290827 117821 408648 0.2883190          
+# 63  77 288670    933 289603 119045 408648 0.2913143       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1089 332348 333437  74991 408428 0.1836089 < R B C O
+# 18  22 267691  61499 329190  79238 408428 0.1940073          
+# 1   01   1230 289245 290475 117953 408428 0.2887975          
+# 63  77 288379    915 289294 119134 408428 0.2916891       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1097 332088 333185  75191 408376 0.1841220 < R B C O
+# 18  22 267788  61182 328970  79406 408376 0.1944434          
+# 1   01   1181 289568 290749 117627 408376 0.2880360          
+# 63  77 288256    923 289179 119197 408376 0.2918805       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1061 332365 333426  74856 408282 0.1833439 < R B C O
+# 18  22 267729  61114 328843  79439 408282 0.1945689          
+# 1   01   1214 289462 290676 117606 408282 0.2880509          
+# 63  77 288438    891 289329 118953 408282 0.2913501       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1193 332170 333363  75205 408568 0.1840697 < R B C O
+# 18  22 267575  61551 329126  79442 408568 0.1944401          
+# 1   01   1263 289024 290287 118281 408568 0.2895014          
+# 63  77 288318    984 289302 119266 408568 0.2919122       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1075 331808 332883  75602 408485 0.1850790 < R B C O
+# 18  22 267350  61522 328872  79613 408485 0.1948982          
+# 1   01   1249 288909 290158 118327 408485 0.2896728          
+# 63  77 288015    935 288950 119535 408485 0.2926301       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1096 332054 333150  74968 408118 0.1836920 < R B C O
+# 18  22 267575  61269 328844  79274 408118 0.1942428          
+# 1   01   1203 288980 290183 117935 408118 0.2889728          
+# 63  77 288029    893 288922 119196 408118 0.2920626       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1032 332458 333490  75104 408594 0.1838108 < R B C O
+# 18  22 268134  61251 329385  79209 408594 0.1938575          
+# 1   01   1147 289365 290512 118082 408594 0.2889959          
+# 63  77 288839    826 289665 118929 408594 0.2910689       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1046 332410 333456  75054 408510 0.1837262 < R B C O
+# 18  22 268428  61296 329724  78786 408510 0.1928619          
+# 1   01   1162 289771 290933 117577 408510 0.2878191          
+# 63  77 288824    884 289708 118802 408510 0.2908179       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1131 331692 332823  75027 407850 0.1839573 < R B C O
+# 18  22 267152  61364 328516  79334 407850 0.1945176          
+# 1   01   1189 288729 289918 117932 407850 0.2891553          
+# 63  77 287800    959 288759 119091 407850 0.2919971       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1131 332442 333573  74636 408209 0.1828377 < R B C O
+# 18  22 267639  61123 328762  79447 408209 0.1946233          
+# 1   01   1194 289285 290479 117730 408209 0.2884062          
+# 63  77 288364    934 289298 118911 408209 0.2912993       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1074 331823 332897  75058 407955 0.1839860 < R B C O
+# 18  22 267257  61656 328913  79042 407955 0.1937518          
+# 1   01   1290 288935 290225 117730 407955 0.2885858          
+# 63  77 287869    921 288790 119165 407955 0.2921033       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1133 332501 333634  75107 408741 0.1837521 < R B C O
+# 18  22 267785  61367 329152  79589 408741 0.1947174          
+# 1   01   1234 289554 290788 117953 408741 0.2885764          
+# 63  77 288428    944 289372 119369 408741 0.2920407       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1129 331681 332810  75431 408241 0.1847708 < R B C O
+# 18  22 267425  61507 328932  79309 408241 0.1942701          
+# 1   01   1234 288951 290185 118056 408241 0.2891821          
+# 63  77 288225    916 289141 119100 408241 0.2917394       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1091 331783 332874  75234 408108 0.1843483 < R B C O
+# 18  22 267568  61491 329059  79049 408108 0.1936963          
+# 1   01   1170 289024 290194 117914 408108 0.2889284          
+# 63  77 288080    875 288955 119153 408108 0.2919644       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1119 332517 333636  74829 408465 0.1831956 < R B C O
+# 18  22 267585  61249 328834  79631 408465 0.1949518          
+# 1   01   1228 289215 290443 118022 408465 0.2889403          
+# 63  77 288271    931 289202 119263 408465 0.2919785       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1153 331638 332791  75567 408358 0.1850509 < R B C O
+# 18  22 267163  61499 328662  79696 408358 0.1951621          
+# 1   01   1218 288839 290057 118301 408358 0.2896992          
+# 63  77 287842    953 288795 119563 408358 0.2927897       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1070 331896 332966  75345 408311 0.1845285 < R B C O
+# 18  22 267415  61638 329053  79258 408311 0.1941118          
+# 1   01   1226 289127 290353 117958 408311 0.2888925          
+# 63  77 288003    924 288927 119384 408311 0.2923850       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1100 332138 333238  75067 408305 0.1838503 < R B C O
+# 18  22 267449  61084 328533  79772 408305 0.1953736          
+# 1   01   1206 289294 290500 117805 408305 0.2885221          
+# 63  77 288095    938 289033 119272 408305 0.2921150       < L
+#    pat   left  right   both  cross    all     ratio      best
+# 8   10   1106 332217 333323  74881 408204 0.1834401 < R B C O
+# 18  22 267869  60926 328795  79409 408204 0.1945326          
+# 1   01   1247 289350 290597 117607 408204 0.2881084          
+# 63  77 288314    920 289234 118970 408204 0.2914474       < L
 \end{verbatim}
 \begin{alltt}
 \hlcom{# summarize:}
@@ -4814,7 +4860,7 @@ Now repeat the above nboot times, and summarize results:
 
 SUMMARY: In 101 bootstrap replicates, we saw 101 samples with the 6/1 split having fewer
 conflicts than the 5/2 split, and the minimum separation between them was $\approx$
--18 sigma, hence highly statistically significant.
+-19 sigma, hence highly statistically significant.
 
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -4830,17 +4876,17 @@ conflicts than the 5/2 split, and the minimum separation between them was $\appr
 \hlkwd{format}\hlstd{(}\hlkwd{rbind}\hlstd{(corsummary,thesummary),}\hlkwc{scientific}\hlstd{=F,}\hlkwc{digits}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{drop0trailing}\hlstd{=T)}
 \end{alltt}
 \begin{verbatim}
-#          Min.              1st Qu.           Median           Mean              3rd Qu.           Max.            
-# bcor     "    0.999973432" "    0.999991997" "    0.99999417" "    0.999993603" "    0.999995979" "    0.99999847"
-# b52cross "78589"           "79244"           "79432"          "79415.267326733" "79590"           "80088"         
-# b61cross "74430"           "74856"           "75049"          "75047.534653465" "75204"           "75528"         
-# b61-b52  "-4988"           "-4581"           "-4346"          "-4367.732673267" "-4206"           "-3660"         
-# % rev    "  100"           "  100"           "  100"          "  100"           "  100"           "  100"         
+#          Min.              1st Qu.           Median            Mean              3rd Qu.           Max.            
+# bcor     "    0.999981368" "    0.999992195" "    0.999994211" "    0.999993689" "    0.999995819" "    0.99999865"
+# b52cross "78763"           "79238"           "79409"           "79396.445544554" "79547"           "79942"         
+# b61cross "74557"           "74953"           "75078"           "75089.237623762" "75217"           "75602"         
+# b61-b52  "-5278"           "-4455"           "-4324"           "-4307.207920792" "-4105"           "-3599"         
+# % rev    "  100"           "  100"           "  100"           "  100"           "  100"           "  100"         
 #          sd               
-# bcor     "    0.000003499"
-# b52cross "  268.69067312" 
-# b61cross "  246.249327486"
-# b61-b52  "  276.221754795"
+# bcor     "    0.000003173"
+# b52cross "  235.554260214"
+# b61cross "  207.05314045" 
+# b61-b52  "  282.072945063"
 # % rev    "    0"
 \end{verbatim}
 \begin{alltt}
@@ -4954,7 +5000,7 @@ Tangent: As a function of nonref allele freq, assuming HWE, what is probability 
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/share-plot-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/share-plot-1} 
 
 }
 
@@ -5092,7 +5138,7 @@ Figure~\ref{fig:tree-medium-unlabeled}:  [** as of 10/4/2015, this fig and next 
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-medium-unlabeled-1} 
+{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-medium-unlabeled-1} 
 
 }
 
@@ -5112,7 +5158,7 @@ Figure~\ref{fig:tree-medium-unlabeled-shortscale}:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-medium-unlabeled-shortscale-1} 
+{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-trunc-qfiltered-tree-medium-unlabeled-shortscale-1} 
 
 }
 
@@ -5177,7 +5223,7 @@ Figure~\ref{fig:fullgenome-tree-medium}:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1} 
 
 }
 
@@ -5190,5 +5236,5 @@ Figure~\ref{fig:fullgenome-tree-medium}:
 \FloatBarrier
 
 % remember to do this to enable Id keyword substution: svn propset svn:keywords Id shared-snps.rnw 
-\mbox{}\vfill\footnotesize\flushright SVN, ID I miss you.\ $ $Id: shared-snps.rnw  2017-06-29 or later. ruzzo $ $
+\mbox{}\vfill\footnotesize\flushright SVN, ID I miss you.\ $ $Id: shared-snps.rnw  2017-07-21 or later. ruzzo $ $
 \end{document}

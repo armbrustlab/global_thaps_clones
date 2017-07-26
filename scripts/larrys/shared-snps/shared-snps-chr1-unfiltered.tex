@@ -98,11 +98,11 @@ Load utility R code; do setup:
 \hlkwd{source}\hlstd{(}\hlstr{'../../../R/wlr.R'}\hlstd{)} \hlcom{# load util code; path relative this folder or sibling in scripts/larrys }
 \end{alltt}
 \begin{verbatim}
-## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-06-26 or later $
+## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
 \end{verbatim}
 \begin{alltt}
 \hlkwd{setup.my.wd}\hlstd{(}\hlstr{'shared-snps'}\hlstd{)} \hlcom{# set working dir; UPDATE if this file moves, or if COPY/PASTE to new file}
-\hlkwd{setup.my.knitr}\hlstd{(}\hlstr{'f-knitr/'}\hlstd{)}
+\hlkwd{setup.my.knitr}\hlstd{(}\hlstr{'figs-knitr/'}\hlstd{)}
 \hlkwd{generic.setup}\hlstd{(}\hlstr{'figs-mine/'}\hlstd{)}
 \end{alltt}
 \end{kframe}
@@ -194,7 +194,7 @@ will/won't force removal (actually, rename):
 \hlkwd{decache}\hlstd{(params}\hlopt{$}\hlstd{clear.cache)}
 \end{alltt}
 \begin{verbatim}
-# Rename of 'cache' to 'cache81523' returned TRUE .
+# Rename of 'cache' to 'cache96093' returned TRUE .
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -646,9 +646,9 @@ are defined as the ``consistent'' SNPs.
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# wrap this in a data structure to be cached:}
-\hlstd{Description} \hlkwb{<-} \hlstr{[2757 chars quoted with ''']}
+\hlstd{Description} \hlkwb{<-} \hlstr{[2753 chars quoted with ''']}
 
-\hlstd{filtered.snps} \hlkwb{<-}
+\hlstd{refined.snps} \hlkwb{<-}
   \hlkwd{list}\hlstd{(}\hlkwc{Description}\hlstd{=Description,}
 
        \hlkwc{Data}\hlstd{=}\hlkwd{list}\hlstd{(}
@@ -661,19 +661,19 @@ are defined as the ``consistent'' SNPs.
        \hlkwc{Code}\hlstd{=}\hlkwd{list}\hlstd{(}
          \hlkwc{get.snps} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{strain}\hlstd{,} \hlkwc{stringency}\hlstd{=}\hlnum{2}\hlstd{)\{}
            \hlcom{# return nusnps x 1 Bool vector of consistent SNPs @ specified stringency & strain}
-           \hlkwd{return}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps[[stringency]]} \hlopt{&}
-                  \hlstd{filtered.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{non.ref.nucleotide[[stringency]][,strain]} \hlopt{>} \hlnum{0}\hlstd{)}
+           \hlkwd{return}\hlstd{(refined.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps[[stringency]]} \hlopt{&}
+                  \hlstd{refined.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{non.ref.nucleotide[[stringency]][,strain]} \hlopt{>} \hlnum{0}\hlstd{)}
          \hlstd{\}}
          \hlstd{,}
          \hlkwc{get.snp.locs.char} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{strain}\hlstd{,} \hlkwc{stringency}\hlstd{=}\hlnum{2}\hlstd{)\{}
            \hlcom{# return char vector of locations of consistent SNPs @ specified stringency & strain}
-           \hlstd{snps} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(strain, stringency)}
+           \hlstd{snps} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(strain, stringency)}
            \hlkwd{return}\hlstd{(}\hlkwd{names}\hlstd{(snps)[snps])}
          \hlstd{\}}
          \hlstd{,}
          \hlkwc{get.snp.locs.df} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{strain}\hlstd{,} \hlkwc{stringency}\hlstd{=}\hlnum{2}\hlstd{)\{}
            \hlcom{# return data frame (Chr/Pos) of locations of consistent SNPs @ specified stringency & strain}
-           \hlstd{snplist} \hlkwb{<-} \hlkwd{strsplit}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snp.locs.char}\hlstd{(strain, stringency),} \hlstr{':'}\hlstd{,} \hlkwc{fixed}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+           \hlstd{snplist} \hlkwb{<-} \hlkwd{strsplit}\hlstd{(refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snp.locs.char}\hlstd{(strain, stringency),} \hlstr{':'}\hlstd{,} \hlkwc{fixed}\hlstd{=}\hlnum{TRUE}\hlstd{)}
            \hlcom{# strsplit returns long list of 2-vectors, 1st=chr, 2nd=char position}
            \hlstd{df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{Chr}\hlstd{=}           \hlkwd{unlist}\hlstd{(}\hlkwd{lapply}\hlstd{(snplist,}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(x[}\hlnum{1}\hlstd{])\})),}
                             \hlkwc{Pos}\hlstd{=}\hlkwd{as.integer}\hlstd{(}\hlkwd{unlist}\hlstd{(}\hlkwd{lapply}\hlstd{(snplist,}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(x[}\hlnum{2}\hlstd{])\}))),}
@@ -684,17 +684,22 @@ are defined as the ``consistent'' SNPs.
   \hlstd{)}
 
 \hlcom{# dont't clobber existing .rda, but save if absent.  (delete to re-save)}
-\hlstd{rda.filtered} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'../00common/mycache/filtered.snps'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'rda'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'.'}\hlstd{)}
-\hlkwa{if}\hlstd{(}\hlkwd{file.exists}\hlstd{(rda.filtered))\{}
-  \hlkwd{cat}\hlstd{(}\hlstr{'Pre-existing file'}\hlstd{, rda.filtered,} \hlstr{'unchanged.\textbackslash{}n'}\hlstd{)}
+\hlcom{# result for trunc, unfiltered tables saved to "data" else "mycache"}
+\hlkwa{if}\hlstd{(}\hlkwd{which.snp.tables}\hlstd{()} \hlopt{==} \hlstr{'trunc-unfiltered'}\hlstd{)\{}
+  \hlstd{rda.refined} \hlkwb{<-} \hlstr{'../../../data/refined.snps-trunc-unfiltered.rda'}
 \hlstd{\}} \hlkwa{else} \hlstd{\{}
-  \hlkwd{cat}\hlstd{(}\hlstr{'Saving'}\hlstd{, rda.filtered,} \hlstr{'...'}\hlstd{)}
-  \hlkwd{save}\hlstd{(filtered.snps,} \hlkwc{file}\hlstd{=rda.filtered,} \hlkwc{compress}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+  \hlstd{rda.refined} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'../00common/mycache/refined.snps'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'rda'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'.'}\hlstd{)}
+\hlstd{\}}
+\hlkwa{if}\hlstd{(}\hlkwd{file.exists}\hlstd{(rda.refined))\{}
+  \hlkwd{cat}\hlstd{(}\hlstr{'Pre-existing file'}\hlstd{, rda.refined,} \hlstr{'unchanged.\textbackslash{}n'}\hlstd{)}
+\hlstd{\}} \hlkwa{else} \hlstd{\{}
+  \hlkwd{cat}\hlstd{(}\hlstr{'Saving'}\hlstd{, rda.refined,} \hlstr{'...'}\hlstd{)}
+  \hlkwd{save}\hlstd{(refined.snps,} \hlkwc{file}\hlstd{=rda.refined,} \hlkwc{compress}\hlstd{=}\hlnum{TRUE}\hlstd{)}
   \hlkwd{cat}\hlstd{(}\hlstr{'Saved.\textbackslash{}n'}\hlstd{)}
 \hlstd{\}}
 \end{alltt}
 \begin{verbatim}
-# Pre-existing file ../00common/mycache/filtered.snps.Chr1-unfiltered.rda unchanged.
+# Saving ../00common/mycache/refined.snps.Chr1-unfiltered.rda ...Saved.
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -704,14 +709,14 @@ Knitr seems to be failing to format the long char string above, which says:
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{cat}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Description)}
+\hlkwd{cat}\hlstd{(refined.snps}\hlopt{$}\hlstd{Description)}
 \end{alltt}
 \begin{verbatim}
 # Contents of this .rda file:
 # 
 #   * Description: this text
 # 
-#   * Data -- 5 items defining filtered SNPs, at 4 different stringency levels, as defined
+#   * Data -- 5 items defining refined SNPs, at 4 different stringency levels, as defined
 #     in shared-snps.rnw:
 # 
 #     * based.on.which.snp.tables: {"Chr1","full","trunc"}-{"unfiltered","qfiltered"}, 
@@ -730,7 +735,7 @@ Knitr seems to be failing to format the long char string above, which says:
 #     * non.ref.nucleotide: 4 arrays, each nusnps x 7, of values 0..4 (0..1 in the 4th 
 #       array).  In the 1st 3 arrays, 0 means the given position in the given strain did
 #       not have nonreference read counts above the corresponding filtering threshold,
-#       i.e., is NOT a filtered SNP in that strain, whereas 1..4 mean that it did pass
+#       i.e., is NOT a refined SNP in that strain, whereas 1..4 mean that it did pass
 #       threshold, for A,C,G,T resp.  In the 4th array, this value is just 1/0,
 #       indicating is/is not a called SNP in that strain.
 # 
@@ -742,12 +747,12 @@ Knitr seems to be failing to format the long char string above, which says:
 #       and uniformity of data structures, the 4th is all TRUE, i.e., union of SNPs
 #       across all strains, without any regard for thresholds or consistency.
 # 
-#       In short, the filtered SNPs according to our medium filtering criteria are
+#       In short, the refined SNPs according to our medium filtering criteria are
 #       strains/positions where consistent.snps[[2]]==TRUE and non.ref.nucleotide[[2]]>0.
 # 
 #       Rownames in both non.ref.nucs and consistent define location, e.g. "Chr1:333".
 # 
-#   * Code -- simple routines to extract filtered SNPs in (potentially) convenient formats:
+#   * Code -- simple routines to extract refined SNPs in (potentially) convenient formats:
 # 
 #     * get.snps(strain, stringency=2)
 #       returns nusnps x 1 Bool vector of consistent SNPs @ specified stringency in
@@ -1264,10 +1269,10 @@ stats, such as those shown in Table 1 of the paper.
   \hlkwd{cat}\hlstd{(}\hlstr{'\textbackslash{}nStringency'}\hlstd{, stringency,} \hlkwd{ifelse}\hlstd{(stringency}\hlopt{==}\hlnum{4}\hlstd{,}\hlstr{'(i.e. raw SAMTools SNP calls)'}\hlstd{,}\hlstr{''}\hlstd{),}
       \hlstr{':\textbackslash{}n--------------\textbackslash{}n'}\hlstd{)}
   \hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{7}\hlstd{)\{}
-    \hlstd{f.snps.i} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(i, stringency)}
+    \hlstd{f.snps.i} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(i, stringency)}
     \hlstd{snp.counts[i,stringency]} \hlkwb{<-} \hlkwd{sum}\hlstd{(f.snps.i)}
     \hlkwa{for}\hlstd{(j} \hlkwa{in} \hlstd{i}\hlopt{:}\hlnum{7}\hlstd{)\{}
-      \hlstd{f.snps.j} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(j, stringency)}
+      \hlstd{f.snps.j} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Code}\hlopt{$}\hlkwd{get.snps}\hlstd{(j, stringency)}
       \hlstd{snp.inter[i,j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(f.snps.i} \hlopt{&} \hlstd{f.snps.j)}
       \hlstd{snp.union[i,j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(f.snps.i} \hlopt{|} \hlstd{f.snps.j)}
     \hlstd{\}}
@@ -1557,6 +1562,8 @@ Arbitrarily pick one isolate, say, $A$, as the ``template''.  Arbitrarily pick a
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{gyre.count} \hlkwb{<-} \hlkwd{sum}\hlstd{(snp.tables[[}\hlnum{4}\hlstd{]]}\hlopt{$}\hlstd{snp)}
+\hlcom{# NOTE: what we now calle "refined" SNPs were once called "filtered" SNPs and I have NOT tried}
+\hlcom{# to update variable names and annotation in the code below to reflect the terminology change...}
 \hlcom{# 'unfil.' => unfiltered for consistency; see below.}
 \hlstd{unfil.fiveway.count}   \hlkwb{<-} \hlkwd{sum}\hlstd{( snp.tables[[}\hlnum{4}\hlstd{]]}\hlopt{$}\hlstd{snp} \hlopt{*} \hlstd{i4.snps)}
 \hlstd{unfil.fiveway.percent} \hlkwb{<-} \hlstd{unfil.fiveway.count} \hlopt{/} \hlstd{gyre.count} \hlopt{*} \hlnum{100}
@@ -2832,7 +2839,8 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
                       \hlkwc{col.clade} \hlstd{=}\hlstr{'black'}\hlstd{,}    \hlkwc{lwd.clade}\hlstd{=}\hlnum{1}\hlstd{,}   \hlkwc{cex.clade} \hlstd{=}\hlnum{1.0}\hlstd{,} \hlkwc{font.clade} \hlstd{=}\hlnum{3}\hlstd{,}
                       \hlkwc{col.legbox}\hlstd{=}\hlstr{'beige'}\hlstd{,}                   \hlkwc{cex.legend}\hlstd{=}\hlnum{0.8}\hlstd{,}
                       \hlkwc{col.tip}   \hlstd{=}\hlstr{'darkblue'}\hlstd{,}                                \hlkwc{font.tip}   \hlstd{=}\hlnum{4}\hlstd{,}
-                      \hlkwc{plusx}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{pltdebug}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{])\{}
+                      \hlkwc{plusx}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{pltdebug}\hlstd{=}\hlnum{FALSE}\hlstd{,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],}
+                      \hlkwc{straight.arrow}\hlstd{=}\hlnum{FALSE}\hlstd{)\{}
 
   \hlcom{####}
   \hlcom{#}
@@ -2901,8 +2909,8 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{3.62}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'all'}  \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'in 7'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'\textbackslash{}n'}\hlstd{),} \hlcom{# 7054}
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{5.75}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'abcde'}\hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'in 5'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'\textbackslash{}n'}\hlstd{),} \hlcom{# 3912}
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{3}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{1.50}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'fg'}   \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'in 2'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{'\textbackslash{}n'}\hlstd{),} \hlcom{# 9365}
-    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{2}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{2.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'f'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 1013'}\hlstd{),}         \hlcom{# 9652 }
-    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{1}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{1.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'g'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 3367'}\hlstd{),}         \hlcom{# 8813 }
+    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{2}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{2.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'f'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 1013'}\hlstd{),}  \hlcom{# 9652 }
+    \hlstd{(inode[}\hlnum{3}\hlstd{]}\hlopt{+}\hlstd{tip[}\hlnum{1}\hlstd{])}\hlopt{/}\hlnum{2}\hlstd{,}  \hlnum{1.00}\hlstd{,} \hlkwd{paste}\hlstd{(lmed[}\hlstr{'g'}    \hlstd{,}\hlnum{1}\hlstd{],} \hlstr{'only\textbackslash{}nin 3367'}\hlstd{),}  \hlcom{# 8813 }
     \hlkwd{sum}\hlstd{(inode[}\hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,}\hlnum{5}\hlstd{)])}\hlopt{/}\hlnum{2}\hlstd{,} \hlnum{4.35}\hlstd{,} \hlstr{'* '}\hlstd{)}
 
   \hlcom{####}
@@ -2948,6 +2956,7 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
   \hlstd{xdel} \hlkwb{<-} \hlnum{3}\hlopt{*}\hlstd{clade.dx}        \hlcom{# space between labeled clade tips and marker line}
 
   \hlstd{tree.x.lim} \hlkwb{<-} \hlnum{1.03}\hlopt{*}\hlstd{(}\hlkwd{max}\hlstd{(tiplabel.x)}\hlopt{+}\hlstd{xdel)}  \hlcom{# <== FINAL plot width}
+  \hlstd{tree.y.lim} \hlkwb{<-} \hlnum{7}
   \hlkwa{if}\hlstd{(pltdebug)\{}\hlkwd{cat}\hlstd{(}\hlstr{'Plot width hacking:'}\hlstd{, provisional.tree.x.lim, tree.x.lim, tree.x.lim}\hlopt{/}\hlnum{1.03}\hlopt{/}\hlkwd{max}\hlstd{(tip), clade.dx)\}}
 
   \hlkwd{par}\hlstd{(}\hlkwc{new}\hlstd{=T)}  \hlcom{# I.e., NOT starting a new plot}
@@ -2957,8 +2966,8 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
   \hlcom{# REAL PLOT}
   \hlcom{#}
   \hlkwd{plot}\hlstd{(the.tree,}
-       \hlkwc{x.lim} \hlstd{= tree.x.lim,}
-       \hlkwc{y.lim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{7}\hlstd{),}
+       \hlkwc{x.lim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, tree.x.lim),}
+       \hlkwc{y.lim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, tree.y.lim),}
        \hlkwc{font}\hlstd{=font.tip,} \hlkwc{label.offset}\hlstd{=}\hlnum{100}\hlstd{,}             \hlcom{# bold-italic, nudged slightly right}
        \hlkwc{tip.color}\hlstd{=col.tip,} \hlkwc{edge.color}\hlstd{=col.edge,}
        \hlkwc{edge.width}\hlstd{=lwd.edge,}
@@ -2999,14 +3008,38 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
   \hlstd{taily} \hlkwb{<-} \hlstd{spy[}\hlnum{1}\hlstd{]}
   \hlstd{headx} \hlkwb{<-} \hlstd{spx[}\hlnum{4}\hlstd{]}
   \hlstd{heady} \hlkwb{<-} \hlstd{spy[}\hlnum{4}\hlstd{]}
-  \hlkwd{arrows}\hlstd{(headx,heady,headx}\hlopt{+}\hlstd{tree.x.lim}\hlopt{*}\hlnum{1e-3}\hlstd{,heady,} \hlkwc{length}\hlstd{=}\hlnum{.1}\hlstd{,}\hlkwc{col}\hlstd{=col.arrow,}\hlkwc{lwd}\hlstd{=lwd.arrow)}
-  \hlkwd{lines}\hlstd{(}\hlkwd{rev}\hlstd{(serx),} \hlkwd{rev}\hlstd{(sery),} \hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{1}\hlstd{),}\hlkwc{col}\hlstd{=col.arrow,} \hlkwc{lwd}\hlstd{=lwd.arrow)}
+  \hlstd{textx} \hlkwb{<-} \hlstd{(headx}\hlopt{+}\hlstd{tailx)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(headx}\hlopt{-}\hlstd{tailx)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.01}\hlstd{)}
+  \hlstd{texty} \hlkwb{<-} \hlstd{(heady}\hlopt{+}\hlstd{taily)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(heady}\hlopt{-}\hlstd{taily)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.10}\hlstd{)}
   \hlstd{bottle.txt} \hlkwb{<-} \hlstr{"inbreeding\textbackslash{}nLoH / LoS"}
-  \hlkwa{if}\hlstd{(T)\{}
-    \hlkwd{text}\hlstd{((headx}\hlopt{+}\hlstd{tailx)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(headx}\hlopt{-}\hlstd{tailx)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.01}\hlstd{), (heady}\hlopt{+}\hlstd{taily)}\hlopt{/}\hlnum{2}\hlopt{+}\hlstd{(heady}\hlopt{-}\hlstd{taily)}\hlopt{*}\hlstd{(}\hlopt{-}\hlnum{.10}\hlstd{),}
-         \hlstd{bottle.txt,} \hlkwc{srt}\hlstd{=}\hlnum{66}\hlstd{,} \hlkwc{font}\hlstd{=font.arrow,} \hlkwc{cex}\hlstd{=cex.arrow,} \hlkwc{col}\hlstd{=col.arrow)}
+  \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{straight.arrow)\{}
+    \hlkwd{arrows}\hlstd{(headx,heady,headx}\hlopt{+}\hlstd{tree.x.lim}\hlopt{*}\hlnum{1e-3}\hlstd{,heady,} \hlkwc{length}\hlstd{=}\hlnum{.1}\hlstd{,}\hlkwc{col}\hlstd{=col.arrow,}\hlkwc{lwd}\hlstd{=lwd.arrow)}
+    \hlkwd{lines}\hlstd{(}\hlkwd{rev}\hlstd{(serx),} \hlkwd{rev}\hlstd{(sery),} \hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{1}\hlstd{),}\hlkwc{col}\hlstd{=col.arrow,} \hlkwc{lwd}\hlstd{=lwd.arrow)}
+    \hlstd{textangle} \hlkwb{<-} \hlnum{66}
+    \hlstd{textadj} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{)}
   \hlstd{\}} \hlkwa{else} \hlstd{\{}
-    \hlcom{# experiment at wrapping text along curved path; not too pretty, but retain for now, maybe revisit}
+    \hlcom{# Tweak positioning slightly; visualize a rectangle from 7-node to base of L-clade;}
+    \hlcom{# center text, rotated, on diagonal towards L-clade; ditto the straight arrow.}
+    \hlstd{llx} \hlkwb{<-} \hlstd{inode[}\hlnum{2}\hlstd{]} \hlcom{# the aforementioned rectangle}
+    \hlstd{urx} \hlkwb{<-} \hlstd{inode[}\hlnum{4}\hlstd{]}
+    \hlstd{lly} \hlkwb{<-} \hlnum{3.62}
+    \hlstd{ury} \hlkwb{<-} \hlnum{5.75}
+    \hlcom{# rect(llx,lly,urx,ury) # show rect for debug}
+    \hlstd{textx} \hlkwb{<-} \hlstd{(llx}\hlopt{+}\hlstd{urx)}\hlopt{/}\hlnum{2}    \hlcom{# center text}
+    \hlstd{texty} \hlkwb{<-} \hlstd{(lly}\hlopt{+}\hlstd{ury)}\hlopt{/}\hlnum{2}
+    \hlstd{textangle} \hlkwb{<-} \hlkwd{atan}\hlstd{(}\hlkwd{grconvertY}\hlstd{(ury}\hlopt{-}\hlstd{lly,}\hlkwc{to}\hlstd{=}\hlstr{'dev'}\hlstd{)}\hlopt{/}\hlkwd{grconvertX}\hlstd{(urx}\hlopt{-}\hlstd{llx,}\hlkwc{to}\hlstd{=}\hlstr{'dev'}\hlstd{))}\hlopt{*}\hlnum{360}\hlopt{/}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{pi)}
+    \hlstd{textadj} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0.50}\hlstd{,} \hlnum{0.43}\hlstd{)} \hlcom{#tweak position; ".5" = center in x , ".43" raises, THEN rotate.}
+    \hlstd{alpha} \hlkwb{<-} \hlnum{.78} \hlcom{# fraction along diag at which arrow begins}
+    \hlstd{beta}  \hlkwb{<-} \hlnum{.95} \hlcom{# ... and ends}
+    \hlkwd{arrows}\hlstd{((}\hlnum{1}\hlopt{-}\hlstd{alpha)}\hlopt{*}\hlstd{llx} \hlopt{+} \hlstd{alpha}\hlopt{*}\hlstd{urx,}
+           \hlstd{(}\hlnum{1}\hlopt{-}\hlstd{alpha)}\hlopt{*}\hlstd{lly} \hlopt{+} \hlstd{alpha}\hlopt{*}\hlstd{ury,}
+           \hlstd{(}\hlnum{1}\hlopt{-}\hlstd{beta)}\hlopt{*}\hlstd{llx}  \hlopt{+} \hlstd{beta}\hlopt{*}\hlstd{urx,}
+           \hlstd{(}\hlnum{1}\hlopt{-}\hlstd{beta)}\hlopt{*}\hlstd{lly}  \hlopt{+} \hlstd{beta}\hlopt{*}\hlstd{ury,} \hlkwc{length}\hlstd{=}\hlnum{.1}\hlstd{,}\hlkwc{col}\hlstd{=col.arrow,}\hlkwc{lwd}\hlstd{=lwd.arrow,}\hlkwc{angle}\hlstd{=}\hlnum{25}\hlstd{)}
+  \hlstd{\}}
+  \hlkwa{if}\hlstd{(T)\{}
+    \hlkwd{text}\hlstd{(textx, texty, bottle.txt,} \hlkwc{srt}\hlstd{=textangle,} \hlkwc{font}\hlstd{=font.arrow,} \hlkwc{cex}\hlstd{=cex.arrow,}
+         \hlkwc{col}\hlstd{=col.arrow,} \hlkwc{adj}\hlstd{=textadj)}
+  \hlstd{\}} \hlkwa{else} \hlstd{\{}
+    \hlcom{# experiment at wrapping text along curved path; unpretty, but retain for now, maybe revisit}
     \hlstd{bottlec} \hlkwb{<-} \hlkwd{strsplit}\hlstd{(bottle,}\hlkwc{split}\hlstd{=}\hlkwa{NULL}\hlstd{)[[}\hlnum{1}\hlstd{]]}
     \hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(bottlec))\{}
       \hlkwd{text}\hlstd{(xser[i],yser[i],bottlec[i],} \hlkwc{srt}\hlstd{=}\hlnum{65}\hlstd{,} \hlkwc{font}\hlstd{=}\hlnum{4}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.7}\hlstd{,} \hlkwc{col}\hlstd{=col.arrow)}
@@ -3079,7 +3112,17 @@ specializations tied to the medium-stringency, full-genome, un-qfiltered data.
     \hlstd{\}}
   \hlstd{\}}
 \hlstd{\}}
-
+\hlkwa{if}\hlstd{(}\hlnum{FALSE}\hlstd{)\{}\hlcom{#for debug convenience}
+  \hlkwd{pdf}\hlstd{(paperfig.path,} \hlkwc{width}\hlstd{=}\hlnum{8}\hlstd{,}\hlkwc{height}\hlstd{=}\hlnum{5}\hlstd{,}\hlkwc{onefile}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{family}\hlstd{=}\hlstr{'Helvetica'}\hlstd{,}\hlkwc{fonts}\hlstd{=}\hlstr{'Courier'}\hlstd{,}\hlkwc{pointsize}\hlstd{=}\hlnum{10}\hlstd{)}
+  \hlkwd{show.tree}\hlstd{(newick.medium,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],} \hlkwc{pltdebug}\hlstd{=F,}\hlkwc{straight.arrow}\hlstd{=T)}
+  \hlkwd{dev.off}\hlstd{()}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
 \hlstd{caption} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{stringency}\hlstd{,}\hlkwc{which.tables}\hlstd{=}\hlkwd{which.snp.tables}\hlstd{(}\hlkwc{string.val}\hlstd{=F))\{}
   \hlstd{caption.where} \hlkwb{<-} \hlstr{'(UNKNOWN genome subset).'}
   \hlkwa{if}\hlstd{(which.tables[}\hlnum{1}\hlstd{]}\hlopt{==}\hlstr{'Chr1'}\hlstd{) \{caption.where} \hlkwb{<-} \hlstr{'on Chr1.'}\hlstd{\}}
@@ -3116,16 +3159,19 @@ the paper fig directly rather than via Knitr.)
 \begin{alltt}
 \hlcom{###}
 \hlcom{#}
-\hlcom{# MAKE PDF FOR PAPER}
+\hlcom{# MAKE PROTOTYPE PDF FOR PAPER, *AND* SAVE DATA NEEDED TO BUILD IT}
 \hlcom{#}
-\hlkwa{if}\hlstd{(}\hlkwd{which.snp.tables}\hlstd{()} \hlopt{==} \hlstr{'trunc-unfiltered'}\hlstd{)\{}
-  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/Fig3-paperfig-medium-tree-'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
+\hlstd{w.s.t.} \hlkwb{<-} \hlkwd{which.snp.tables}\hlstd{()}
+\hlkwa{if}\hlstd{(w.s.t.} \hlopt{==} \hlstr{'trunc-unfiltered'}\hlstd{)\{}
+  \hlstd{rda.Description} \hlkwb{<-} \hlstr{'This .rda contains data to generate Fig 3; see shared.snps.rnw for details.'}
+  \hlkwd{save}\hlstd{(rda.Description, w.s.t., pat.summaries, consistent.count,} \hlkwc{file}\hlstd{=}\hlstr{'Fig3-data.rda'}\hlstd{)}
+  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/paperfig-medium-tree-'}\hlstd{, w.s.t.,} \hlstr{'--Fig3proto.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
 \hlstd{\}} \hlkwa{else} \hlstd{\{}
-  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/paperfig-medium-tree-'}\hlstd{,} \hlkwd{which.snp.tables}\hlstd{(),} \hlstr{'.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
+  \hlstd{paperfig.path} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'figs-mine/paperfig-medium-tree-'}\hlstd{, w.s.t.,} \hlstr{'.pdf'}\hlstd{,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{)}
 \hlstd{\}}
 \hlkwd{pdf}\hlstd{(paperfig.path,} \hlkwc{width}\hlstd{=}\hlnum{8}\hlstd{,}\hlkwc{height}\hlstd{=}\hlnum{5}\hlstd{,}\hlkwc{onefile}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{family}\hlstd{=}\hlstr{'Helvetica'}\hlstd{,}\hlkwc{fonts}\hlstd{=}\hlstr{'Courier'}\hlstd{,}\hlkwc{pointsize}\hlstd{=}\hlnum{10}\hlstd{)}
 \hlstd{newick.medium} \hlkwb{<-} \hlkwd{newickize}\hlstd{(}\hlkwd{make.tree}\hlstd{(pat.summaries[,}\hlstr{'count2'}\hlstd{]))}
-\hlkwd{show.tree}\hlstd{(newick.medium,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],} \hlkwc{pltdebug}\hlstd{=F)}
+\hlkwd{show.tree}\hlstd{(newick.medium,} \hlkwc{total.snps}\hlstd{=consistent.count[}\hlnum{2}\hlstd{],} \hlkwc{pltdebug}\hlstd{=F,}\hlkwc{straight.arrow}\hlstd{=T)}
 \hlkwd{dev.off}\hlstd{()}
 \end{alltt}
 \begin{verbatim}
@@ -3162,7 +3208,7 @@ Figure~\ref{fig:tree-loose}, i.e., criteria [[1]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-loose-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-loose-1} 
 
 }
 
@@ -3185,7 +3231,7 @@ Figure~\ref{fig:tree-medium}, i.e. [[2]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-medium-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-medium-1} 
 
 }
 
@@ -3205,7 +3251,7 @@ Figure~\ref{fig:tree-strict}, i.e. [[3]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-strict-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-strict-1} 
 
 }
 
@@ -3225,7 +3271,7 @@ Figure~\ref{fig:tree-unfiltered}, i.e. [[4]]:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-unfiltered-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-unfiltered-1} 
 
 }
 
@@ -3833,7 +3879,7 @@ tabulated in a 128 row table analogous to pattern.summaries, for analysis by sho
 \hlkwd{str}\hlstd{(boot.sample)}
 \end{alltt}
 \begin{verbatim}
-#  int [1:46896] 125 1 16 117 127 16 2 127 16 127 ...
+#  int [1:46896] 16 119 16 2 18 18 2 28 2 109 ...
 \end{verbatim}
 \begin{alltt}
 \hlstd{boot.count} \hlkwb{<-} \hlkwd{mytable}\hlstd{(boot.sample,}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{127}\hlstd{))}
@@ -3842,20 +3888,20 @@ tabulated in a 128 row table analogous to pattern.summaries, for analysis by sho
 \begin{verbatim}
 #      val count
 # [1,]   0     0
-# [2,]   1    47
-# [3,]   2  8854
-# [4,]   3    14
-# [5,] 124    19
-# [6,] 125  1408
+# [2,]   1    39
+# [3,]   2  8780
+# [4,]   3    16
+# [5,] 124    15
+# [6,] 125  1469
 # [7,] 126   118
-# [8,] 127  7032
+# [8,] 127  6999
 \end{verbatim}
 \begin{alltt}
 \hlstd{boot.counts} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwa{NULL}\hlstd{,boot.count,}\hlkwa{NULL}\hlstd{)} \hlcom{# dummy list with just c2 summaries}
 \hlkwd{cor}\hlstd{(pattern.counts[[}\hlnum{2}\hlstd{]][,}\hlnum{2}\hlstd{],boot.counts[[}\hlnum{2}\hlstd{]][,}\hlnum{2}\hlstd{])} \hlcom{# just curious - how correlated are they?}
 \end{alltt}
 \begin{verbatim}
-# [1] 0.9999712
+# [1] 0.9999417
 \end{verbatim}
 \begin{alltt}
 \hlstd{boot.summaries} \hlkwb{<-} \hlkwd{pat.summary}\hlstd{(boot.counts)}
@@ -3863,17 +3909,17 @@ tabulated in a 128 row table analogous to pattern.summaries, for analysis by sho
 \end{alltt}
 \begin{verbatim}
 #       Pat ShrBy 1007 1012 1013 1014 1015 3367 1335 count1 count2 count3 count4
-# 3     002     1                             X          NA   8854     NA     NA
-# 17    020     1              X                         NA   9650     NA     NA
-# 19    022     2              X              X          NA   9410     NA     NA
-# 102   145     4    X    X              X         X     NA    999     NA     NA
-# 110   155     5    X    X         X    X         X     NA   3881     NA     NA
-# 112   157     6    X    X         X    X    X    X     NA   1223     NA     NA
-# 118   165     5    X    X    X         X         X     NA    421     NA     NA
-# 120   167     6    X    X    X         X    X    X     NA   1866     NA     NA
-# 126   175     6    X    X    X    X    X         X     NA   1408     NA     NA
-# 128   177     7    X    X    X    X    X    X    X     NA   7032     NA     NA
-# Other   (   118 rows   w/   c2    <  400    )          NA   2152     NA     NA
+# 3     002     1                             X          NA   8780     NA     NA
+# 17    020     1              X                         NA   9533     NA     NA
+# 19    022     2              X              X          NA   9461     NA     NA
+# 102   145     4    X    X              X         X     NA    965     NA     NA
+# 110   155     5    X    X         X    X         X     NA   3961     NA     NA
+# 112   157     6    X    X         X    X    X    X     NA   1242     NA     NA
+# 118   165     5    X    X    X         X         X     NA    480     NA     NA
+# 120   167     6    X    X    X         X    X    X     NA   1900     NA     NA
+# 126   175     6    X    X    X    X    X         X     NA   1469     NA     NA
+# 128   177     7    X    X    X    X    X    X    X     NA   6999     NA     NA
+# Other   (   118 rows   w/   c2    <  400    )          NA   2106     NA     NA
 # Total                                                  NA  46896     NA     NA
 \end{verbatim}
 \end{kframe}
@@ -3887,72 +3933,72 @@ Tree partition analysis (and how to pluck out only the best rows based on 3 smal
 \hlstd{tp} \hlkwb{<-} \hlkwd{treepart}\hlstd{(boot.summaries,}\hlkwc{root}\hlstd{=}\hlnum{127}\hlstd{) ; tp}
 \end{alltt}
 \begin{verbatim}
-# root: 177 ; shared: 7032 .  max l 077 , max r 010 , max both 022 , min cross 022 , min ratio 022 . 
+# root: 177 ; shared: 6999 .  max l 077 , max r 010 , max both 022 , min cross 022 , min ratio 022 . 
 # All the same?: FALSE
 #    pat  left right  both cross   all     ratio    best
-# 1   01    47 29232 29279 10585 39864 0.2655278        
-# 2   02  8854 17306 26160 13704 39864 0.3437688        
-# 3   03  8915 10386 19301 20563 39864 0.5158288        
-# 4   04   239 28465 28704 11160 39864 0.2799518        
-# 5   05   305 28241 28546 11318 39864 0.2839153        
-# 6   06  9103  9984 19087 20777 39864 0.5211971        
-# 7   07  9184  9878 19062 20802 39864 0.5218242        
-# 8   10    63 32785 32848  7016 39864 0.1759984     < R
-# 9   11   117 28834 28951 10913 39864 0.2737558        
-# 10  12  8932 11773 20705 19159 39864 0.4806091        
-# 11  13  9003 10204 19207 20657 39864 0.5181868        
-# 12  14   304 28268 28572 11292 39864 0.2832631        
-# 13  15   380 28097 28477 11387 39864 0.2856462        
-# 14  16  9184  9868 19052 20812 39864 0.5220751        
-# 15  17  9282  9789 19071 20793 39864 0.5215984        
-# 16  20  9650 16149 25799 14065 39864 0.3528246        
-# 17  21  9709  9556 19265 20599 39864 0.5167319        
-# 18  22 27914  5626 33540  6324 39864 0.1586394 < B C O
-# 19  23 28007   608 28615 11249 39864 0.2821844        
-# 20  24  9903  9182 19085 20779 39864 0.5212472        
-# 21  25  9985  9067 19052 20812 39864 0.5220751        
-# 22  26 28206   263 28469 11395 39864 0.2858469        
-# 23  27 28339   190 28529 11335 39864 0.2843418        
-# 24  30  9733 10813 20546 19318 39864 0.4845976        
-# 25  31  9803  9378 19181 20683 39864 0.5188391        
-# 26  32 28035  1573 29608 10256 39864 0.2572747        
-# 27  33 28145   471 28616 11248 39864 0.2821593        
-# 28  34  9989  9070 19059 20805 39864 0.5218995        
-# 29  35 10088  8982 19070 20794 39864 0.5216235        
-# 30  36 28334   178 28512 11352 39864 0.2847682        
-# 31  37 28505   122 28627 11237 39864 0.2818834        
-# 32  40    73 28672 28745 11119 39864 0.2789233        
-# 33  41   122 28435 28557 11307 39864 0.2836394        
-# 34  42  8927 10160 19087 20777 39864 0.5211971        
-# 35  43  8999 10047 19046 20818 39864 0.5222256        
-# 36  44   329 28221 28550 11314 39864 0.2838150        
-# 37  45   421 28089 28510 11354 39864 0.2848184        
-# 38  46  9202  9845 19047 20817 39864 0.5222005        
-# 39  47  9340  9772 19112 20752 39864 0.5205699        
-# 40  50   140 28470 28610 11254 39864 0.2823099        
-# 41  51   196 28296 28492 11372 39864 0.2852699        
-# 42  52  9009 10046 19055 20809 39864 0.5219998        
-# 43  53  9091  9956 19047 20817 39864 0.5222005        
-# 44  54   402 28073 28475 11389 39864 0.2856964        
-# 45  55   514 27965 28479 11385 39864 0.2855960        
-# 46  56  9292  9749 19041 20823 39864 0.5223510        
-# 47  57  9461  9688 19149 20715 39864 0.5196418        
-# 48  60  9726  9366 19092 20772 39864 0.5210716        
-# 49  61  9787  9246 19033 20831 39864 0.5225517        
-# 50  62 28007   438 28445 11419 39864 0.2864489        
-# 51  63 28121   351 28472 11392 39864 0.2857716        
-# 52  64 10002  9051 19053 20811 39864 0.5220500        
-# 53  65 10127  8973 19100 20764 39864 0.5208710        
-# 54  66 28383   153 28536 11328 39864 0.2841662        
-# 55  67 28692    97 28789 11075 39864 0.2778196        
-# 56  70  9814  9256 19070 20794 39864 0.5216235        
-# 57  71  9886  9161 19047 20817 39864 0.5222005        
-# 58  72 28144   356 28500 11364 39864 0.2850692        
-# 59  73 28276   284 28560 11304 39864 0.2835641        
-# 60  74 10098  8959 19057 20807 39864 0.5219496        
-# 61  75 10264  8893 19157 20707 39864 0.5194411        
-# 62  76 28546    82 28628 11236 39864 0.2818583        
-# 63  77 28971    33 29004 10860 39864 0.2724262     < L
+# 1   01    39 29036 29075 10822 39897 0.2712485        
+# 2   02  8780 17278 26058 13839 39897 0.3468682        
+# 3   03  8835 10204 19039 20858 39897 0.5227962        
+# 4   04   209 28302 28511 11386 39897 0.2853849        
+# 5   05   273 28117 28390 11507 39897 0.2884177        
+# 6   06  9000  9830 18830 21067 39897 0.5280347        
+# 7   07  9083  9753 18836 21061 39897 0.5278843        
+# 8   10    61 32669 32730  7167 39897 0.1796376     < R
+# 9   11   106 28634 28740 11157 39897 0.2796451        
+# 10  12  8862 11614 20476 19421 39897 0.4867785        
+# 11  13  8926 10032 18958 20939 39897 0.5248264        
+# 12  14   270 28102 28372 11525 39897 0.2888688        
+# 13  15   347 27959 28306 11591 39897 0.2905231        
+# 14  16  9083  9719 18802 21095 39897 0.5287365        
+# 15  17  9187  9665 18852 21045 39897 0.5274833        
+# 16  20  9533 16175 25708 14189 39897 0.3556408        
+# 17  21  9578  9450 19028 20869 39897 0.5230719        
+# 18  22 27774  5617 33391  6506 39897 0.1630699 < B C O
+# 19  23 27858   549 28407 11490 39897 0.2879916        
+# 20  24  9756  9092 18848 21049 39897 0.5275835        
+# 21  25  9828  9000 18828 21069 39897 0.5280848        
+# 22  26 28038   244 28282 11615 39897 0.2911246        
+# 23  27 28171   189 28360 11537 39897 0.2891696        
+# 24  30  9612 10751 20363 19534 39897 0.4896107        
+# 25  31  9664  9286 18950 20947 39897 0.5250269        
+# 26  32 27901  1493 29394 10503 39897 0.2632529        
+# 27  33 27997   422 28419 11478 39897 0.2876908        
+# 28  34  9843  8984 18827 21070 39897 0.5281099        
+# 29  35  9929  8908 18837 21060 39897 0.5278592        
+# 30  36 28178   166 28344 11553 39897 0.2895706        
+# 31  37 28344   121 28465 11432 39897 0.2865378        
+# 32  40    66 28519 28585 11312 39897 0.2835301        
+# 33  41   107 28303 28410 11487 39897 0.2879164        
+# 34  42  8847 10012 18859 21038 39897 0.5273078        
+# 35  43  8911  9913 18824 21073 39897 0.5281851        
+# 36  44   290 28079 28369 11528 39897 0.2889440        
+# 37  45   386 27962 28348 11549 39897 0.2894704        
+# 38  46  9099  9709 18808 21089 39897 0.5285861        
+# 39  47  9239  9655 18894 21003 39897 0.5264306        
+# 40  50   129 28308 28437 11460 39897 0.2872396        
+# 41  51   176 28144 28320 11577 39897 0.2901722        
+# 42  52  8931  9897 18828 21069 39897 0.5280848        
+# 43  53  9004  9819 18823 21074 39897 0.5282101        
+# 44  54   359 27924 28283 11614 39897 0.2910996        
+# 45  55   485 27826 28311 11586 39897 0.2903978        
+# 46  56  9190  9615 18805 21092 39897 0.5286613        
+# 47  57  9375  9570 18945 20952 39897 0.5251523        
+# 48  60  9602  9274 18876 21021 39897 0.5268817        
+# 49  61  9649  9150 18799 21098 39897 0.5288117        
+# 50  62 27867   406 28273 11624 39897 0.2913502        
+# 51  63 27964   321 28285 11612 39897 0.2910495        
+# 52  64  9845  8973 18818 21079 39897 0.5283355        
+# 53  65  9969  8904 18873 21024 39897 0.5269569        
+# 54  66 28206   142 28348 11549 39897 0.2894704        
+# 55  67 28495    97 28592 11305 39897 0.2833546        
+# 56  70  9684  9156 18840 21057 39897 0.5277840        
+# 57  71  9739  9059 18798 21099 39897 0.5288368        
+# 58  72 28010   324 28334 11563 39897 0.2898213        
+# 59  73 28123   254 28377 11520 39897 0.2887435        
+# 60  74  9943  8874 18817 21080 39897 0.5283605        
+# 61  75 10109  8815 18924 20973 39897 0.5256786        
+# 62  76 28386    70 28456 11441 39897 0.2867634        
+# 63  77 28791    31 28822 11075 39897 0.2775898     < L
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -3966,10 +4012,10 @@ Tree partition analysis (and how to pluck out only the best rows based on 3 smal
 \end{alltt}
 \begin{verbatim}
 #    pat  left right  both cross   all     ratio    best
-# 18  22 27914  5626 33540  6324 39864 0.1586394 < B C O
-# 8   10    63 32785 32848  7016 39864 0.1759984     < R
-# 26  32 28035  1573 29608 10256 39864 0.2572747        
-# 63  77 28971    33 29004 10860 39864 0.2724262     < L
+# 18  22 27774  5617 33391  6506 39897 0.1630699 < B C O
+# 8   10    61 32669 32730  7167 39897 0.1796376     < R
+# 26  32 27901  1493 29394 10503 39897 0.2632529        
+# 63  77 28791    31 28822 11075 39897 0.2775898     < L
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -4025,7 +4071,7 @@ Now repeat the above nboot times, and summarize results:
 
 SUMMARY: In 5 bootstrap replicates, we saw 0 samples with the 6/1 split having fewer
 conflicts than the 5/2 split, and the minimum separation between them was $\approx$
-6.6 sigma, hence highly statistically significant.
+7.7 sigma, hence highly statistically significant.
 
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -4042,10 +4088,10 @@ conflicts than the 5/2 split, and the minimum separation between them was $\appr
 \end{alltt}
 \begin{verbatim}
 #          Min.            1st Qu.         Median          Mean            3rd Qu.         Max.            sd             
-# bcor     "   0.99989616" "   0.99991299" "   0.99994527" "   0.99994012" "   0.99996772" "   0.99997845" "   0.00003509"
-# b52cross "6286"          "6310"          "6316"          "6352"          "6389"          "6459"          "  71.12313266"
-# b61cross "6877"          "7000"          "7004"          "6988.4"        "7011"          "7050"          "  65.37048264"
-# b61-b52  " 552"          " 567"          " 615"          " 636.4"        " 714"          " 734"          "  83.5840894" 
+# bcor     "   0.99987057" "   0.99990268" "   0.99993947" "   0.99992174" "   0.99993965" "   0.99995633" "   0.00003469"
+# b52cross "6332"          "6399"          "6437"          "6428.6"        "6485"          "6490"          "  65.63002362"
+# b61cross "7002"          "7030"          "7099"          "7077.4"        "7113"          "7143"          "  59.09568512"
+# b61-b52  " 565"          " 628"          " 631"          " 648.8"        " 653"          " 767"          "  73.75771146"
 # % rev    "   0"          "   0"          "   0"          "   0"          "   0"          "   0"          "   0"
 \end{verbatim}
 \begin{alltt}
@@ -4159,7 +4205,7 @@ Tangent: As a function of nonref allele freq, assuming HWE, what is probability 
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/share-plot-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/share-plot-1} 
 
 }
 
@@ -4297,7 +4343,7 @@ Figure~\ref{fig:tree-medium-unlabeled}:  [** as of 10/4/2015, this fig and next 
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-medium-unlabeled-1} 
+{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-medium-unlabeled-1} 
 
 }
 
@@ -4317,7 +4363,7 @@ Figure~\ref{fig:tree-medium-unlabeled-shortscale}:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-medium-unlabeled-shortscale-1} 
+{\centering \includegraphics[width=3.5in]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/newick-Chr1-unfiltered-tree-medium-unlabeled-shortscale-1} 
 
 }
 
@@ -4382,7 +4428,7 @@ Figure~\ref{fig:fullgenome-tree-medium}:
 \end{alltt}
 \end{kframe}\begin{figure}
 
-{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/code/snpNB/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1} 
+{\centering \includegraphics[width=\maxwidth]{/homes/gws/ruzzo/Documents/g/projects/thaps/Thaps_7_strains/scripts/larrys/shared-snps/figs-knitr/fullgenome-tree-medium-1} 
 
 }
 
@@ -4395,5 +4441,5 @@ Figure~\ref{fig:fullgenome-tree-medium}:
 \FloatBarrier
 
 % remember to do this to enable Id keyword substution: svn propset svn:keywords Id shared-snps.rnw 
-\mbox{}\vfill\footnotesize\flushright SVN, ID I miss you.\ $ $Id: shared-snps.rnw  2017-06-29 or later. ruzzo $ $
+\mbox{}\vfill\footnotesize\flushright SVN, ID I miss you.\ $ $Id: shared-snps.rnw  2017-07-21 or later. ruzzo $ $
 \end{document}
