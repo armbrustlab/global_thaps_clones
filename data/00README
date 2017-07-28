@@ -2,4 +2,14 @@ Raw sequence data are available in the NCBI SRA BioProject PRJNA376612
 
   https://www.ncbi.nlm.nih.gov/bioproject/PRJNA376612/
 
-This directory contains major derivative data including SNP “desert”/“hotspot”, refined SNP, and copy-number variation calls.
+This directory contains major derivative data including:
+
+  * cnv.txt                           - Copy-number variation calls from CNVnator; see Supplement
+  * des.rda, hs.rda                   - SNP “desert” and “hotspot” calls; see Supplement
+  * refined.snps-trunc-unfiltered.rda - Refined SNP calls; see scripts/larrys/shared-snps
+  * full.tables.01.26.14.rda.gz       \
+  * full.tables.02.25.15.rda.gz       - Integrated tables with per-nucleotide read counts, SNP calls,
+                                        etc forall 7 isolates.  "01..."/"02..." are unfiltered/
+				        qual-filtered versions.  These files are large, ~ 600 Mb, 
+				        gzipped; accessible in the public repo via Git LFS (Large
+				        File Storage).  See, e.g., scripts/larrys/shared-snps
