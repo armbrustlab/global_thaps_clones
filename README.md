@@ -24,14 +24,14 @@ you wish to clone the repo, _excluding_ these files:
          GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/armbrustlab/global_thaps_clones
 
 Either will create a subdirectory named 'global\_thaps\_clones', with
-a total size of about 250 Mb, i.e., a clone all of the repo except the
-two large .rda.gz files; short "pointer" files will appear in their
-place.
+a total size of about 250 Mb, i.e., a clone of all of the repo except
+the two large .rda.gz files; short "pointer" files will appear in
+their place.
 
 If you _have_ installed the LFS extension, step 1 above will clone the
 full repo, including the large files in 'data' (plus a copy of each in
 git's lfs cache - for a total repo size of about 2.5 Gb).  If you used
-either approach to avoid the large files, and later decide you want
+either approach to exclude the large files, and later decide you want
 them, (after installing LFS) do:
 
     git lfs pull
