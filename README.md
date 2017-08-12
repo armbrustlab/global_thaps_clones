@@ -35,7 +35,8 @@ If you _have_ installed the LFS extension, step 1 above will clone the
 full repo, including the large files in "data" (plus a copy of each in
 git's lfs cache -- for a total repo size of about 2.5 Gb).  If you
 used either approach to exclude the large files, and later decide you
-want them, (after installing LFS) do:
+want them, either download them via the GitHub web interface, or
+(after installing LFS) do:
 
     git lfs pull
 
