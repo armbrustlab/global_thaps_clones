@@ -1,0 +1,16 @@
+Note on asex.Rmd vs {.docx, .html, .md, .pdf}:
+
+  .Rmd is the original; the others are derived from it.  I didn't make all the derivatives every time, so they may be out of date, and there may or may not be a contemporaneous .Rmd for them.  No particular reason to care, I was just being compulsive in keeping them.
+
+3/22/2018:
+
+  starting conversion  Rmd to .rnw with explicit fig files, for ease of building supplement.
+
+Note on git history:
+
+  This will probably never matter to anyone, but I was erratic about checking in intermediate versions as I worked.  On 2/23+24/2018 I combed through old email plus files on my laptop and tried to check in everything I found in chronological order.  In the case of asex.Rmd and derivatives, this went on top of previously check-in versions, so there may be stuff in the september '17 to jan '18 time frame that *was* checked in but *not* emailed that is now buried out-of-order.  The latest versions (from Jan 20 @ Portland) will be on top.  diffeq.txt (the sep '17 model) initially added (2 versions) but removed now since it's incorporated at the tail end of asex.Rmd.
+
+  3/21/2018:
+    deleting asex.{docx,html,md}, as these are now very dated (all from 10/17).
+
+    filling in/git commit emailed versions since 2/24/18
