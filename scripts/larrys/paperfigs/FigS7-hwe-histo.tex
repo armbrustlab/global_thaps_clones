@@ -79,7 +79,7 @@ Load utility R code and do setup:
 \hlkwd{source}\hlstd{(}\hlstr{'../../../R/wlr.R'}\hlstd{)} \hlcom{# load util code; path relative this folder or sibling in scripts/larrys }
 \end{alltt}
 \begin{verbatim}
-## Running as: ruzzo @ recycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
+## Running as: ruzzo @ bicycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
 \end{verbatim}
 \begin{alltt}
 \hlkwd{setup.my.wd}\hlstd{(}\hlstr{'paperfigs'}\hlstd{)}   \hlcom{# set working dir; UPDATE if this file moves, or if COPY/PASTE to new file}
@@ -153,7 +153,7 @@ Set them carefully before running ``make.''  Major choices are:
 The following code chunk sets all these parameters based on where it's run.  To prototype/debug on a
 laptop, faster is better---run on Chr1; when run on the linux servers, I 
 typically do full genomes.  Just override them if these defaults don't work for you.  
-N.B.: Loading all 4 table sets pushed VM > 50Gb; fails on my laptop, so run this on server only.
+N.B.: Loading all 4 table sets pushed VM $>$ 50Gb; fails on my laptop, so run this on server only.
 
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -1536,7 +1536,7 @@ Other parameters and notes (numerical values are for IT, Chr1, qfilt; they may s
 \section{R vs SAMtools SNP calls}
 \label{sec:rvsam}
 
-A quick tangent: How do SAMtools SNP calls correlate to R stats?  Code below makes a quick-and-dirty R histogram, overlaid with histo of number of SNP calls in each bin.  Short answer is that $\approx80\%$ of points in the middle hump are called SNPs by SAMtools and, in un-q-filtered data, $<25\%$ of points above $R=0.78$ are called SNPs.  At first glance, this seems like good discrimination of heterozygous from homozygous, but whether this is because SAMtools considered them to be homozygous, or because the alignment quality was low on average (or both) is unclear.  But the $25\%$ rises to $\approx50\%$ in q-filtered H-clade, which we believe to be homozygous nonreference.  (We did not re-run SAMtoold after q-filter.)  In short, mis-classification of homozygous non-reference as heterozygus may be a significant contributor to the large SNP-counts seen in H-clade.  
+A quick tangent: How do SAMtools SNP calls correlate to R stats?  Code below makes a quick-and-dirty R histogram, overlaid with histo of number of SNP calls in each bin.  Short answer is that $\approx80\%$ of points in the middle hump are called SNPs by SAMtools and, in un-q-filtered data, $<25\%$ of points above $R=0.78$ are called SNPs.  At first glance, this seems like good discrimination of heterozygous from homozygous, but whether this is because SAMtools considered them to be homozygous, or because the alignment quality was low on average (or both) is unclear.  But the $25\%$ rises to $\approx50\%$ in q-filtered H-clade, which we believe to be homozygous nonreference.  (We did not re-run SAMtools after q-filter.)  In short, mis-classification of homozygous non-reference as heterozygus may be a significant contributor to the large SNP-counts seen in H-clade.  
 
 NOTE: After writing this code chunk, I modified code in the preceding section to add the analogous histo based on $\mu\pm\sigma$, etc. to the 301 bin plots, so those plots are more accurate, but the numerical summary below is still a useful ballpark.
 
@@ -1635,5 +1635,5 @@ But not sure it's compatible with Histo, and would need work to plot 2-in-1.
 
 
 % remember to do this to enable Id keyword substution: svn propset svn:keywords Id fig1b.rnw 
-\vfill\footnotesize\flushright SVN Id, I miss you.\  $ $Id: 2017-07-12 or later. $ $
+\vfill\footnotesize\flushright SVN Id, I miss you.\  $ $Id: 2018-03-22 or later. $ $
 \end{document}

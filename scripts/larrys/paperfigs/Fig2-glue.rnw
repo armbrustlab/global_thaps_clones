@@ -89,5 +89,5 @@ Fig~\ref{fig:2a2b} shows it.  (Surrounding boxes just to make marginal space obv
   \label{fig:2a2b}
 \end{figure}
 
-\vfill\footnotesize\flushright SVN ID I miss you $ $Id: Fig2.rnw 2017-07-20 or later ruzzo $ $
+\vfill\footnotesize\flushright SVN ID I miss you $ $Id: Fig2-glue.rnw 2018-03-22 or later ruzzo $ $
 \end{document}

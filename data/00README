@@ -10,10 +10,10 @@ This directory also contains major derivative data including:
   * des.rda, hs.rda                   - SNP “desert” and “hotspot” calls; see Supplement
   * refined.snps-trunc-unfiltered.rda - Refined SNP calls; see scripts/larrys/shared-snps
   * full.tables.01.26.14.rda.gz       \
-  * full.tables.02.25.15.rda.gz       - Integrated tables with per-nucleotide read counts, SNP calls,
-                                        etc forall 7 isolates.  "01..."/"02..." are unfiltered/
-				        qual-filtered versions.  These files are large, ~ 600 Mb, 
-				        gzipped; accessible in the public repo via Git LFS (Large
-				        File Storage).  See the public repo’s README.md for LFS
-                                        instructions, and, e.g., scripts/larrys/shared-snps for
-                                        info on these .rda files.
+  * full.tables.02.25.15.rda.gz       - Integrated tables with per-nucleotide read counts, SNP 
+                                        calls, etc for all 7 isolates.  "01..."/"02..." are 
+				        unfiltered/qual-filtered versions, resp.  These files  
+				        are large, ~ 600 Mb gzipped; accessible in the public 
+				        repo via Git LFS (Large File Storage).  See the public 
+                                        repo’s README.md for LFS instructions, and, e.g., 
+                                        scripts/larrys/shared-snps for info on these .rda files.

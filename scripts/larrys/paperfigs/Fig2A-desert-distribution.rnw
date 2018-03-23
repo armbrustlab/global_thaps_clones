@@ -361,10 +361,11 @@ draw.des.fig(des, all.n.na, panel.label='A',gap.col = 'gold',d.col='dodgerblue2'
 dev.off()
 @
 \noindent and shown juxtaposed with Fig2b for comparison as Fig~\ref{fig:2a2b}.  (Surrounding boxes just to make marginal space obvious; change fbox to mbox to remove.)
+\\ 3/22/2018: Oh, Fig2B no longer exists separately, since fig2-glue.rnw now builds the full fig 2.
 \begin{figure}
   \begin{center}
     \fbox{\includegraphics{\Sexpr{fpath('Fig2A-desert-distribution-fig')}}}\\
-    \fbox{\includegraphics{../../../inst/doc/figures4paper/Fig2B-bigdes-snpdens-ny.pdf}}
+    \fbox{[Panel B goes here]}%%%\includegraphics{../../../inst/doc/figures4paper/Fig2B-bigdes-snpdens-ny.pdf}}
   \end{center}
   \caption{Proposed caption: Attributes of SNP deserts for {\it T. pseudonana\/} isolates. A) SNP distributions across the 3 Mb of Chromosome 1 for the seven {\it T. pseudonana\/} isolates. Regions in blue have significantly low SNP density (``SNP deserts'') based on a negative binomial model (Methods). Pink(???) region is a gap of known size in the reference sequence. The large region centered near 1.5Mb is a 320Kb SNP desert present in all L-isolates but neither H-isolate. B) SNP densities (SNP per base-pair---$\mu\pm2\sigma$) in the 29 deserts that span at least 50Kb of the CCMP 1335 genome (blue) and the thirty regions surrounding these deserts (including deserts smaller than 50Kb; black).  }
   \label{fig:2a2b}

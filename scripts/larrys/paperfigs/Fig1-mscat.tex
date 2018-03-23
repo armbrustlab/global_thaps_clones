@@ -128,7 +128,7 @@ Load utility R code; do setup:
 \hlkwd{source}\hlstd{(}\hlstr{'../../../R/wlr.R'}\hlstd{)} \hlcom{# load util code; path relative this folder or sibling in scripts/larrys }
 \end{alltt}
 \begin{verbatim}
-## Running as: ruzzo @ recycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
+## Running as: ruzzo @ D-10-18-109-56.dhcp4.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
 \end{verbatim}
 \begin{alltt}
 \hlkwd{setup.my.wd}\hlstd{(}\hlstr{'paperfigs'}\hlstd{)} \hlcom{# set working dir; UPDATE if this file moves, or if COPY/PASTE to new file}
@@ -260,7 +260,7 @@ CLEAR CACHE!!!  T/F set in params above will/won't force knitr cache removal (we
 \hlkwd{decache}\hlstd{(params}\hlopt{$}\hlstd{clear.cache)}
 \end{alltt}
 \begin{verbatim}
-# No cache to remove.
+# Rename of 'cache' to 'cache11578' returned TRUE .
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -712,7 +712,9 @@ See section~\ref{sec:post} for more on this.
 \begin{alltt}
 \hlcom{# sample scatter-smooth for debugging }
 \hlcom{#pdf('scatter15-35-j2T',5,5)}
-\hlkwd{smoothScatter}\hlstd{(nrfall[samp,}\hlnum{7}\hlstd{], nrfall[samp,st],} \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{'gray66'}\hlstd{,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
+\hlstd{the.dot.color} \hlkwb{<-} \hlstr{'gray80'} \hlcom{# was gray66, but maybe that's too dark.}
+\hlkwd{smoothScatter}\hlstd{(nrfall[samp,}\hlnum{7}\hlstd{], nrfall[samp,st],} \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.color,}
+              \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
               \hlkwc{transformation}\hlstd{=}\hlkwd{xformer}\hlstd{(}\hlnum{20}\hlstd{,}\hlnum{.2}\hlstd{,}\hlnum{.03}\hlstd{,}\hlnum{0.33}\hlstd{),}
               \hlkwc{xlab}\hlstd{=}\hlstr{''}\hlstd{,} \hlkwc{xlim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{xaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{4}\hlstd{),}
               \hlkwc{ylab}\hlstd{=}\hlstr{''}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{4}\hlstd{))}
@@ -737,7 +739,7 @@ See section~\ref{sec:post} for more on this.
 \hlcom{#   some marker for clipped y in histos?}
 \hlcom{#   X: (tried this, doesn't help; change filtering so gyre looks better, maybe get 100 k points or so?)}
 \hlcom{#   }
-\hlstd{margin.scat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{stxl}\hlstd{=}\hlnum{6}\hlstd{,} \hlkwc{stxr}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{sty}\hlstd{=}\hlnum{7}\hlstd{,} \hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{)\{}
+\hlstd{margin.scat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{stxl}\hlstd{=}\hlnum{6}\hlstd{,} \hlkwc{stxr}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{sty}\hlstd{=}\hlnum{7}\hlstd{,} \hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{the.dot.col}\hlstd{=the.dot.color)\{}
   \hlcom{# plot main fig with 2 side-by-side smooth-scatters and marginal histograms}
   \hlcom{# if stxl is NULL, omit left scatter/margin}
   \hlstd{opar} \hlkwb{<-} \hlkwd{par}\hlstd{(}\hlkwc{mar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0.6}\hlstd{,}\hlnum{0.3}\hlstd{,}\hlnum{0.0}\hlstd{,}\hlnum{0.4}\hlstd{),}\hlkwc{oma}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{),}\hlkwc{tck}\hlstd{=}\hlopt{-}\hlnum{.02}\hlstd{);} \hlkwd{on.exit}\hlstd{(}\hlkwd{par}\hlstd{(opar))}
@@ -770,7 +772,7 @@ See section~\ref{sec:post} for more on this.
   \hlcom{# 4: lower left scatter}
   \hlkwa{if}\hlstd{(}\hlopt{!}\hlkwd{is.null}\hlstd{(stxl))\{}
     \hlkwd{smoothScatter}\hlstd{(nrfall[samp,stxl], nrfall[samp,sty],}
-                  \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{'gray66'}\hlstd{,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
+                  \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.col,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
                   \hlkwc{transformation}\hlstd{=}\hlkwd{xformer}\hlstd{(}\hlnum{20}\hlstd{,}\hlnum{.2}\hlstd{,}\hlnum{.03}\hlstd{,}\hlnum{0.33}\hlstd{),}
                   \hlkwc{xlab}\hlstd{=xl1,} \hlkwc{xlim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{xaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}
                   \hlkwc{ylab}\hlstd{=yl,}  \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{xaxt}\hlstd{=}\hlstr{'s'}\hlstd{,}\hlkwc{yaxt}\hlstd{=}\hlstr{'s'}\hlstd{)}
@@ -782,7 +784,7 @@ See section~\ref{sec:post} for more on this.
   \hlcom{# 5: lower mid scatter}
   \hlcom{#eplot(0:1,0:1)}
   \hlkwd{smoothScatter}\hlstd{(nrfall[samp,stxr], nrfall[samp,sty],}
-                \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{'gray66'}\hlstd{,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
+                \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.col,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
                 \hlkwc{transformation}\hlstd{=}\hlkwd{xformer}\hlstd{(}\hlnum{20}\hlstd{,}\hlnum{.2}\hlstd{,}\hlnum{.03}\hlstd{,}\hlnum{0.33}\hlstd{),}
                 \hlkwc{xlab}\hlstd{=xl2,} \hlkwc{xlim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{xaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}
                 \hlkwc{ylab}\hlstd{=}\hlstr{''}\hlstd{,}  \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{xaxt}\hlstd{=}\hlstr{'s'}\hlstd{,}\hlkwc{yaxt}\hlstd{=}\hlkwd{ifelse}\hlstd{(}\hlkwd{is.null}\hlstd{(stxl),}\hlstr{'s'}\hlstd{,}\hlstr{'n'}\hlstd{))}
@@ -1638,6 +1640,10 @@ Are they ``consistent SNPs,'' as in shared-SNPs analysis?
   paste('../00common/mycache/filtered.snps', which.snp.tables(), 'rda', sep='.')
 \end{verbatim}
 \noindent\textit{but not totally sure and I think the structure has changed, too.  E.g., I think the embedded var name ``consistent'' should now be} \verb|filtered.snps$Data$consistent.snps| \textit{or something.  Maybe I've fixed this below, maybe not; but not on the critical path tonight...}
+\noindent\textit{2018/03/22: oh, I think name changed again, to:}
+\begin{verbatim}
+  paste('../00common/mycache/refined.snps', which.snp.tables(), 'rda', sep='.')
+\end{verbatim}
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -1648,8 +1654,8 @@ Are they ``consistent SNPs,'' as in shared-SNPs analysis?
 \hlcom{#sum(consistent[[2]])}
 \hlcom{#conswhere <- names(consistent[[2]][consistent[[2]]])}
 \hlcom{#new:}
-\hlkwd{load}\hlstd{(}\hlstr{'../00common/mycache/filtered.snps.Chr1-qfiltered.rda'}\hlstd{)}
-\hlkwd{str}\hlstd{(filtered.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps)}
+\hlkwd{load}\hlstd{(}\hlstr{'../00common/mycache/refined.snps.Chr1-qfiltered.rda'}\hlstd{)}
+\hlkwd{str}\hlstd{(refined.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps)}
 \end{alltt}
 \begin{verbatim}
 # List of 4
@@ -1663,7 +1669,7 @@ Are they ``consistent SNPs,'' as in shared-SNPs analysis?
 #   ..- attr(*, "names")= chr [1:47499] "Chr1:333" "Chr1:417" "Chr1:435" "Chr1:438" ...
 \end{verbatim}
 \begin{alltt}
-\hlstd{consistent} \hlkwb{<-} \hlstd{filtered.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps}
+\hlstd{consistent} \hlkwb{<-} \hlstd{refined.snps}\hlopt{$}\hlstd{Data}\hlopt{$}\hlstd{consistent.snps}
 \hlkwd{sum}\hlstd{(consistent[[}\hlnum{2}\hlstd{]])}
 \end{alltt}
 \begin{verbatim}

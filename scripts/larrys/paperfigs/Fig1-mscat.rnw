@@ -517,7 +517,9 @@ gamma.hist() # default marginal histo
 <<>>=
 # sample scatter-smooth for debugging 
 #pdf('scatter15-35-j2T',5,5)
-smoothScatter(nrfall[samp,7], nrfall[samp,st], pch='.', cex=2, col='gray66', nrpoints=200,
+the.dot.color <- 'gray80' # was gray66, but maybe that's too dark.
+smoothScatter(nrfall[samp,7], nrfall[samp,st], pch='.', cex=2, col=the.dot.color, 
+              nrpoints=200,
               transformation=xformer(20,.2,.03,0.33),
               xlab='', xlim=0:1, xaxp=c(0,1,4),
               ylab='', ylim=0:1, yaxp=c(0,1,4))
@@ -534,7 +536,7 @@ smoothScatter(nrfall[samp,7], nrfall[samp,st], pch='.', cex=2, col='gray66', nrp
 #   some marker for clipped y in histos?
 #   X: (tried this, doesn't help; change filtering so gyre looks better, maybe get 100 k points or so?)
 #   
-margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE){
+margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE, the.dot.col=the.dot.color){
   # plot main fig with 2 side-by-side smooth-scatters and marginal histograms
   # if stxl is NULL, omit left scatter/margin
   opar <- par(mar=c(0.6,0.3,0.0,0.4),oma=c(3,4,0,0),tck=-.02); on.exit(par(opar))
@@ -567,7 +569,7 @@ margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE){
   # 4: lower left scatter
   if(!is.null(stxl)){
     smoothScatter(nrfall[samp,stxl], nrfall[samp,sty], 
-                  pch='.', cex=2, col='gray66', nrpoints=200,
+                  pch='.', cex=2, col=the.dot.col, nrpoints=200,
                   transformation=xformer(20,.2,.03,0.33),
                   xlab=xl1, xlim=0:1, xaxp=c(0,1,2),
                   ylab=yl,  ylim=0:1, yaxp=c(0,1,2),xaxt='s',yaxt='s')
@@ -579,7 +581,7 @@ margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE){
   # 5: lower mid scatter
   #eplot(0:1,0:1)
   smoothScatter(nrfall[samp,stxr], nrfall[samp,sty], 
-                pch='.', cex=2, col='gray66', nrpoints=200,
+                pch='.', cex=2, col=the.dot.col, nrpoints=200,
                 transformation=xformer(20,.2,.03,0.33),
                 xlab=xl2, xlim=0:1, xaxp=c(0,1,2),
                 ylab='',  ylim=0:1, yaxp=c(0,1,2),xaxt='s',yaxt=ifelse(is.null(stxl),'s','n'))
@@ -1005,6 +1007,10 @@ Are they ``consistent SNPs,'' as in shared-SNPs analysis?
   paste('../00common/mycache/filtered.snps', which.snp.tables(), 'rda', sep='.')
 \end{verbatim}
 \noindent\textit{but not totally sure and I think the structure has changed, too.  E.g., I think the embedded var name ``consistent'' should now be} \verb|filtered.snps$Data$consistent.snps| \textit{or something.  Maybe I've fixed this below, maybe not; but not on the critical path tonight...}
+\noindent\textit{2018/03/22: oh, I think name changed again, to:}
+\begin{verbatim}
+  paste('../00common/mycache/refined.snps', which.snp.tables(), 'rda', sep='.')
+\end{verbatim}
 
 <<size='scriptsize'>>=
 #old:
@@ -1013,9 +1019,9 @@ Are they ``consistent SNPs,'' as in shared-SNPs analysis?
 #sum(consistent[[2]])
 #conswhere <- names(consistent[[2]][consistent[[2]]])
 #new:
-load('../00common/mycache/filtered.snps.Chr1-qfiltered.rda')
-str(filtered.snps$Data$consistent.snps)
-consistent <- filtered.snps$Data$consistent.snps
+load('../00common/mycache/refined.snps.Chr1-qfiltered.rda')
+str(refined.snps$Data$consistent.snps)
+consistent <- refined.snps$Data$consistent.snps
 sum(consistent[[2]])
 conswhere <- names(consistent[[2]][consistent[[2]]])
 

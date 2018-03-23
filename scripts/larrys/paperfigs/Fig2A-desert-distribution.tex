@@ -78,7 +78,7 @@ Load utility R code; do setup:
 \hlkwd{source}\hlstd{(}\hlstr{'../../../R/wlr.R'}\hlstd{)} \hlcom{# load util code; path relative this folder or sibling in scripts/larrys }
 \end{alltt}
 \begin{verbatim}
-## Running as: ruzzo @ recycle.cs.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
+## Running as: ruzzo @ D-10-18-109-56.dhcp4.washington.edu; SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $
 \end{verbatim}
 \begin{alltt}
 \hlkwd{setup.my.wd}\hlstd{(}\hlstr{'paperfigs'}\hlstd{)} \hlcom{# set working dir; UPDATE if this file moves, or if COPY/PASTE to new file}
@@ -143,7 +143,7 @@ CLEAR CACHE!!!  T/F  will/won't force knitr cache removal (well, actually a rena
 \hlkwd{decache}\hlstd{(}\hlnum{FALSE}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-# No cache.
+# Cache exists, and was left alone.
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -906,10 +906,11 @@ Figure prototype for paper:
 \end{kframe}
 \end{knitrout}
 \noindent and shown juxtaposed with Fig2b for comparison as Fig~\ref{fig:2a2b}.  (Surrounding boxes just to make marginal space obvious; change fbox to mbox to remove.)
+\\ 3/22/2018: Oh, Fig2B no longer exists separately, since fig2-glue.rnw now builds the full fig 2.
 \begin{figure}
   \begin{center}
     \fbox{\includegraphics{Fig2A-desert-distribution-figs-mine/Fig2A-desert-distribution-fig.pdf}}\\
-    \fbox{\includegraphics{../../../inst/doc/figures4paper/Fig2B-bigdes-snpdens-ny.pdf}}
+    \fbox{[Panel B goes here]}%%%\includegraphics{../../../inst/doc/figures4paper/Fig2B-bigdes-snpdens-ny.pdf}}
   \end{center}
   \caption{Proposed caption: Attributes of SNP deserts for {\it T. pseudonana\/} isolates. A) SNP distributions across the 3 Mb of Chromosome 1 for the seven {\it T. pseudonana\/} isolates. Regions in blue have significantly low SNP density (``SNP deserts'') based on a negative binomial model (Methods). Pink(???) region is a gap of known size in the reference sequence. The large region centered near 1.5Mb is a 320Kb SNP desert present in all L-isolates but neither H-isolate. B) SNP densities (SNP per base-pair---$\mu\pm2\sigma$) in the 29 deserts that span at least 50Kb of the CCMP 1335 genome (blue) and the thirty regions surrounding these deserts (including deserts smaller than 50Kb; black).  }
   \label{fig:2a2b}
