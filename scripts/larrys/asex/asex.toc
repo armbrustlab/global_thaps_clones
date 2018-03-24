@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}Intro}{1}{section.1}
+\contentsline {section}{\numberline {2}Executive Summary}{2}{section.2}
+\contentsline {section}{\numberline {3}Preliminaries}{3}{section.3}
+\contentsline {section}{\numberline {4}Prelude: L is at least a substantial minority}{4}{section.4}
+\contentsline {section}{\numberline {5}Model 1: asexual reproduction = exponential growth}{5}{section.5}
+\contentsline {section}{\numberline {6}Model 2: \textit {Slowed} sexual reproduction \textit {also} = exponential growth advantage}{8}{section.6}
+\contentsline {section}{\numberline {7}Tracking L's offspring}{10}{section.7}
+\contentsline {subsection}{\numberline {7.1}Model 2-prime: Tracking L's offspring}{10}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Model 4: Simple Mendelian Recessive}{19}{subsection.7.2}
+\contentsline {section}{\numberline {8}Hitchhiking}{26}{section.8}
+\contentsline {section}{\numberline {9}Digression: Dominant/Recessive/Sweep/Obligate/Facultative}{31}{section.9}
+\contentsline {section}{\numberline {10}Summary}{32}{section.10}
+\contentsline {section}{\numberline {A}Appendix: Overlap}{32}{appendix.A}
+\contentsline {section}{\numberline {B}Appendix: Old and (mostly) in the way}{32}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}Origin}{32}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}Synopsis}{32}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Supporting Arguments (and a differential equation version)}{33}{subsection.B.3}
+\contentsline {subsection}{\numberline {B.4}Notes from email}{35}{subsection.B.4}
+\contentsline {section}{\numberline {C}To Do}{37}{appendix.C}
