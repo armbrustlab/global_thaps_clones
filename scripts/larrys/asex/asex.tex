@@ -114,9 +114,9 @@ This document argues that the L-genotype is an \emph{obligate asexual}.  The log
   \item If L is a facultative sexual, that genetic advantage must be \emph{confined} to mitotic
     offspring, for otherwise it would have spread to the non-L population, thus creating competition
     that would have prevented L's rise.  As a simple example of non-confinement, the advantage could
-    not have been conferred by a simple Mendelian dominant gene---it would have quickly spread
-    throughout the non-L population.  (A simulation supporting this appears near the end of
-    Section~\ref{sec:smr}.)
+    not have been conferred by a simple Mendelian dominant allele of one gene---it would have
+    quickly spread throughout the non-L population.  (A simulation supporting this appears near the
+    end of Section~\ref{sec:smr}.)
 
   \item For a \emph{mitotically confined} genetic advantage in a facultative sexual, two simple
     models suggest themselves:
@@ -237,7 +237,7 @@ Load utility R code; do setup:
   \hlkwd{return}\hlstd{(}\hlkwd{paste}\hlstd{(dir, base, suffix,} \hlkwc{sep}\hlstd{=}\hlstr{''}\hlstd{))}
 \hlstd{\}}
 
-\hlstd{QUICKLY} \hlkwb{<-} \hlstd{F}                    \hlcom{# if T, shortcut the 100 millenium sim}
+\hlstd{QUICKLY} \hlkwb{<-} \hlnum{FALSE}                   \hlcom{# if T, shortcut the 100 millenium sim}
 
 \hlcom{# GLOBALLY change knitr's per-chunk plot options}
 \hlstd{opts_chunk}\hlopt{$}\hlkwd{set}\hlstd{(}\hlkwc{fig.width}\hlstd{=}\hlnum{6.5}\hlstd{,}\hlkwc{fig.height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{fig.align}\hlstd{=}\hlstr{'center'}\hlstd{,}\hlkwc{fig.show}\hlstd{=}\hlstr{'hold'}\hlstd{)} \hlcom{##$}
@@ -296,6 +296,11 @@ these scenarios, if the L-clade is at most a quarter of the population at each s
 a 10\% chance of successfully repeating the 5 of 7 sampling that we observed; lowering L's frequency
 to 1/5 reduces this to at most a 5\% chance.
 
+Flipping the question, I also looked at, as a function of$ $f, how large a "going into culture"
+advantage is needed to be sure that we have at least a 0.05 chance of seeing 5 of 7?  This is
+plotted in orange below, with legend and axis on the right side of the figure.  E.g., for 
+$f \le 0.06$, at least a 9-fold advantage would be required.
+
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -316,6 +321,7 @@ to 1/5 reduces this to at most a 5\% chance.
 \hlkwd{lines}\hlstd{(f, s72,} \hlkwc{col}\hlstd{=}\hlstr{'blue'}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{2}\hlstd{)}
 \hlkwd{lines}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwd{rep}\hlstd{(}\hlnum{.25}\hlstd{,}\hlnum{2}\hlstd{)),} \hlkwd{c}\hlstd{(}\hlnum{0.1}\hlstd{,} \hlnum{0.1}\hlstd{,} \hlnum{0}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{.5}\hlstd{)}
 \hlkwd{lines}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwd{rep}\hlstd{(}\hlnum{.20}\hlstd{,}\hlnum{2}\hlstd{)),} \hlkwd{c}\hlstd{(}\hlnum{.05}\hlstd{,} \hlnum{.05}\hlstd{,} \hlnum{0}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{.5}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{.06}\hlstd{,}\hlnum{.06}\hlstd{,}\hlnum{1}\hlstd{),}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{.9}\hlstd{,}\hlnum{.9}\hlstd{),}  \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{.5}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{'orange'}\hlstd{)}
 \hlkwd{legend}\hlstd{(}\hlnum{.08}\hlstd{,}\hlnum{1.05}\hlstd{,} \hlkwc{bty}\hlstd{=}\hlstr{'n'}\hlstd{,}
        \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{'== 5 of 5 samples'}\hlstd{,}
                 \hlstr{'>= 5 of 6 samples'}\hlstd{,}
@@ -336,6 +342,14 @@ to 1/5 reduces this to at most a 5\% chance.
 \hlstd{\}}
 \hlkwd{lines}\hlstd{(f, s7k,} \hlkwc{col}\hlstd{=}\hlstr{'blue'}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{)}
 \hlkwd{lines}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,f[thresh]),} \hlkwd{c}\hlstd{(}\hlnum{.1}\hlstd{, (}\hlnum{1}\hlopt{:}\hlstd{howmany)}\hlopt{/}\hlnum{10}\hlstd{),} \hlkwc{type}\hlstd{=}\hlstr{'b'}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{'orange'}\hlstd{)}
+\hlkwd{print}\hlstd{(}\hlkwd{rbind}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{.1}\hlstd{, (}\hlnum{1}\hlopt{:}\hlstd{howmany)}\hlopt{/}\hlnum{10}\hlstd{),} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,f[thresh])))}
+\end{alltt}
+\begin{verbatim}
+#      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+# [1,]  0.1 0.10 0.20 0.30 0.40  0.5 0.60 0.70 0.80  0.90
+# [2,]  1.0 0.35 0.21 0.15 0.12  0.1 0.08 0.07 0.07  0.06
+\end{verbatim}
+\begin{alltt}
 \hlkwd{legend}\hlstd{(}\hlnum{.6}\hlstd{,} \hlnum{.45}\hlstd{,} \hlkwc{bty}\hlstd{=}\hlstr{'n'}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlstr{'>= 5 of 7, advantage\textbackslash{}nneeded for p>=0.05\textbackslash{}n(right axis)'}\hlstd{,}
        \hlkwc{col}\hlstd{=}\hlstr{'orange'}\hlstd{,} \hlkwc{text.col}\hlstd{=}\hlstr{'orange'}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlstr{'o'}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
 \end{alltt}
@@ -353,9 +367,8 @@ to 1/5 reduces this to at most a 5\% chance.
 \label{sec:asexpo}
 
 This is an idea that we kicked around very soon after we started considering asex as a possibility,
-but we never explored it quantitatively.  I find the quantitative results surprising, and it may
-dictate changes to the main body of the paper.  In short, the ``global fitness'' of L, and
-``bursting the niche'' all may be no more than simple consequences of one trait: L commits to
+but we never explored it quantitatively.  I find the quantitative results surprising.  In short,
+the ``global fitness'' of L may be no more than simple consequences of one trait: L commits to
 meiosis less often than H.  (But Julie raised objections to this revised interpretation;
 \textit{TODO: find that email, probably oct '17, and integrate a summary here...})
 
@@ -412,9 +425,9 @@ advantage.
 
 \begin{quote} 
   SIDEBAR: the pop gen book I happen to have (Gillespie ``Population Genetics, a concise guide,''
-  2nded 2004, Johns Hopkins Press) seems to prefer to quantify things in per-generation terms.
+  2nd ed. 2004, Johns Hopkins Press) seems to prefer to quantify things in per-generation terms.
   E.g. (p63), for 2 alleles $A_1, A_2$, suppose the absolute viabilities, i.e., probabilities of
-  survival, of the $A_iA_j$ genotyppe is $w_{ij}$.  The ``selection coefficient $s$'' for an allele
+  survival, of the $A_iA_j$ genotype is $w_{ij}$.  The ``selection coefficient $s$'' for an allele
   $A_2$ vs $A_1$ is 1 minus its relative viability $s=1-w_{22}/w_{11} ( \ge 0$ with the convention
   that $A_1$ is fitter, i.e. $w_{11} \ge w_{22})$.  In our scenario, where ``generation time'' is a
   key trait of interest, it's not totally clear how to make an analogous definition, but I think the
@@ -701,14 +714,14 @@ meiotic frequency, I think obligate asexual is the most likely scenario: see Sec
 
 Summarizing some of the above thoughts: the offspring of a facultative sexual share genes with their
 parents, but are distinct from it.  A \emph{plentiful clone} that is facultatively sexual thus
-pushes \emph{many copies} the clonal sequences into the remaining population.  This section begins
-to model that; the results in Section~\ref{sec:hitchhiking} do that in a more general way.
+pushes \emph{many copies} of the clonal sequences into the remaining population.  This section begins
+to model that; the results in Section~\ref{sec:hitchhiking} repeat this in a more general way.
 
 \subsection{Model 2-prime: Tracking L's offspring}
-label{sec:2prime}
+\label{sec:2prime}
 
-In the ``slow sex'' model model considered in the previous section, the sexual offspring of L carry
-L-alleles into the non-L population.  The extent of this introgression is explored in this section.
+In the ``slow sex'' model considered in the previous section, the sexual offspring of L carry
+L-alleles into the non-L population.  The extent of this admixture is explored in this section.
 Somewhat surprisingly, this happend to an extreme extent, sufficiently so that the stable L/non-L
 coexistance depicted above cannot explain our observed L/H snapshot.  The simulations below first
 consider only non-L cells that can trace all ancestors to L (e.g., a direct L-L cross, or crosses
@@ -807,12 +820,14 @@ thought of it first...
 \hlstd{\}}
 \hlkwd{growex2pold}\hlstd{()}
 \end{alltt}
-\end{kframe}
+\end{kframe}\begin{figure}
 
 {\centering \includegraphics[width=\maxwidth]{asex-figs-knitr/unnamed-chunk-13-1} 
 
 }
 
+\caption[Dotted lines show the incremental addition of ``pure-L-ancestry'' atop L]{Dotted lines show the incremental addition of ``pure-L-ancestry'' atop L.}\label{fig:unnamed-chunk-13}
+\end{figure}
 
 
 \end{knitrout}
@@ -998,17 +1013,21 @@ fraction of the population would look very different from H.  Specifically, it w
 
 Furthermore, we should re-visit the assumption that slow sex is a complex trait driven by the happy
 confluence of many SNPs in many genes/regulatory regions and hence is easily destroyed by
-recombination, never to reappear.  Suppose that quantitatively this involves, e.g., 30 SNPs on 5
-different chromosomes.  Then a random genome drawn from the above pool has one chance in $2^{30}$ of
+recombination, never to reappear.  Suppose that quantitatively this involves, e.g., 70 homozygous
+positions plus 30 SNPs on 5 different chromosomes.  Then, even if these alleles were rare in the 
+pre-L population, the simulation implies that the homozygous ones will rise to fixation as L
+expands, and that each heterozygous allele will appear at 50\% frequency.   Thus, a random genome 
+drawn from this pool will necessarily have all 70 homozygous positions, has one chance in $2^{30}$ of
 having the same 30 heterozygous positions, and one chance in $2^{25}$ of having them phased the same
 way as in L (the 1st SNP on each chromosome is arbitrarily phased; the remaining 25 have 1 chance in
-2 to be phased relative to the first in the same way as in L).  (Phasing may not matter, but
-conservatively, assume it does.)  Hence, one cell in $2^{55}$ \textit{within y} will recapitulate
-the slow sex phenotype.  While this is a miniscule fraction, given that my ballpark estimate of
-thaps population size is $10^{19}\approx2^{63}$, it is virtually certain that the slow sex phenotype
-would re-emerge on many non-L backgrounds, which would strongly constrain the fraction of L-genotype
-in the population (see model 4).  I didn't try to simulate this one numerically, because 30/5 are
-just made up numbers, and I think the case is clear enough without this, but just FYI...
+2 to be phased relative to the first in the same way as in L).  (Heterozygote advantage is rare, and 
+even if present, phasing may not matter, but conservatively, assume both.)  Hence, one cell in 
+$2^{55}$ \textit{within non-L} will recapitulate the slow sex phenotype.  While this is a 
+miniscule fraction, given that my ballpark estimate of thaps population size is 
+$10^{19}\approx2^{63}$, it is virtually certain that the slow sex phenotype would re-emerge on 
+many non-L backgrounds, which would strongly constrain the fraction of L-genotype in the 
+population (see model 4).  I didn't try to simulate this one numerically, because 30/5 are just 
+made up numbers, and I think the case is clear enough without this, but just FYI...
 
 In summary, assuming that L remains facultatively sexual, but at a (nontrivially) lower frequency
 that wildtype, and further assuming that this reduced sexual frequency phenotype is easily disrupted
@@ -1190,7 +1209,7 @@ seperately track the ``purely-L-ancestry'' component (``z'' above).
 \end{kframe}
 \end{knitrout}
 
-\dofig{asex-figs-mine/Fig-S10A.pdf}{Population structure, facultative sexual, ``complex trait''}{fig:s10b}
+\dofig{asex-figs-mine/Fig-S10A.pdf}{(Fig-S10A) Population structure, facultative sexual, ``complex trait''}{fig:s10a}
 
 Reassuringly, this reproduces the earlier figure.
 
@@ -1414,7 +1433,7 @@ the earlier sections; they differ in that they model a hypothetical Mendelian re
 which, when homozygous, lowers the meiotic rate to $b_x=0.05, \ldots, 0.24$, (vs $b_y=0.5$ for
 heterozygotes and for homozygous wild type).  In all, the wild-type remains dominant for a few
 centuries, then crashes rapidly as the L-genotype starts reaching significant levels, but the
-L-genotype's rise is quicky reversed as homozygous non-L genotypes out-compete and/or interbreed
+L-genotype's rise is quicky reversed as ss-homozygous non-L genotypes out-compete and/or interbreed
 with it.  The L-genotype exceeds 50\% of the population only in the first simulation, and only
 briefly ($\approx30$ years); note that this simulation assumes an average of 20 years between
 meioses, ten-fold less frequent than the default model of once every 2 years.
@@ -1514,12 +1533,12 @@ effects apparently balance, preventing the ss allele frequency from growing appr
 If we instead assume that slow sex is a \textit{dominant} trait then, in comparison to the first
 parameterization plotted in this section, dominance speeds the transition by about 50 years, and
 suppresses growth of the L genotype, but does not result in fixation of the ss allele, as seen in
-the plot below.  Instead, the wild type persists at a low but stable level.  Perhaps because
-heterozygotes get the growth advantage, hets persist in the population, and HWE then yields a few
-homozygous wild-type cells.  [[Or maybe there's a bug in my code...]]  (Out of laziness, the plot
-below is somewhat mislabeled, but the key new feature is the dashed orange line, which records the
-percentage of the population with 1 \textit{or} 2 copies of the ss allele.  Key point is that it
-does \textit{not} reach 100\%.)
+the plot below.  Instead, the wild type persists at a low but stable level.  Presumably because
+heterozygotes also get the growth advantage, hets persist in the population, and HWE then yields 
+a few homozygous wild-type cells.  [[Or maybe there's a bug in my code...]]  (Out of laziness, 
+the plot below is somewhat mislabeled, but the key new feature is the dashed orange line, which 
+records the percentage of the population with 1 \textit{or} 2 copies of the ss allele.  Key 
+point is that it does \textit{not} reach 100\%.)
 
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -1553,7 +1572,7 @@ involved, so I may need to rename this in the end...)
 
 This section looks at population-wide allele frequencies.  The hypothesis is that even under the
 Mendelian recessive model (where the ``slow-sex'' allele comes to dominate the population, but the
-L-genotype peaks, then fades), all other alleles in the L-genotype, even ones \textit{not} in
+L-genotype peaks, then fades), \emph{all other alleles in the L-genotype}, even ones \textit{not} in
 linkage disequilibrium with ``slow-sex'', will ``hitchhike'' on the success of slow-sex, reaching
 relatively high frequencies in the global population.  This appears to be correct.  Thus, in
 contrast to the neutralist expectation that most variation will be rare, all standing variation that
@@ -1561,17 +1580,17 @@ happened to be present in L will be lifted to relatively high frequencies in the
 HWE, i.e., sometimes het and sometimes hom for either allele, as opposed to the uniformly het states
 seen in L).  This is also in contrast to the usual ...
 
-This should be readily visible in a moderate size population sample -- a hundred thousand SNPs at
+This should be readily visible in a moderate size population sample---a hundred thousand SNPs at
 20\% (say) allele frequency.  (Unfortunately, we have no such sample...)
 
-On the other hand, although I did not attempt to model it, I expect LoH in the vicinity of the
-slow-sex allele -- i.e., the hallmark of a classic selective sweep.  (hmmm.  is that right?  if L is
-het in the vicinity, won't those 2 haplotypes \textit{both} be amplified?)  AND HOW IS THE
-HITCHHIKING EFFECT DIFFERENT FROM OTHER SELECTIVE SWEEPS???  [[I'm still mulling all this;
-recently-added section 5, is partial answer.  ``LoH near ss'' - yes, in the sense that pre-existing
-non-L variation near ss will be reduced, but BOTH neighboring haplotypes will be amplified, assuming
-they are different, which isn't quite like the classic sweep.  I think hitchhiking $\ne$ sel sweep
-in that unlinked loci are involved, even other chromosomes.]]
+On the other hand, although I did not attempt to model it, I expect some LoH in the vicinity of the
+slow-sex allele---i.e., like the hallmark of a classic selective sweep, pre-existing variants found
+in the non-L population at this locus will be swept away.  However, there is a key difference: if 
+L is heterozygous in the vicinity of ss, \textit{both} haplotypes will be amplified (and will 
+presumably remain as two distinct haplotypes on the same distance scale as is typical of LoH due to
+a selective sweep). 
+
+[[I'm still mulling all this; recently-added section~\ref{sec:sweepish}, is partial answer.]]
 
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -1814,6 +1833,8 @@ in that unlinked loci are involved, even other chromosomes.]]
 
 \end{knitrout}
 
+The simulation above also includes code for another scenario: suppose ss requires simultaneous homozygosity of \emph{two} recessive alleles.  Initially I thought this might change things qualitatively, because the joint state is much rarer, but in fact it has only a modest effect; see also the discussion of re-emergence of complex traits near the end of section~\ref{sec:2prime}.  
+
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -1830,6 +1851,7 @@ in that unlinked loci are involved, even other chromosomes.]]
 \end{knitrout}
 
 \section{Digression: Dominant/Recessive/Sweep/Obligate/Facultative}
+\label{sec:sweepish}
 
 I think population genetics of advantageous recessive alleles in facultative sexuals is probably not
 a widely studied scenario.  Here I want to write down some general comments just to clear my head
@@ -1855,7 +1877,9 @@ rare until the allele frequency in the population rises to a substantial fractio
 seat-of-the-pants analysis.  Neutral theory says only 1 in 2N neutral mutations ever fix, where N is
 the effective population size.  So 1 in N reach 50\% allele frequency, at which point 1/2 fix and
 1/2 go extinct.  So only something like 1 in N (or, being generous: 10 in N) advantageous recessives
-ever rise to a level at which selection begins to favor them.
+ever rise to a level at which selection begins to favor them.  (Standard pop gen models probably 
+address this theory.  Gillespie generally doesn't explore recessive models, but after reading him, 
+I don't think the above ballpark is crazy.)
 
 Partial isolation of a small founder population with concomitant inbreeding might accelerate that,
 but only if the selective advantage of the homozygous recessive state outweighs the other
@@ -2176,10 +2200,10 @@ certainly need to double-check it.
 
 
 \begin{verbatim}
->Nao: 1) Is it fair to say that the fitness of L-population is equal to that of non-L? Isn't a 
-part of our argument that L-population is ``general-purpose'' population and that they better 
-fit the general environment than the non-L population? Reviewers might question the 
-fitness(L)=fitness(non-L) assumption. 
+>Nao: 1) Is it fair to say that the fitness of L-population is equal to that
+of non-L? Isn't a part of our argument that L-population is ``general-purpose''
+population and that they better fit the general environment than the non-L
+population? Reviewers might question the fitness(L)=fitness(non-L) assumption. 
 \end{verbatim}
 
 L has a particular set of genes that make it fit (we think).  The offspring of an L cross L mating
@@ -2198,10 +2222,10 @@ deleterious changes.  We assume the overall net change to be neutral.]]
 
 
 \begin{verbatim}
->Nao: 2) It seems little odd for me that entire L population suddenly becomes sexual. 
-To me, more realistic starting point is to have a fraction of L population (e.g., 10\%) 
-reproducing at the rate of 10\% per year? I might need to talk to Larry in person about 
-this because I might be completely off.
+>Nao: 2) It seems little odd for me that entire L population suddenly 
+becomes sexual. To me, more realistic starting point is to have a fraction of
+L population (e.g., 10\%) reproducing at the rate of 10\% per year? I might
+need to talk to Larry in person about this because I might be completely off.
 \end{verbatim}
 
 If we’re assumming L is genetically homogeneous, then all are sexual or all not.  I think the
@@ -2233,11 +2257,11 @@ ones.
 
 Misc leftovers that I hope to get to soon.
 
-\textit{is recessive vs 1/sqrt(N) modeled right?}
+\textit{Is recessive vs 1/sqrt(N) model OK?}
 
 \textit{From 11/24/17 email to julie: "There’s a slight discrepancy between two simulations that
   should be identical (44\% on top of pg 20 vs 52\% top of pg 27) that I need to debug; hopefully
-  minor."  (This is now pg 23 bottom growex4(bx=0.1), 44.1\% vs pg30 last plot under "hitching",
+  minor."  (This is now pg 23 top growex4(bx=0.1), 44.1\% vs pg30 last plot under "hitching",
   growex4q(), bx=.1 52.6\%)}
 
 \textit{Would it be clearer if I use the exec summary's 2a/b/c labeling throughout, including code?}
@@ -2246,5 +2270,5 @@ Misc leftovers that I hope to get to soon.
 
 \textit{Plus general proofread and cleanup.}
 
-\vfill\footnotesize\flushright SVN ID I miss you $ $Id: asex.rnw 2018-03-23 or later ruzzo $ $
+\vfill\footnotesize\flushright SVN ID I miss you $ $Id: asex.rnw 2018-03-24 or later ruzzo $ $
 \end{document}
