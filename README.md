@@ -9,7 +9,7 @@ paper:
 
     Scientific Reports, July 12, 2018
 
-    http://www.nature.com/articles/s41598-018-28630-4/
+    [http://www.nature.com/articles/s41598-018-28630-4](http://www.nature.com/articles/s41598-018-28630-4)
 
     DOI: 10.1038/s41598-018-28630-4
 
