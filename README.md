@@ -7,11 +7,9 @@ paper:
     dispersed clone within the model diatom species _Thalassiosira
     pseudonana_," by Julie A. Koester, et al.
 
-    Scientific Reports, July 12, 2018
-
-    [http://www.nature.com/articles/s41598-018-28630-4](http://www.nature.com/articles/s41598-018-28630-4)
-
-    DOI: 10.1038/s41598-018-28630-4
+Scientific Reports, July 12, 2018.
+[http://www.nature.com/articles/s41598-018-28630-4](http://www.nature.com/articles/s41598-018-28630-4)
+DOI: 10.1038/s41598-018-28630-4
 
 All files can be viewed/downloaded via the GitHub web interface.  To
 download (aka "clone") the entire repository, read the following.
