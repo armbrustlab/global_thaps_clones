@@ -3,9 +3,15 @@
 Code, scripts, notes, data and supplemental information supporting the
 paper:
 
-    "Sexual ancestors generate an obligate asexual and globally
+    "Sexual ancestors generated an obligate asexual and globally
     dispersed clone within the model diatom species _Thalassiosira
     pseudonana_," by Julie A. Koester, et al.
+
+    Scientific Reports, July 12, 2018
+
+    http://www.nature.com/articles/s41598-018-28630-4
+
+    DOI: 10.1038/s41598-018-28630-4
 
 All files can be viewed/downloaded via the GitHub web interface.  To
 download (aka "clone") the entire repository, read the following.

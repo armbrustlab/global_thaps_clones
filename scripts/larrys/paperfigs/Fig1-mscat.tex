@@ -260,7 +260,7 @@ CLEAR CACHE!!!  T/F set in params above will/won't force knitr cache removal (we
 \hlkwd{decache}\hlstd{(params}\hlopt{$}\hlstd{clear.cache)}
 \end{alltt}
 \begin{verbatim}
-# Rename of 'cache' to 'cache11578' returned TRUE .
+# Rename of 'cache' to 'cache14995' returned TRUE .
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -739,7 +739,8 @@ See section~\ref{sec:post} for more on this.
 \hlcom{#   some marker for clipped y in histos?}
 \hlcom{#   X: (tried this, doesn't help; change filtering so gyre looks better, maybe get 100 k points or so?)}
 \hlcom{#   }
-\hlstd{margin.scat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{stxl}\hlstd{=}\hlnum{6}\hlstd{,} \hlkwc{stxr}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{sty}\hlstd{=}\hlnum{7}\hlstd{,} \hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{the.dot.col}\hlstd{=the.dot.color)\{}
+\hlstd{margin.scat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{stxl}\hlstd{=}\hlnum{6}\hlstd{,} \hlkwc{stxr}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{sty}\hlstd{=}\hlnum{7}\hlstd{,} \hlkwc{label.panels}\hlstd{=}\hlnum{FALSE}\hlstd{,}
+                        \hlkwc{the.dot.col}\hlstd{=the.dot.color,} \hlkwc{nbin}\hlstd{=}\hlnum{128}\hlstd{)\{}
   \hlcom{# plot main fig with 2 side-by-side smooth-scatters and marginal histograms}
   \hlcom{# if stxl is NULL, omit left scatter/margin}
   \hlstd{opar} \hlkwb{<-} \hlkwd{par}\hlstd{(}\hlkwc{mar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0.6}\hlstd{,}\hlnum{0.3}\hlstd{,}\hlnum{0.0}\hlstd{,}\hlnum{0.4}\hlstd{),}\hlkwc{oma}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{),}\hlkwc{tck}\hlstd{=}\hlopt{-}\hlnum{.02}\hlstd{);} \hlkwd{on.exit}\hlstd{(}\hlkwd{par}\hlstd{(opar))}
@@ -772,10 +773,11 @@ See section~\ref{sec:post} for more on this.
   \hlcom{# 4: lower left scatter}
   \hlkwa{if}\hlstd{(}\hlopt{!}\hlkwd{is.null}\hlstd{(stxl))\{}
     \hlkwd{smoothScatter}\hlstd{(nrfall[samp,stxl], nrfall[samp,sty],}
-                  \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.col,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
+                  \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.col,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,} \hlkwc{nbin}\hlstd{=nbin,}
                   \hlkwc{transformation}\hlstd{=}\hlkwd{xformer}\hlstd{(}\hlnum{20}\hlstd{,}\hlnum{.2}\hlstd{,}\hlnum{.03}\hlstd{,}\hlnum{0.33}\hlstd{),}
                   \hlkwc{xlab}\hlstd{=xl1,} \hlkwc{xlim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{xaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}
-                  \hlkwc{ylab}\hlstd{=yl,}  \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{xaxt}\hlstd{=}\hlstr{'s'}\hlstd{,}\hlkwc{yaxt}\hlstd{=}\hlstr{'s'}\hlstd{)}
+                  \hlkwc{ylab}\hlstd{=yl,}  \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}
+                  \hlkwc{xaxt}\hlstd{=}\hlstr{'s'}\hlstd{,} \hlkwc{yaxt}\hlstd{=}\hlstr{'s'}\hlstd{)}
     \hlkwd{mtext}\hlstd{(xl1,}\hlkwc{side}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{line}\hlstd{=}\hlnum{2.5}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.9}\hlstd{)}
     \hlkwd{mtext}\hlstd{(yl,} \hlkwc{side}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{line}\hlstd{=}\hlnum{2.5}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.9}\hlstd{)}
     \hlkwa{if}\hlstd{(label.panels)\{}\hlkwd{text}\hlstd{(}\hlnum{.10}\hlstd{,} \hlnum{.95}\hlstd{,} \hlstr{'D'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{1.5}\hlstd{)\}}
@@ -784,10 +786,11 @@ See section~\ref{sec:post} for more on this.
   \hlcom{# 5: lower mid scatter}
   \hlcom{#eplot(0:1,0:1)}
   \hlkwd{smoothScatter}\hlstd{(nrfall[samp,stxr], nrfall[samp,sty],}
-                \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.col,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,}
+                \hlkwc{pch}\hlstd{=}\hlstr{'.'}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=the.dot.col,} \hlkwc{nrpoints}\hlstd{=}\hlnum{200}\hlstd{,} \hlkwc{nbin}\hlstd{=nbin,}
                 \hlkwc{transformation}\hlstd{=}\hlkwd{xformer}\hlstd{(}\hlnum{20}\hlstd{,}\hlnum{.2}\hlstd{,}\hlnum{.03}\hlstd{,}\hlnum{0.33}\hlstd{),}
                 \hlkwc{xlab}\hlstd{=xl2,} \hlkwc{xlim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{xaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}
-                \hlkwc{ylab}\hlstd{=}\hlstr{''}\hlstd{,}  \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{xaxt}\hlstd{=}\hlstr{'s'}\hlstd{,}\hlkwc{yaxt}\hlstd{=}\hlkwd{ifelse}\hlstd{(}\hlkwd{is.null}\hlstd{(stxl),}\hlstr{'s'}\hlstd{,}\hlstr{'n'}\hlstd{))}
+                \hlkwc{ylab}\hlstd{=}\hlstr{''}\hlstd{,}  \hlkwc{ylim}\hlstd{=}\hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{yaxp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}
+                \hlkwc{xaxt}\hlstd{=}\hlstr{'s'}\hlstd{,} \hlkwc{yaxt}\hlstd{=}\hlkwd{ifelse}\hlstd{(}\hlkwd{is.null}\hlstd{(stxl),}\hlstr{'s'}\hlstd{,}\hlstr{'n'}\hlstd{))}
   \hlkwd{mtext}\hlstd{(xl2,} \hlkwc{side}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{line}\hlstd{=}\hlnum{2.5}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.9}\hlstd{)}
   \hlkwa{if}\hlstd{(}\hlkwd{is.null}\hlstd{(stxl))\{}
     \hlkwd{mtext}\hlstd{(yl,} \hlkwc{side}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{line}\hlstd{=}\hlnum{2.5}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.9}\hlstd{)}
@@ -819,18 +822,59 @@ Repeating, the chatter from the call building \texttt{filt99} defines the data b
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{pdf}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{)}
-\hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\hlkwa{if}\hlstd{(}\hlnum{0}\hlstd{)\{} \hlcom{# format experimentation}
+  \hlkwd{pdf}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{tiff}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7'}\hlstd{,}\hlstr{'.tiff'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,}\hlkwc{res}\hlstd{=}\hlnum{360}\hlstd{,}\hlkwc{compression}\hlstd{=}\hlstr{'lzw'}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{jpeg}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7'}\hlstd{,}\hlstr{'.jpg'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,}\hlkwc{res}\hlstd{=}\hlnum{360}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{jpeg}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7-j30'}\hlstd{,}\hlstr{'.jpg'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,}\hlkwc{res}\hlstd{=}\hlnum{720}\hlstd{,}\hlkwc{quality}\hlstd{=}\hlnum{30}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{jpeg}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7-j256'}\hlstd{,}\hlstr{'.jpg'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,}\hlkwc{res}\hlstd{=}\hlnum{720}\hlstd{,}\hlkwc{quality}\hlstd{=}\hlnum{75}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{nbin}\hlstd{=}\hlnum{256}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{png}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7'}\hlstd{,}\hlstr{'.png'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,}\hlkwc{res}\hlstd{=}\hlnum{360}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{bmp}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-6-2-7'}\hlstd{,}\hlstr{'.bmp'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,}\hlkwc{res}\hlstd{=}\hlnum{360}\hlstd{);}
+  \hlkwd{margin.scat}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{label.panels}\hlstd{=}\hlnum{TRUE}\hlstd{);}
+  \hlkwd{dev.off}\hlstd{()}
+\hlstd{\}}
+\hlcom{#distilling that, pdf and jpeg seem most viable, with edge to jpeg}
+\hlstd{mscfig} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{i}\hlstd{,}\hlkwc{j}\hlstd{,}\hlkwc{k}\hlstd{,}\hlkwc{panel.labels}\hlstd{=}\hlnum{FALSE}\hlstd{,}\hlkwc{nbin}\hlstd{=}\hlnum{256}\hlstd{)\{}
+  \hlkwa{if}\hlstd{(}\hlkwd{is.null}\hlstd{(i))\{}
+    \hlstd{ix} \hlkwb{<-} \hlstr{'null'}
+  \hlstd{\}} \hlkwa{else} \hlstd{\{}
+    \hlstd{ix} \hlkwb{<-} \hlstd{i}
+  \hlstd{\}}
+  \hlstd{file.base} \hlkwb{<-} \hlkwd{paste}\hlstd{(}\hlstr{'mscat'}\hlstd{,ix,j,k,}\hlkwc{sep}\hlstd{=}\hlstr{'-'}\hlstd{)}
+  \hlkwd{pdf}\hlstd{(}\hlkwd{fpath}\hlstd{(file.base),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{)}
+  \hlkwd{margin.scat}\hlstd{(i,j,k,}\hlkwc{label.panels}\hlstd{=panel.labels,}\hlkwc{nbin}\hlstd{=nbin)}
+  \hlkwd{dev.off}\hlstd{()}
+  \hlkwd{jpeg}\hlstd{(}\hlkwd{fpath}\hlstd{(file.base,}\hlstr{'.jpg'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{,} \hlkwc{units}\hlstd{=}\hlstr{'in'}\hlstd{,} \hlkwc{res}\hlstd{=}\hlnum{360}\hlstd{)}
+  \hlkwd{margin.scat}\hlstd{(i,j,k,}\hlkwc{label.panels}\hlstd{=panel.labels,}\hlkwc{nbin}\hlstd{=nbin)}
+  \hlkwd{dev.off}\hlstd{()}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}\footnotesize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{mscfig}\hlstd{(}\hlnum{6}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{7}\hlstd{,}\hlkwc{panel.labels} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
 # Counts clipped at 2500 ; Top 5: 16283 2126 1619 1160 813
 # Counts clipped at 2500 ; Top 5: 24452 925 865 841 719
 # Counts clipped at 2500 ; Top 5: 25041 811 804 749 728
-\end{verbatim}
-\begin{alltt}
-\hlkwd{dev.off}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
+# Counts clipped at 2500 ; Top 5: 16283 2126 1619 1160 813
+# Counts clipped at 2500 ; Top 5: 24452 925 865 841 719
+# Counts clipped at 2500 ; Top 5: 25041 811 804 749 728
 # pdf 
 #   2
 \end{verbatim}
@@ -839,18 +883,15 @@ Repeating, the chatter from the call building \texttt{filt99} defines the data b
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{pdf}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-1-4-7'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{)}
-\hlkwd{margin.scat}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{7}\hlstd{)}
+\hlkwd{mscfig}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{7}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
 # Counts clipped at 2500 ; Top 5: 24172 942 697 689 670
 # Counts clipped at 2500 ; Top 5: 20258 4625 950 731 587
 # Counts clipped at 2500 ; Top 5: 25041 811 804 749 728
-\end{verbatim}
-\begin{alltt}
-\hlkwd{dev.off}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
+# Counts clipped at 2500 ; Top 5: 24172 942 697 689 670
+# Counts clipped at 2500 ; Top 5: 20258 4625 950 731 587
+# Counts clipped at 2500 ; Top 5: 25041 811 804 749 728
 # pdf 
 #   2
 \end{verbatim}
@@ -859,18 +900,15 @@ Repeating, the chatter from the call building \texttt{filt99} defines the data b
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{pdf}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-5-3-7'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{)}
-\hlkwd{margin.scat}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{3}\hlstd{,}\hlnum{7}\hlstd{)}
+\hlkwd{mscfig}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{3}\hlstd{,}\hlnum{7}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
 # Counts clipped at 2500 ; Top 5: 24248 1043 890 871 730
 # Counts clipped at 2500 ; Top 5: 15320 2019 1327 975 931
 # Counts clipped at 2500 ; Top 5: 25041 811 804 749 728
-\end{verbatim}
-\begin{alltt}
-\hlkwd{dev.off}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
+# Counts clipped at 2500 ; Top 5: 24248 1043 890 871 730
+# Counts clipped at 2500 ; Top 5: 15320 2019 1327 975 931
+# Counts clipped at 2500 ; Top 5: 25041 811 804 749 728
 # pdf 
 #   2
 \end{verbatim}
@@ -879,30 +917,26 @@ Repeating, the chatter from the call building \texttt{filt99} defines the data b
 \begin{knitrout}\footnotesize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{pdf}\hlstd{(}\hlkwd{fpath}\hlstd{(}\hlstr{'mscat-null-3-6'}\hlstd{),} \hlkwc{width}\hlstd{=}\hlnum{6.5}\hlstd{,} \hlkwc{height}\hlstd{=}\hlnum{4}\hlstd{)}
-\hlkwd{margin.scat}\hlstd{(}\hlkwa{NULL}\hlstd{,}\hlnum{3}\hlstd{,}\hlnum{6}\hlstd{)} \hlcom{# need 1 x 1 version here, rather than 1 x 2}
+\hlkwd{mscfig}\hlstd{(}\hlkwa{NULL}\hlstd{,}\hlnum{3}\hlstd{,}\hlnum{6}\hlstd{)} \hlcom{# need 1 x 1 version here, rather than 1 x 2}
 \end{alltt}
 \begin{verbatim}
 # Counts clipped at 2500 ; Top 5: 15320 2019 1327 975 931
 # Counts clipped at 2500 ; Top 5: 16283 2126 1619 1160 813
-\end{verbatim}
-\begin{alltt}
-\hlkwd{dev.off}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
+# Counts clipped at 2500 ; Top 5: 15320 2019 1327 975 931
+# Counts clipped at 2500 ; Top 5: 16283 2126 1619 1160 813
 # pdf 
 #   2
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-\noindent\includegraphics{Fig1-mscat-figs/mscat-6-2-7.pdf}
+\noindent\includegraphics[width=\linewidth]{Fig1-mscat-figs/mscat-6-2-7.jpg}
 
-\noindent\includegraphics{Fig1-mscat-figs/mscat-1-4-7.pdf}
+\noindent\includegraphics[width=\linewidth]{Fig1-mscat-figs/mscat-1-4-7.jpg}
 
-\noindent\includegraphics{Fig1-mscat-figs/mscat-5-3-7.pdf}
+\noindent\includegraphics[width=\linewidth]{Fig1-mscat-figs/mscat-5-3-7.jpg}
 
-\noindent\includegraphics{Fig1-mscat-figs/mscat-null-3-6.pdf}
+\noindent\includegraphics[width=\linewidth]{Fig1-mscat-figs/mscat-null-3-6.jpg}
 
 \section{``6+1'' with dots}
 
@@ -1604,7 +1638,7 @@ My summary: Not much changes; most of what does change, changes near the axes---
 # Details:Inconsistent: 98 moved/un: 78 20
 \end{verbatim}
 \end{kframe}
-\includegraphics[width=7in]{Fig1-mscat-figs/unnamed-chunk-45-1} 
+\includegraphics[width=7in]{Fig1-mscat-figs/unnamed-chunk-46-1} 
 
 \end{knitrout}
 

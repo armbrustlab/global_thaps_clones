@@ -536,7 +536,8 @@ smoothScatter(nrfall[samp,7], nrfall[samp,st], pch='.', cex=2, col=the.dot.color
 #   some marker for clipped y in histos?
 #   X: (tried this, doesn't help; change filtering so gyre looks better, maybe get 100 k points or so?)
 #   
-margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE, the.dot.col=the.dot.color){
+margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=FALSE, 
+                        the.dot.col=the.dot.color, nbin=128){
   # plot main fig with 2 side-by-side smooth-scatters and marginal histograms
   # if stxl is NULL, omit left scatter/margin
   opar <- par(mar=c(0.6,0.3,0.0,0.4),oma=c(3,4,0,0),tck=-.02); on.exit(par(opar))
@@ -569,10 +570,11 @@ margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE, the.dot.col=th
   # 4: lower left scatter
   if(!is.null(stxl)){
     smoothScatter(nrfall[samp,stxl], nrfall[samp,sty], 
-                  pch='.', cex=2, col=the.dot.col, nrpoints=200,
+                  pch='.', cex=2, col=the.dot.col, nrpoints=200, nbin=nbin,
                   transformation=xformer(20,.2,.03,0.33),
                   xlab=xl1, xlim=0:1, xaxp=c(0,1,2),
-                  ylab=yl,  ylim=0:1, yaxp=c(0,1,2),xaxt='s',yaxt='s')
+                  ylab=yl,  ylim=0:1, yaxp=c(0,1,2), 
+                  xaxt='s', yaxt='s')
     mtext(xl1,side=1, line=2.5, cex=.9)
     mtext(yl, side=2, line=2.5, cex=.9)
     if(label.panels){text(.10, .95, 'D', cex=1.5)}
@@ -581,10 +583,11 @@ margin.scat <- function(stxl=6, stxr=2, sty=7, label.panels=TRUE, the.dot.col=th
   # 5: lower mid scatter
   #eplot(0:1,0:1)
   smoothScatter(nrfall[samp,stxr], nrfall[samp,sty], 
-                pch='.', cex=2, col=the.dot.col, nrpoints=200,
+                pch='.', cex=2, col=the.dot.col, nrpoints=200, nbin=nbin,
                 transformation=xformer(20,.2,.03,0.33),
                 xlab=xl2, xlim=0:1, xaxp=c(0,1,2),
-                ylab='',  ylim=0:1, yaxp=c(0,1,2),xaxt='s',yaxt=ifelse(is.null(stxl),'s','n'))
+                ylab='',  ylim=0:1, yaxp=c(0,1,2),
+                xaxt='s', yaxt=ifelse(is.null(stxl),'s','n'))
   mtext(xl2, side=1, line=2.5, cex=.9)
   if(is.null(stxl)){
     mtext(yl, side=2, line=2.5, cex=.9)
@@ -599,33 +602,65 @@ Repeating, the chatter from the call building \texttt{filt99} defines the data b
 cat(filt99$chatter)
 @
 <<>>=
-pdf(fpath('mscat-6-2-7'), width=6.5, height=4)
-margin.scat(6,2,7,label.panels=TRUE)
-dev.off()
+if(0){ # format experimentation
+  pdf(fpath('mscat-6-2-7-216'), width=6.5, height=4); 
+  margin.scat(6,2,7,label.panels=TRUE,nbin=216); 
+  dev.off()
+  tiff(fpath('mscat-6-2-7','p.tiff'), width=6.5, height=4,units='in',res=360,compression='zip+p');
+  margin.scat(6,2,7,label.panels=TRUE); 
+  dev.off()
+  jpeg(fpath('mscat-6-2-7','.jpg'), width=6.5, height=4,units='in',res=360); 
+  margin.scat(6,2,7,label.panels=TRUE); 
+  dev.off()
+  jpeg(fpath('mscat-6-2-7-j30','.jpg'), width=6.5, height=4,units='in',res=720,quality=30); 
+  margin.scat(6,2,7,label.panels=TRUE); 
+  dev.off()
+  jpeg(fpath('mscat-6-2-7-j256','.jpg'), width=6.5, height=4,units='in',res=720,quality=75); 
+  margin.scat(6,2,7,label.panels=TRUE,nbin=256); 
+  dev.off()
+  png(fpath('mscat-6-2-7','.png'), width=6.5, height=4,units='in',res=360); 
+  margin.scat(6,2,7,label.panels=TRUE); 
+  dev.off()
+  bmp(fpath('mscat-6-2-7','.bmp'), width=6.5, height=4,units='in',res=360); 
+  margin.scat(6,2,7,label.panels=TRUE); 
+  dev.off()
+}
+#distilling that, pdf and jpeg seem most viable, with edge to jpeg
+mscfig <- function(i,j,k,panel.labels=FALSE,nbin=256){
+  if(is.null(i)){
+    ix <- 'null'
+  } else {
+    ix <- i
+  }
+  file.base <- paste('mscat',ix,j,k,sep='-')
+  pdf(fpath(file.base), width=6.5, height=4)
+  margin.scat(i,j,k,label.panels=panel.labels,nbin=nbin)
+  dev.off()
+  jpeg(fpath(file.base,'.jpg'), width=6.5, height=4, units='in', res=360)
+  margin.scat(i,j,k,label.panels=panel.labels,nbin=nbin)
+  dev.off()
+}
 @
 <<>>=
-pdf(fpath('mscat-1-4-7'), width=6.5, height=4)
-margin.scat(1,4,7)
-dev.off()
+mscfig(6,2,7,panel.labels = TRUE)
 @
 <<>>=
-pdf(fpath('mscat-5-3-7'), width=6.5, height=4)
-margin.scat(5,3,7)
-dev.off()
+mscfig(1,4,7)
 @
 <<>>=
-pdf(fpath('mscat-null-3-6'), width=6.5, height=4)
-margin.scat(NULL,3,6) # need 1 x 1 version here, rather than 1 x 2
-dev.off()
+mscfig(5,3,7)
+@
+<<>>=
+mscfig(NULL,3,6) # need 1 x 1 version here, rather than 1 x 2
 @
 
-\noindent\includegraphics{\Sexpr{fpath('mscat-6-2-7')}}
+\noindent\includegraphics[width=\linewidth]{\Sexpr{fpath('mscat-6-2-7','.jpg')}}
 
-\noindent\includegraphics{\Sexpr{fpath('mscat-1-4-7')}}
+\noindent\includegraphics[width=\linewidth]{\Sexpr{fpath('mscat-1-4-7','.jpg')}}
 
-\noindent\includegraphics{\Sexpr{fpath('mscat-5-3-7')}}
+\noindent\includegraphics[width=\linewidth]{\Sexpr{fpath('mscat-5-3-7','.jpg')}}
 
-\noindent\includegraphics{\Sexpr{fpath('mscat-null-3-6')}}
+\noindent\includegraphics[width=\linewidth]{\Sexpr{fpath('mscat-null-3-6','.jpg')}}
 
 \section{``6+1'' with dots}
 

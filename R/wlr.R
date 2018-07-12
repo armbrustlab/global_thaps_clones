@@ -5,7 +5,7 @@ svn.stamp.wlr.r <- function(){
   #
   # svn version stamp
   #
-	return('SVN Id, I miss you.  $Id: wlr.R  2017-07-21 or later $')
+	return('SVN Id, I miss you.  $Id: wlr.R  2018-05-25 or later $')
 }
 
 who.where <- function(){
@@ -3544,51 +3544,75 @@ seeseq <- function(x){
 ###############################################################################################
 ###############################################################################################
 #
-# show read counts for all 7 strains, or a subset
+# show read counts for all 7 strains, or a subset, with parallel metadata
 #
 #   x:   vector of positions
 #   who: which strains to show
+#   rat: if T, add nonref fraction to table, + ratio of nrf to nrf_ny
+#   extra: if non-NULL, a list with named elements, each a list-of-7-vectors of same 
+#          length as snp.tables, printed under col heading taken from list name.
 #
-seecounts <- function(x,who=1:7,snp.tables=full.tables.01.26.14,debug=F,rat=F){
-	df <- NULL
-	minitab <- lapply(snp.tables,function(st){st[x,]})
-	if(debug){print(minitab)}
-	for(i in 1:length(x)){
-	        if(debug){cat('Seecounts: i =', i, 'x[i]=', x[i])}
-		df <- rbind(df, data.frame(
-				chr=minitab[[1]]$chr[i],
-  				pos=minitab[[1]]$pos[i],
-  				Ref=minitab[[1]]$Ref[i], ### was Ref2, here and below; 1/26/14 tables redefined this?
-  				Strain='',A='',G='',C='',T='',SNP='',exon='',indel='',nrf='',rat='',stringsAsFactors=F))
-  		for(j in who){
-		      	if(debug){cat('j =',j)}
-			if(rat){# quick+dirty - should find minor nuc consistently
-				maxnr <- max(minitab[[j]][i,c('a','g','c','t')])
-				maxny <- max(minitab[[7]][i,c('a','g','c','t')])
-				rr <- maxnr/(maxnr+minitab[[j]]$.match[i]) / (maxny/(maxny+minitab[[7]]$.match[i]))
-				rr <- round(rr,2)
-				nrf <- round(maxnr/(maxnr++minitab[[j]]$.match[i]),2)
-			} else {
-			        rr <- ''; nrf<- ''
-			}
-			if(debug){print(str(df))}
-  			df <- rbind(df, data.frame(
-				chr='',pos='',Ref='',
-				Strain=names(minitab)[j],
-  				A=ifelse(minitab[[1]]$Ref[i]=='A',minitab[[j]]$.match[i],minitab[[j]]$a[i]),
-  				G=ifelse(minitab[[1]]$Ref[i]=='G',minitab[[j]]$.match[i],minitab[[j]]$g[i]),
-  				C=ifelse(minitab[[1]]$Ref[i]=='C',minitab[[j]]$.match[i],minitab[[j]]$c[i]),
-  				T=ifelse(minitab[[1]]$Ref[i]=='T',minitab[[j]]$.match[i],minitab[[j]]$t[i]),
-				SNP  =minitab[[j]]$snp[i],
-				exon =minitab[[j]]$exon[i],
-				indel=minitab[[j]]$indel[i],
-				nrf  =nrf,
-				rat  =rr,
-				stringsAsFactors=F))
-  		}
-		if(debug){cat('\n')}
-	}
-	return(df)
+seecounts <- function(x,who=1:7,snp.tables=full.tables.01.26.14,debug=F,rat=F, extra=NULL){
+  df <- NULL
+  minitab <- lapply(snp.tables,function(st){st[x,]})
+  if(!is.null(extra)){
+    mtab3 <- lapply(extra,function(ex){lapply(ex,function(st){st[x]})})
+  }
+  if(debug){print(minitab)}
+  for(i in 1:length(x)){
+    if(debug){cat('Seecounts: i =', i, 'x[i]=', x[i])}
+    ttl.row <- data.frame(
+      chr=as.character(minitab[[1]]$chr[i]),
+      pos=minitab[[1]]$pos[i],
+      Ref=minitab[[1]]$Ref[i], ### was Ref2, here and below; 1/26/14 tables redefined this?
+      Strain='',A='',G='',C='',T='',SNP='',exon='',indel='',
+      stringsAsFactors=F, check.names=FALSE)
+    if(rat){
+      # add extra cols for nrf/rat fractions
+      ttl.row <- data.frame(ttl.row, nrf='',rat='', stringsAsFactors=F)
+    }
+    if(!is.null(extra)){
+      # add even more extra columms, named as in names(extra)
+      for(k in 1:length(extra)){
+        ttl.row <- data.frame(ttl.row, xyz='', stringsAsFactors=F)
+        names(ttl.row)[length(names(ttl.row))] <- names(extra)[k]
+      }
+    }
+    if(debug){print('boo');print(ttl.row); print(str(ttl.row))}
+    df <- rbind(df, ttl.row)
+    for(j in who){
+      if(debug){cat('j =',j); print(str(df))}
+      who.row <- list(
+        chr='',pos='',Ref='',
+        Strain=names(minitab)[j],
+        A=ifelse(minitab[[1]]$Ref[i]=='A',minitab[[j]]$.match[i],minitab[[j]]$a[i]),
+        G=ifelse(minitab[[1]]$Ref[i]=='G',minitab[[j]]$.match[i],minitab[[j]]$g[i]),
+        C=ifelse(minitab[[1]]$Ref[i]=='C',minitab[[j]]$.match[i],minitab[[j]]$c[i]),
+        T=ifelse(minitab[[1]]$Ref[i]=='T',minitab[[j]]$.match[i],minitab[[j]]$t[i]),
+        SNP  =minitab[[j]]$snp[i],
+        exon =minitab[[j]]$exon[i],
+        indel=minitab[[j]]$indel[i]
+      )
+      if(rat){# quick+dirty - should find minor nuc consistently
+        maxnr <- max(minitab[[j]][i,c('a','g','c','t')])
+        maxny <- max(minitab[[7]][i,c('a','g','c','t')])
+        rr <- maxnr/(maxnr+minitab[[j]]$.match[i]) / (maxny/(maxny+minitab[[7]]$.match[i]))
+        rr <- round(rr,2)
+        nrf <- round(maxnr/(maxnr+minitab[[j]]$.match[i]),2)
+        who.row[['nrf']] <- nrf
+        who.row[['rat']] <- rr
+      }
+      if(!is.null(extra)){
+        for(k in 1:length(extra)){
+          who.row[[names(extra)[k]]] <- as.character(mtab3[[k]][[j]][i])
+        }
+      }
+      if(debug){print(df); print(who.row); print(str(who.row))}
+      df <- rbind(df, who.row)
+    }
+    if(debug){cat('\n')}
+  }
+  return(df)
 }
 ###############################################################################################
 ###############################################################################################
